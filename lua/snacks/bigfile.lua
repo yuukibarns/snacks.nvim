@@ -1,21 +1,20 @@
+---@class snacks.bigfile
 local M = {}
 
 ---@class snacks.bigfile.Config
 local defaults = {
   size = 1.5 * 1024 * 1024, -- 1.5MB
-  ---@param opts {buf: number, ft:string}
-  behave = function(opts)
+  ---@param ev {buf: number, ft:string}
+  behave = function(ev)
     vim.b.minianimate_disable = true
     vim.schedule(function()
-      vim.bo.syntax = opts.ft
+      vim.bo[ev.buf].syntax = ev.ft
     end)
-    vim.notify("Big file detected, syntax highlighting disabled", "warn")
   end,
 }
 
----@param opts snacks.bigfile.Config?
-function M.setup(opts)
-  opts = vim.tbl_deep_extend("force", defaults, opts or {})
+function M.setup()
+  local opts = Snacks.config.get("bigfile", defaults)
 
   vim.filetype.add({
     pattern = {
