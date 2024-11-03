@@ -6,6 +6,7 @@
 ---@field words snacks.words
 ---@field rename snacks.rename
 ---@field float snacks.float
+---@field terminal snacks.terminal
 local M = {}
 
 setmetatable(M, {
@@ -24,6 +25,7 @@ _G.Snacks = M
 ---@field statuscolumn snacks.statuscolumn.Config  | { enabled: boolean }
 ---@field words snacks.words.Config
 ---@field float snacks.float.Config
+---@field terminal snacks.terminal.Config
 local config = {
   bigfile = { enabled = true },
   quickfile = { enabled = true },
