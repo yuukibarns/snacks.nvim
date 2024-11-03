@@ -3,6 +3,7 @@
 ---@field bufdelete snacks.bufdelete
 ---@field quickfile snacks.quickfile
 ---@field statuscolumn snacks.statuscolumn
+---@field words snacks.words
 local M = {}
 
 setmetatable(M, {
@@ -19,10 +20,12 @@ _G.Snacks = M
 ---@field bigfile snacks.bigfile.Config | { enabled: boolean }
 ---@field quickfile { enabled: boolean }
 ---@field statuscolumn snacks.statuscolumn.Config  | { enabled: boolean }
+---@field words snacks.words.Config
 local config = {
   bigfile = { enabled = true },
   quickfile = { enabled = true },
   statuscolumn = { enabled = true },
+  words = { enabled = true },
 }
 
 ---@class snacks.Config: snacks.Opts
@@ -69,6 +72,20 @@ function M.setup(opts)
 
   if M.config.statuscolumn.enabled then
     vim.o.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
+  end
+
+  local later = vim.schedule_wrap(function()
+    if M.config.words.enabled then
+      Snacks.words.setup()
+    end
+  end)
+
+  if vim.v.vim_did_enter == 1 then
+    later()
+  else
+    vim.api.nvim_create_autocmd("UIEnter", {
+      callback = later,
+    })
   end
 end
 
