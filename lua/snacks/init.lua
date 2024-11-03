@@ -50,42 +50,28 @@ function M.setup(opts)
 
   local group = vim.api.nvim_create_augroup("snacks", { clear = true })
 
-  if M.config.bigfile.enabled then
-    vim.api.nvim_create_autocmd("BufReadPre", {
-      group = group,
-      once = true,
-      callback = function()
-        Snacks.bigfile.setup()
-      end,
-    })
-  end
+  local events = {
+    BufReadPre = { "bigfile" },
+    BufReadPost = { "quickfile" },
+    LspAttach = { "words" },
+  }
 
-  if M.config.quickfile.enabled then
-    vim.api.nvim_create_autocmd("BufReadPost", {
+  for event, snacks in pairs(events) do
+    vim.api.nvim_create_autocmd(event, {
       group = group,
       once = true,
       callback = function()
-        Snacks.quickfile.setup()
+        for _, snack in ipairs(snacks) do
+          if M.config[snack].enabled then
+            M[snack].setup()
+          end
+        end
       end,
     })
   end
 
   if M.config.statuscolumn.enabled then
     vim.o.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
-  end
-
-  local later = vim.schedule_wrap(function()
-    if M.config.words.enabled then
-      Snacks.words.setup()
-    end
-  end)
-
-  if vim.v.vim_did_enter == 1 then
-    later()
-  else
-    vim.api.nvim_create_autocmd("UIEnter", {
-      callback = later,
-    })
   end
 end
 
