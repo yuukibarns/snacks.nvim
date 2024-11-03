@@ -17,9 +17,9 @@ local M = setmetatable({}, {
 ---@field file? string
 ---@field enter? boolean
 ---@field backdrop? number|false
----@field win vim.api.keyset.win_config
----@field wo vim.wo
----@field bo vim.bo
+---@field win? vim.api.keyset.win_config
+---@field wo? vim.wo
+---@field bo? vim.bo
 ---@field keys? table<string, false|string|fun(self: snacks.float)>
 ---@field b? table<string, any>
 ---@field w? table<string, any>
@@ -56,27 +56,30 @@ function M.new(opts)
   return self
 end
 
----@param opts? { win: boolean, buf: boolean }
+---@param opts? { buf: boolean }
 function M:close(opts)
   opts = opts or {}
+  local wipe = opts.buf ~= false and not self.opts.buf and not self.opts.file
+
   local win = self.win
-  local buf = self.buf
-  if opts.win ~= false and win and vim.api.nvim_win_is_valid(win) then
-    self.win = nil
-    vim.api.nvim_win_close(win, true)
-    if self.backdrop then
-      self.backdrop:close({ win = false })
-      self.backdrop = nil
-    end
-  end
-  if not self.opts.buf and not self.opts.file and opts.buf ~= false and buf and vim.api.nvim_buf_is_valid(buf) then
+  local buf = wipe and self.buf
+  self.win = nil
+  if buf then
     self.buf = nil
-    vim.api.nvim_buf_delete(buf, { force = true })
   end
-  if self.augroup then
-    vim.api.nvim_del_augroup_by_id(self.augroup)
-    self.augroup = nil
-  end
+
+  vim.schedule(function()
+    if win and vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
+    end
+    if buf and vim.api.nvim_buf_is_valid(buf) then
+      vim.api.nvim_buf_delete(buf, { force = true })
+    end
+    if self.augroup then
+      vim.api.nvim_del_augroup_by_id(self.augroup)
+      self.augroup = nil
+    end
+  end)
 end
 
 function M:hide()
@@ -112,6 +115,9 @@ function M:show()
   else
     self.buf = vim.api.nvim_create_buf(false, true)
   end
+  if self.opts.bo and vim.bo[self.buf].filetype ~= "" then
+    self.opts.bo.filetype = nil
+  end
   self:set_options("buf")
   for k, v in pairs(self.opts.b or {}) do
     vim.b[self.buf][k] = v
@@ -123,6 +129,7 @@ function M:show()
   end
 
   vim.api.nvim_create_autocmd("VimResized", {
+    group = self.augroup,
     callback = function()
       if self:valid() then
         vim.api.nvim_win_set_config(self.win, self:win_opts())
@@ -139,6 +146,12 @@ function M:show()
     end
   end
 
+  self:drop()
+
+  return self
+end
+
+function M:drop()
   local has_bg = false
   if vim.fn.has("nvim-0.9.0") == 0 then
     local normal = vim.api.nvim_get_hl_by_name("Normal", true)
@@ -169,12 +182,21 @@ function M:show()
         filetype = "snack_float_backdrop",
       },
     })
+    vim.api.nvim_create_autocmd("WinClosed", {
+      group = self.augroup,
+      pattern = self.win .. "",
+      callback = function()
+        if self.backdrop then
+          self.backdrop:close()
+          self.backdrop = nil
+        end
+      end,
+    })
   end
-  return self
 end
 
 function M:win_opts()
-  local opts = vim.deepcopy(self.opts.win)
+  local opts = vim.deepcopy(self.opts.win or {})
   local parent = {
     height = opts.relative == "win" and vim.api.nvim_win_get_height(opts.win) or vim.o.lines,
     width = opts.relative == "win" and vim.api.nvim_win_get_width(opts.win) or vim.o.columns,
