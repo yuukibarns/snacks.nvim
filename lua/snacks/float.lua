@@ -33,9 +33,7 @@ local defaults = {
     zindex = 50,
   },
   wo = {},
-  bo = {
-    filetype = "snacks_float",
-  },
+  bo = {},
   keys = {
     q = "close",
   },
@@ -115,8 +113,8 @@ function M:show()
   else
     self.buf = vim.api.nvim_create_buf(false, true)
   end
-  if self.opts.bo and vim.bo[self.buf].filetype ~= "" then
-    self.opts.bo.filetype = nil
+  if vim.bo[self.buf].filetype == "" and not self.opts.bo.filetype then
+    self.opts.bo.filetype = "snacks_float"
   end
   self:set_options("buf")
   for k, v in pairs(self.opts.b or {}) do
