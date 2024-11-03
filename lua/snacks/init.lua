@@ -43,7 +43,7 @@ M.config = setmetatable({}, {
 ---@param defaults T
 ---@return T
 function M.config.get(snack, defaults)
-  config[snack] = vim.tbl_deep_extend("force", defaults, config[snack] or {})
+  config[snack] = vim.tbl_deep_extend("force", {}, defaults, config[snack] or {})
   return config[snack]
 end
 
