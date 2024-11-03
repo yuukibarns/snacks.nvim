@@ -4,6 +4,7 @@
 ---@field quickfile snacks.quickfile
 ---@field statuscolumn snacks.statuscolumn
 ---@field words snacks.words
+---@field rename snacks.rename
 local M = {}
 
 setmetatable(M, {
