@@ -18,6 +18,7 @@ local M = setmetatable({}, {
 ---@field mode? string|string[]
 
 ---@class snacks.float.Config
+---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
 ---@field file? string
 ---@field enter? boolean
@@ -25,22 +26,74 @@ local M = setmetatable({}, {
 ---@field win? vim.api.keyset.win_config
 ---@field wo? vim.wo
 ---@field bo? vim.bo
----@field keys? table<string, false|string|fun(self: snacks.float)>
----@field b? table<string, any>
----@field w? table<string, any>
+---@field keys? table<string, false|string|fun(self: snacks.float)|snacks.float.Keys>
+---@field on_buf? fun(self: snacks.float)
+---@field on_win? fun(self: snacks.float)
 local defaults = {
-  backdrop = 60,
+  position = "float",
   win = {
     relative = "editor",
-    height = 0.9,
-    width = 0.9,
     style = "minimal",
-    zindex = 50,
   },
-  wo = {},
+  wo = {
+    winhighlight = "EndOfBuffer:NormalFloat,Normal:NormalFloat,NormalNC:NormalFloat",
+  },
   bo = {},
   keys = {
     q = "close",
+  },
+}
+
+---@type snacks.float.Config
+local defaults_float = {
+  backdrop = 60,
+  win = {
+    height = 0.9,
+    width = 0.9,
+    zindex = 50,
+  },
+}
+
+---@type snacks.float.Config
+local defaults_split = {
+  win = {
+    height = 0.4,
+    width = 0.4,
+  },
+}
+
+local split_commands = {
+  editor = {
+    top = "topleft",
+    right = "vertical botright",
+    bottom = "botright",
+    left = "vertical topleft",
+  },
+  win = {
+    top = "aboveleft",
+    right = "vertical rightbelow",
+    bottom = "belowright",
+    left = "vertical leftabove",
+  },
+}
+
+---@type snacks.float.Config
+local minimal = {
+  wo = {
+    cursorcolumn = false,
+    cursorline = true,
+    cursorlineopt = "both",
+    fillchars = "eob: ",
+    list = false,
+    number = false,
+    relativenumber = false,
+    signcolumn = "no",
+    spell = false,
+    winbar = "",
+    statuscolumn = "",
+    winfixheight = true,
+    winfixwidth = true,
+    wrap = false,
   },
 }
 
@@ -54,7 +107,13 @@ function M.new(opts)
   local self = setmetatable({}, { __index = M })
   id = id + 1
   self.id = id
-  self.opts = vim.tbl_deep_extend("force", {}, Snacks.config.get("float", defaults), opts or {})
+  opts = vim.tbl_deep_extend("force", {}, Snacks.config.get("float", defaults), opts or {})
+  opts =
+    vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
+  if opts.win.style == "minimal" then
+    opts = vim.tbl_deep_extend("force", {}, vim.deepcopy(minimal), opts)
+  end
+  self.opts = opts
   self:show()
   return self
 end
@@ -97,11 +156,7 @@ function M:toggle()
   end
 end
 
-function M:show()
-  if self:valid() then
-    return self
-  end
-  self.augroup = vim.api.nvim_create_augroup("snacks_float_" .. id, { clear = true })
+function M:open_buf()
   if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
     -- keep existing buffer
     self.buf = self.buf
@@ -121,14 +176,61 @@ function M:show()
   if vim.bo[self.buf].filetype == "" and not self.opts.bo.filetype then
     self.opts.bo.filetype = "snacks_float"
   end
-  self:set_options("buf")
-  for k, v in pairs(self.opts.b or {}) do
-    vim.b[self.buf][k] = v
+end
+
+function M:open_win()
+  local relative = self.opts.win.relative or "editor"
+  local position = self.opts.position or "float"
+  local enter = self.opts.enter == nil or self.opts.enter or false
+  local opts = self:win_opts()
+  if position == "float" then
+    self.win = vim.api.nvim_open_win(self.buf, enter, opts)
+  else
+    local parent = self.opts.win.win or 0
+    local vertical = position == "left" or position == "right"
+    if parent == 0 then
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.w[win].snacks_float_relative == "editor" and vim.w[win].snacks_float_position == position then
+          parent = win
+          relative = "win"
+          position = vertical and "bottom" or "right"
+          vertical = not vertical
+          break
+        end
+      end
+    end
+    local cmd = split_commands[relative][position]
+    local size = vertical and opts.width or opts.height
+    vim.api.nvim_win_call(parent, function()
+      vim.cmd("silent noswapfile " .. cmd .. " " .. size .. "split")
+      vim.api.nvim_win_set_buf(0, self.buf)
+      self.win = vim.api.nvim_get_current_win()
+    end)
+    if enter then
+      vim.api.nvim_set_current_win(self.win)
+    end
   end
-  self.win = vim.api.nvim_open_win(self.buf, self.opts.enter == nil or self.opts.enter, self:win_opts())
+  vim.w[self.win].snacks_float = self.id
+  vim.w[self.win].snacks_float_position = self.opts.position
+  vim.w[self.win].snacks_float_relative = self.opts.win.relative
+end
+
+function M:show()
+  if self:valid() then
+    return self
+  end
+  self.augroup = vim.api.nvim_create_augroup("snacks_float_" .. id, { clear = true })
+
+  self:open_buf()
+  self:set_options("buf")
+  if self.opts.on_buf then
+    self.opts.on_buf(self)
+  end
+
+  self:open_win()
   self:set_options("win")
-  for k, v in pairs(self.opts.w or {}) do
-    vim.w[self.win][k] = v
+  if self.opts.on_win then
+    self.opts.on_win(self)
   end
 
   vim.api.nvim_create_autocmd("VimResized", {
