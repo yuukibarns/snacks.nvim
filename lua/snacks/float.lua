@@ -190,7 +190,11 @@ function M:open_win()
     local vertical = position == "left" or position == "right"
     if parent == 0 then
       for _, win in ipairs(vim.api.nvim_list_wins()) do
-        if vim.w[win].snacks_float_relative == "editor" and vim.w[win].snacks_float_position == position then
+        if
+          vim.w[win].snacks_float
+          and vim.w[win].snacks_float.relative == "editor"
+          and vim.w[win].snacks_float.position == position
+        then
           parent = win
           relative = "win"
           position = vertical and "bottom" or "right"
@@ -210,9 +214,11 @@ function M:open_win()
       vim.api.nvim_set_current_win(self.win)
     end
   end
-  vim.w[self.win].snacks_float = self.id
-  vim.w[self.win].snacks_float_position = self.opts.position
-  vim.w[self.win].snacks_float_relative = self.opts.win.relative
+  vim.w[self.win].snacks_float = {
+    id = self.id,
+    position = self.opts.position,
+    relative = self.opts.win.relative,
+  }
 end
 
 function M:show()

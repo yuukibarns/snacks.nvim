@@ -54,11 +54,11 @@ local terminals = {}
 ---@param cmd? string | string[]
 ---@param opts? snacks.terminal.Config
 function M.open(cmd, opts)
+  local id = vim.v.count1
   ---@type snacks.terminal.Config
   opts = Snacks.config.get("terminal", defaults, opts)
   opts.float.position = opts.float.position or (cmd and "float" or "bottom")
-  opts.float.wo.winbar = opts.float.wo.winbar
-    or (opts.float.position == "float" and "" or (vim.v.count1 .. ": %{b:term_title}"))
+  opts.float.wo.winbar = opts.float.wo.winbar or (opts.float.position == "float" and "" or (id .. ": %{b:term_title}"))
 
   if opts.override then
     return opts.override(cmd, opts)
@@ -69,7 +69,7 @@ function M.open(cmd, opts)
   ---@param self snacks.terminal
   opts.float.on_buf = function(self)
     self.cmd = cmd
-    vim.b[self.buf].snacks_terminal_cmd = cmd
+    vim.b[self.buf].snacks_terminal = { cmd = cmd, id = id }
     if on_buf then
       on_buf(self)
     end
