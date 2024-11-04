@@ -8,11 +8,11 @@
 ---@class snacks.terminal.Config
 ---@field cwd? string
 ---@field env? table<string, string>
----@field float? snacks.win.Config
+---@field win? snacks.win.Config
 ---@field interactive? boolean
 ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
 {
-  float = {
+  win = {
     bo = {
       filetype = "snacks_terminal",
     },
