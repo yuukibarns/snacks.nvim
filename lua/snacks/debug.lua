@@ -36,4 +36,18 @@ function M.backtrace()
   Snacks.notify.warn(#trace > 0 and (table.concat(trace, "\n")) or "", { title = "Backtrace" })
 end
 
+---@param fn fun()
+---@param opts? {count?: number, flush?: boolean}
+function M.profile(fn, opts)
+  opts = vim.tbl_extend("force", { count = 100, flush = true }, opts or {})
+  local start = vim.uv.hrtime()
+  for _ = 1, opts.count, 1 do
+    if opts.flush then
+      jit.flush(fn, true)
+    end
+    fn()
+  end
+  Snacks.notify(((vim.uv.hrtime() - start) / 1e6 / opts.count) .. "ms")
+end
+
 return M
