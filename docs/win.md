@@ -6,6 +6,7 @@
 
 ```lua
 ---@class snacks.win.Config
+---@field view? string merges with config from `Snacks.config.views[view]`
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
 ---@field file? string
@@ -66,6 +67,14 @@ Snacks.win()
 ---@param opts? snacks.win.Config
 ---@return snacks.win
 Snacks.win.new(opts)
+```
+
+### `Snacks.win.resolve()`
+
+```lua
+---@param opts? snacks.win.Config
+---@return snacks.win.Config
+Snacks.win.resolve(opts)
 ```
 
 ### `win:buf_valid()`

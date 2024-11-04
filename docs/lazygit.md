@@ -23,6 +23,9 @@
     selectedLineBgColor = { bg = "Visual" }, -- set to `default` to have no background colour
     unstagedChangesColor = { fg = "DiagnosticError" },
   },
+  win = {
+    view = "lazygit",
+  },
 }
 ```
 

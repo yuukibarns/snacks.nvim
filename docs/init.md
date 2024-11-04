@@ -28,9 +28,19 @@ Snacks = {}
 ---@generic T: table
 ---@param snack string
 ---@param defaults T
----@param opts? T
+---@param ... T[]
 ---@return T
-Snacks.config.get(snack, defaults, opts)
+Snacks.config.get(snack, defaults, ...)
+```
+
+### `Snacks.config.view()`
+
+Register a new window view config.
+
+```lua
+---@param name string
+---@param defaults snacks.win.Config
+Snacks.config.view(name, defaults)
 ```
 
 ### `Snacks.setup()`
