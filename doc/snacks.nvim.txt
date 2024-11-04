@@ -3,16 +3,18 @@
 ==============================================================================
 Table of Contents                              *snacks.nvim-table-of-contents*
 
-1. snack.nvim                                         |snacks.nvim-snack.nvim|
-  - Todo                                         |snacks.nvim-snack.nvim-todo|
+1. snacks.nvim                                       |snacks.nvim-snacks.nvim|
+  - Todo                                        |snacks.nvim-snacks.nvim-todo|
 
 ==============================================================================
-1. snack.nvim                                         *snacks.nvim-snack.nvim*
+1. snacks.nvim                                       *snacks.nvim-snacks.nvim*
 
 A collection of small QoL plugins for Neovim.
 
 
-TODO                                             *snacks.nvim-snack.nvim-todo*
+  [!CAUTION] Do **NOT** use this for now, it’s still in development.
+
+TODO                                            *snacks.nvim-snacks.nvim-todo*
 
 - docs :)
 - bigfile `BufReadPre`
