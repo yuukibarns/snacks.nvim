@@ -71,7 +71,7 @@ local function env(opts)
         "# Error:",
         vim.trim(proc.stdout .. "\n" .. proc.stderr),
       }
-      vim.notify(table.concat(msg, "\n"), vim.log.levels.ERROR, { title = "lazygit" })
+      Snacks.notify.error(msg, { title = "lazygit" })
     end
   end
 end

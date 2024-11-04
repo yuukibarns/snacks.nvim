@@ -358,11 +358,7 @@ function M:set_options(type)
       win = self.win,
     } or { buf = self.buf })
     if not ok then
-      vim.notify(
-        "Error setting option `" .. k .. "=" .. v .. "`\n\n" .. err,
-        vim.log.levels.ERROR,
-        { title = "Snacks Float" }
-      )
+      Snacks.notify.error("Error setting option `" .. k .. "=" .. v .. "`\n\n" .. err, { title = "Snacks Float" })
     end
   end
 end

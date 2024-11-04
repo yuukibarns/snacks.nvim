@@ -10,6 +10,7 @@
 ---@field lazygit snacks.lazygit
 ---@field git snacks.git
 ---@field gitbrowse snacks.gitbrowse
+---@field notify snacks.notify
 local M = {}
 
 setmetatable(M, {

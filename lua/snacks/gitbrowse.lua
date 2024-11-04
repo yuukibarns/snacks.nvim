@@ -48,13 +48,13 @@ function M.open(opts)
   opts = Snacks.config.get("gitbrowse", defaults, opts)
   local proc = vim.system({ "git", "remote", "-v" }, { text = true }):wait()
   if proc.code ~= 0 then
-    return vim.notify("Failed to get git remotes", vim.log.levels.ERROR, { title = "Git Browse" })
+    return Snacks.notify.error("Failed to get git remotes", { title = "Git Browse" })
   end
   local lines = vim.split(proc.stdout, "\n")
 
   proc = vim.system({ "git", "rev-parse", "--abbrev-ref", "HEAD" }):wait()
   if proc.code ~= 0 then
-    return vim.notify("Failed to get current branch", vim.log.levels.ERROR, { title = "Git Browse" })
+    return Snacks.notify.error("Failed to get current branch", { title = "Git Browse" })
   end
   local branch = proc.stdout:gsub("\n", "")
 
@@ -78,13 +78,13 @@ function M.open(opts)
 
   local function open(remote)
     if remote then
-      vim.notify(("Opening %s\n%s"):format(remote.name, remote.url), vim.log.levels.INFO, { title = "Git Browse" })
+      Snacks.notify(("Opening [%s](%s)"):format(remote.name, remote.url), { title = "Git Browse" })
       opts.open(remote.url)
     end
   end
 
   if #remotes == 0 then
-    return vim.notify("No git remotes found", vim.log.levels.ERROR, { title = "Git Browse" })
+    return Snacks.notify.error("No git remotes found", { title = "Git Browse" })
   elseif #remotes == 1 then
     return open(remotes[1])
   end
