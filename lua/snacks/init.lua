@@ -43,10 +43,10 @@ M.config = setmetatable({}, {
 ---@generic T: table
 ---@param snack string
 ---@param defaults T
+---@param opts? T
 ---@return T
-function M.config.get(snack, defaults)
-  config[snack] = vim.tbl_deep_extend("force", {}, defaults, config[snack] or {})
-  return config[snack]
+function M.config.get(snack, defaults, opts)
+  return vim.tbl_deep_extend("force", {}, vim.deepcopy(defaults), vim.deepcopy(config[snack] or {}), opts or {})
 end
 
 ---@param opts snacks.Opts?

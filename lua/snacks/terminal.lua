@@ -54,7 +54,7 @@ local terminals = {}
 ---@param opts? snacks.terminal.Config
 function M.open(cmd, opts)
   ---@type snacks.terminal.Config
-  opts = vim.tbl_deep_extend("force", {}, Snacks.config.get("terminal", defaults), opts or {})
+  opts = Snacks.config.get("terminal", defaults, opts)
   opts.float.position = opts.float.position or (cmd and "float" or "bottom")
   opts.float.wo.winbar = opts.float.wo.winbar
     or (opts.float.position == "float" and "" or (vim.v.count1 .. ": %{b:term_title}"))

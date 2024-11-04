@@ -107,7 +107,7 @@ function M.new(opts)
   local self = setmetatable({}, { __index = M })
   id = id + 1
   self.id = id
-  opts = vim.tbl_deep_extend("force", {}, Snacks.config.get("float", defaults), opts or {})
+  opts = Snacks.config.get("float", defaults, opts)
   opts =
     vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
   if opts.win.style == "minimal" then
