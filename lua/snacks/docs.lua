@@ -55,7 +55,7 @@ function M.md(str)
 
   local ret = {} ---@type string[]
   if #comments > 0 then
-    table.insert(ret, table.concat(comments, "\n"))
+    table.insert(ret, vim.trim(table.concat(comments, "\n")))
     table.insert(ret, "")
   end
   if #lines > 0 then
@@ -94,14 +94,31 @@ function M.render(name, info)
   end
 
   if info.mod then
-    add(M.md(info.mod .. prefix .. " = {}"))
+    local mod_lines = vim.split(info.mod, "\n")
+    mod_lines = vim.tbl_filter(function(line)
+      local overload = line:match("^%-%-%-%s*@overload (.*)(%s*)$") --[[@as string?]]
+      if overload then
+        table.insert(info.methods, {
+          name = "",
+          args = "",
+          type = "",
+          comment = "---@type " .. overload,
+        })
+        return false
+      elseif line:find("^%s*$") then
+        return false
+      end
+      return true
+    end, mod_lines)
+    table.insert(mod_lines, prefix .. " = {}")
+    add(M.md(table.concat(mod_lines, "\n")))
   end
 
   table.sort(info.methods, function(a, b)
     if a.type == b.type then
       return a.name < b.name
     end
-    return a.type == "."
+    return a.type < b.type
   end)
 
   for _, method in ipairs(info.methods) do
