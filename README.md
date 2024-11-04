@@ -1,5 +1,10 @@
-# Snacks
+# 🍿 `snack.nvim`
 
+A collection of small QoL plugins for Neovim.
+
+## Todo
+
+- [ ] docs :)
 - [x] bigfile `BufReadPre`
 - [x] bufdelete
 - [x] statuscolumn
@@ -11,6 +16,9 @@
 - [x] lazygit
 - [x] git
 - [x] gitbrowse
+
+### Maybe
+
 - [ ] zen
 - [ ] lsp
 - [ ] root
