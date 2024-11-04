@@ -18,11 +18,13 @@ A collection of small QoL plugins for Neovim.
 TODO                                            *snacks.nvim-snacks.nvim-todo*
 
 - docs :)
-- docgen
-- plugin
 - float => win
 - win views
-- log module
+- cowboy
+- docgen
+- plugin
+- notify module
+- overload docgen
 - bigfile `BufReadPre`
 - bufdelete
 - statuscolumn
@@ -34,6 +36,7 @@ TODO                                            *snacks.nvim-snacks.nvim-todo*
 - lazygit
 - git
 - gitbrowse
+- toggle
 
 
 MAYBE ~
@@ -41,7 +44,6 @@ MAYBE ~
 - zen
 - lsp
 - root
-- toggle
 
 
 SNACKS                                        *snacks.nvim-snacks.nvim-snacks*
@@ -56,10 +58,6 @@ SNACKS                                        *snacks.nvim-snacks.nvim-snacks*
 
   debug                    Pretty inspect &         README
                            backtraces for debugging 
-
-  float                    Easily create and manage README
-                           floating windows or      
-                           splits                   
 
   git                      Useful tools for Git     README
 
@@ -91,6 +89,14 @@ SNACKS                                        *snacks.nvim-snacks.nvim-snacks*
 
   terminal                 Create and toggle        README
                            floating/sp. Uses float. 
+
+  toggle                   Toggle keymaps           README
+                           integrated with          
+                           which-key icons / colors 
+
+  win                      Easily create and manage README
+                           floating windows or      
+                           splits                   
 
   words                    Auto-show LSP            README
                            references, auto-show    
