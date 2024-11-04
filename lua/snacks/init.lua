@@ -12,6 +12,7 @@
 ---@field gitbrowse snacks.gitbrowse
 ---@field notify snacks.notify
 ---@field debug snacks.debug
+---@field toggle snacks.toggle
 local M = {}
 
 setmetatable(M, {
