@@ -8,6 +8,11 @@ A collection of small QoL plugins for Neovim.
 ## Todo
 
 - [ ] docs :)
+- [ ] docgen
+- [ ] plugin
+- [ ] float => win
+- [ ] win views
+- [ ] log module
 - [x] bigfile `BufReadPre`
 - [x] bufdelete
 - [x] statuscolumn

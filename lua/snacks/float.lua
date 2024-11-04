@@ -156,6 +156,7 @@ function M:toggle()
   end
 end
 
+---@private
 function M:open_buf()
   if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
     -- keep existing buffer
@@ -178,6 +179,7 @@ function M:open_buf()
   end
 end
 
+---@private
 function M:open_win()
   local relative = self.opts.win.relative or "editor"
   local position = self.opts.position or "float"
@@ -280,6 +282,7 @@ function M:is_floating()
   return self:valid() and vim.api.nvim_win_get_config(self.win).zindex ~= nil
 end
 
+---@private
 function M:drop()
   -- don't show a backdrop for non-floating windows
   if not self:is_floating() then
@@ -328,6 +331,7 @@ function M:drop()
   end
 end
 
+---@private
 function M:win_opts()
   local opts = vim.deepcopy(self.opts.win or {})
   local parent = {
@@ -342,6 +346,7 @@ function M:win_opts()
   return opts
 end
 
+---@private
 ---@param type "win" | "buf"
 function M:set_options(type)
   local opts = type == "win" and self.opts.wo or self.opts.bo
