@@ -1,6 +1,9 @@
-# 🍿 `snack.nvim`
+# 🍿 `snacks.nvim`
 
 A collection of small QoL plugins for Neovim.
+
+> [!CAUTION]
+> Do **NOT** use this for now, it's still in development.
 
 ## Todo
 
