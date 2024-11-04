@@ -1,5 +1,7 @@
----@class snacks.terminal
----@overload fun(opts? :snacks.terminal.Config): snacks.float
+---@class snacks.terminal: snacks.float
+---@field cmd? string | string[]
+---@field opts snacks.terminal.Config
+---@overload fun(opts?: snacks.terminal.Config): snacks.terminal
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.toggle(...)
@@ -16,6 +18,7 @@ local defaults = {
     bo = {
       filetype = "snacks_terminal",
     },
+    wo = {},
     keys = {
       gf = function(self)
         local f = vim.fn.findfile(vim.fn.expand("<cfile>"))
@@ -51,38 +54,51 @@ local terminals = {}
 ---@param opts? snacks.terminal.Config
 function M.open(cmd, opts)
   ---@type snacks.terminal.Config
-  opts = vim.tbl_deep_extend("force", {}, Snacks.config.get("terminal", defaults), opts or {}, {
-    float = {
-      b = {
-        snacks_terminal_cmd = cmd,
-      },
-    },
-  })
+  opts = vim.tbl_deep_extend("force", {}, Snacks.config.get("terminal", defaults), opts or {})
+  opts.float.position = opts.float.position or (cmd and "float" or "bottom")
+  opts.float.wo.winbar = opts.float.wo.winbar
+    or (opts.float.position == "float" and "" or (vim.v.count1 .. ": %{b:term_title}"))
 
-  local float = Snacks.float(opts.float)
-  vim.api.nvim_buf_call(float.buf, function()
-    vim.fn.termopen(cmd or vim.o.shell, vim.tbl_isempty(opts) and vim.empty_dict() or opts)
+  local on_buf = opts.float and opts.float.on_buf
+
+  ---@param self snacks.terminal
+  opts.float.on_buf = function(self)
+    self.cmd = cmd
+    vim.b[self.buf].snacks_terminal_cmd = cmd
+    if on_buf then
+      on_buf(self)
+    end
+  end
+
+  local terminal = Snacks.float(opts.float)
+
+  vim.api.nvim_buf_call(terminal.buf, function()
+    local term_opts = {
+      cwd = opts.cwd,
+      env = opts.env,
+    }
+    vim.fn.termopen(cmd or vim.o.shell, vim.tbl_isempty(term_opts) and vim.empty_dict() or term_opts)
   end)
 
   if opts.interactive ~= false then
     vim.cmd.startinsert()
     vim.api.nvim_create_autocmd("TermClose", {
       once = true,
-      buffer = float.buf,
+      buffer = terminal.buf,
       callback = function()
-        float:close()
+        terminal:close()
         vim.cmd.checktime()
       end,
     })
     vim.api.nvim_create_autocmd("BufEnter", {
-      buffer = float.buf,
+      buffer = terminal.buf,
       callback = function()
         vim.cmd.startinsert()
       end,
     })
   end
   vim.cmd("noh")
-  return float
+  return terminal
 end
 
 ---@param cmd? string | string[]
