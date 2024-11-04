@@ -1,8 +1,8 @@
-# float
+# 🍿 float
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.float.Config
@@ -33,7 +33,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.float.Keys: vim.api.keyset.keymap

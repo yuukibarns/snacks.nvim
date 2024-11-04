@@ -1,8 +1,8 @@
-# quickfile
+# 🍿 quickfile
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.quickfile.Config
@@ -12,7 +12,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.quickfile

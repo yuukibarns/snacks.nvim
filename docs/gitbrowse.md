@@ -1,8 +1,8 @@
-# gitbrowse
+# 🍿 gitbrowse
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.gitbrowse.Config
@@ -32,7 +32,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.gitbrowse

@@ -1,8 +1,8 @@
-# git
+# 🍿 git
 
 <!-- docgen -->
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.git

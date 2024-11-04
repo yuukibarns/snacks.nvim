@@ -1,8 +1,8 @@
-# rename
+# 🍿 rename
 
 <!-- docgen -->
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.rename

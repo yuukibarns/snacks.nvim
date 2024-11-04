@@ -1,8 +1,8 @@
-# init
+# 🍿 init
 
 <!-- docgen -->
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class Snacks

@@ -1,8 +1,8 @@
-# terminal
+# 🍿 terminal
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.terminal.Config
@@ -46,7 +46,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.terminal: snacks.float

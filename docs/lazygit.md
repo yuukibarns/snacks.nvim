@@ -1,8 +1,8 @@
-# lazygit
+# 🍿 lazygit
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.lazygit.Config: snacks.terminal.Config
@@ -26,7 +26,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@alias snacks.lazygit.Color {fg?:string, bg?:string, bold?:boolean}

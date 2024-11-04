@@ -1,8 +1,8 @@
-# bufdelete
+# 🍿 bufdelete
 
 <!-- docgen -->
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.bufdelete

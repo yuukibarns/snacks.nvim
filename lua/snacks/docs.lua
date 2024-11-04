@@ -81,11 +81,11 @@ function M.render(name, info)
   end
 
   if info.config then
-    add("## Config\n")
+    add("## ⚙️ Config\n")
     add(M.md(info.config))
   end
 
-  add("## Module\n")
+  add("## 📦 Module\n")
 
   if #info.types > 0 then
     for _, t in ipairs(info.types) do
@@ -128,7 +128,7 @@ function M.write(name, lines)
   local top = {} ---@type string[]
 
   if not ok then
-    table.insert(top, "# " .. name)
+    table.insert(top, "# 🍿 " .. name)
     table.insert(top, "")
   else
     for _, line in ipairs(text) do
@@ -159,7 +159,5 @@ function M.build()
   end
   vim.cmd.checktime()
 end
-
-M.build()
 
 return M

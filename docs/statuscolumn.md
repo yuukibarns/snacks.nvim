@@ -1,8 +1,8 @@
-# statuscolumn
+# 🍿 statuscolumn
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.statuscolumn.Config
@@ -20,7 +20,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@alias snacks.statuscolumn.Sign.type "mark"|"sign"|"fold"|"git"

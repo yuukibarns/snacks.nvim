@@ -1,8 +1,8 @@
-# bigfile
+# 🍿 bigfile
 
 <!-- docgen -->
 
-## Config
+## ⚙️ Config
 
 ```lua
 ---@class snacks.bigfile.Config
@@ -18,7 +18,7 @@
 }
 ```
 
-## Module
+## 📦 Module
 
 ```lua
 ---@class snacks.bigfile
