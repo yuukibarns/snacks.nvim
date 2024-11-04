@@ -5,7 +5,7 @@
 ---@field statuscolumn snacks.statuscolumn
 ---@field words snacks.words
 ---@field rename snacks.rename
----@field float snacks.float
+---@field win snacks.win
 ---@field terminal snacks.terminal
 ---@field lazygit snacks.lazygit
 ---@field git snacks.git
@@ -29,7 +29,7 @@ _G.Snacks = M
 ---@field quickfile { enabled: boolean }
 ---@field statuscolumn snacks.statuscolumn.Config  | { enabled: boolean }
 ---@field words snacks.words.Config
----@field float snacks.float.Config
+---@field win snacks.win.Config
 ---@field terminal snacks.terminal.Config
 ---@field lazygit snacks.lazygit.Config
 ---@field gitbrowse snacks.gitbrowse.Config

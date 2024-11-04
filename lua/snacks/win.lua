@@ -1,23 +1,23 @@
----@class snacks.float
+---@class snacks.win
 ---@field id number
 ---@field buf? number
 ---@field win? number
----@field opts snacks.float.Config
+---@field opts snacks.win.Config
 ---@field augroup? number
----@field backdrop? snacks.float
----@overload fun(opts? :snacks.float.Config): snacks.float
+---@field backdrop? snacks.win
+---@overload fun(opts? :snacks.win.Config): snacks.win
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.new(...)
   end,
 })
 
----@class snacks.float.Keys: vim.api.keyset.keymap
+---@class snacks.win.Keys: vim.api.keyset.keymap
 ---@field [1]? string
----@field [2]? string|fun(self: snacks.float): any
+---@field [2]? string|fun(self: snacks.win): any
 ---@field mode? string|string[]
 
----@class snacks.float.Config
+---@class snacks.win.Config
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
 ---@field file? string
@@ -26,9 +26,9 @@ local M = setmetatable({}, {
 ---@field win? vim.api.keyset.win_config
 ---@field wo? vim.wo
 ---@field bo? vim.bo
----@field keys? table<string, false|string|fun(self: snacks.float)|snacks.float.Keys>
----@field on_buf? fun(self: snacks.float)
----@field on_win? fun(self: snacks.float)
+---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys>
+---@field on_buf? fun(self: snacks.win)
+---@field on_win? fun(self: snacks.win)
 local defaults = {
   position = "float",
   win = {
@@ -44,7 +44,7 @@ local defaults = {
   },
 }
 
----@type snacks.float.Config
+---@type snacks.win.Config
 local defaults_float = {
   backdrop = 60,
   win = {
@@ -54,7 +54,7 @@ local defaults_float = {
   },
 }
 
----@type snacks.float.Config
+---@type snacks.win.Config
 local defaults_split = {
   win = {
     height = 0.4,
@@ -77,7 +77,7 @@ local split_commands = {
   },
 }
 
----@type snacks.float.Config
+---@type snacks.win.Config
 local minimal = {
   wo = {
     cursorcolumn = false,
@@ -101,13 +101,13 @@ vim.api.nvim_set_hl(0, "SnackFloatBackdrop", { bg = "#000000", default = true })
 
 local id = 0
 
----@param opts? snacks.float.Config
----@return snacks.float
+---@param opts? snacks.win.Config
+---@return snacks.win
 function M.new(opts)
   local self = setmetatable({}, { __index = M })
   id = id + 1
   self.id = id
-  opts = Snacks.config.get("float", defaults, opts)
+  opts = Snacks.config.get("win", defaults, opts)
   opts =
     vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
   if opts.win.style == "minimal" then
@@ -268,7 +268,7 @@ function M:show()
           return spec[2](self)
         end
       end
-      ---@cast spec snacks.float.Keys
+      ---@cast spec snacks.win.Keys
       vim.keymap.set(spec.mode or "n", spec[1], rhs, opts)
     end
   end

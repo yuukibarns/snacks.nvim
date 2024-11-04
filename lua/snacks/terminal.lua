@@ -1,4 +1,4 @@
----@class snacks.terminal: snacks.float
+---@class snacks.terminal: snacks.win
 ---@field cmd? string | string[]
 ---@field opts snacks.terminal.Config
 ---@overload fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
@@ -11,7 +11,7 @@ local M = setmetatable({}, {
 ---@class snacks.terminal.Config
 ---@field cwd? string
 ---@field env? table<string, string>
----@field float? snacks.float.Config
+---@field float? snacks.win.Config
 ---@field interactive? boolean
 ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
 local defaults = {
@@ -48,7 +48,7 @@ local defaults = {
   },
 }
 
----@type table<string, snacks.float>
+---@type table<string, snacks.win>
 local terminals = {}
 
 ---@param cmd? string | string[]
@@ -75,7 +75,7 @@ function M.open(cmd, opts)
     end
   end
 
-  local terminal = Snacks.float(opts.float)
+  local terminal = Snacks.win(opts.float)
 
   vim.api.nvim_buf_call(terminal.buf, function()
     local term_opts = {

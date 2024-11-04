@@ -1,5 +1,5 @@
 ---@class snacks.lazygit
----@overload fun(opts?: snacks.lazygit.Config): snacks.float
+---@overload fun(opts?: snacks.lazygit.Config): snacks.win
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.open(...)
