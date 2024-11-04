@@ -55,7 +55,14 @@ M.config = setmetatable({}, {
 ---@param ... T[]
 ---@return T
 function M.config.get(snack, defaults, ...)
-  return vim.tbl_deep_extend("force", {}, vim.deepcopy(defaults), vim.deepcopy(config[snack] or {}), ...)
+  local merge = { vim.deepcopy(defaults), vim.deepcopy(config[snack] or {}) }
+  for i = 1, select("#", ...) do
+    local v = select(i, ...)
+    if v then
+      table.insert(merge, v)
+    end
+  end
+  return vim.tbl_deep_extend("force", unpack(merge))
 end
 
 --- Register a new window view config.
