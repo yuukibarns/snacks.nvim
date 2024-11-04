@@ -17,6 +17,11 @@ A collection of small QoL plugins for Neovim.
 TODO                                            *snacks.nvim-snacks.nvim-todo*
 
 - docs :)
+- docgen
+- plugin
+- float => win
+- win views
+- log module
 - bigfile `BufReadPre`
 - bufdelete
 - statuscolumn
