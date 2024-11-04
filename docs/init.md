@@ -17,6 +17,8 @@
 ---@field lazygit snacks.lazygit
 ---@field git snacks.git
 ---@field gitbrowse snacks.gitbrowse
+---@field notify snacks.notify
+---@field debug snacks.debug
 Snacks = {}
 ```
 
