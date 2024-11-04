@@ -8,6 +8,7 @@
 ---@field float snacks.float
 ---@field terminal snacks.terminal
 ---@field lazygit snacks.lazygit
+---@field git snacks.git
 local M = {}
 
 setmetatable(M, {
