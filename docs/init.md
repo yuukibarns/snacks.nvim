@@ -12,7 +12,7 @@
 ---@field statuscolumn snacks.statuscolumn
 ---@field words snacks.words
 ---@field rename snacks.rename
----@field float snacks.float
+---@field win snacks.win
 ---@field terminal snacks.terminal
 ---@field lazygit snacks.lazygit
 ---@field git snacks.git

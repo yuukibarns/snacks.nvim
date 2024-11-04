@@ -10,8 +10,14 @@
 
 ```lua
 ---@class snacks.notify
----@overload fun(msg: string|string[], opts?: snacks.notify.Opts)
 Snacks.notify = {}
+```
+
+### `Snacks.notify()`
+
+```lua
+---@type fun(msg: string|string[], opts?: snacks.notify.Opts)
+Snacks.notify()
 ```
 
 ### `Snacks.notify.error()`

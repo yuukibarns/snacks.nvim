@@ -36,8 +36,14 @@
 
 ```lua
 ---@class snacks.gitbrowse
----@overload fun(opts?: snacks.gitbrowse.Config)
 Snacks.gitbrowse = {}
+```
+
+### `Snacks.gitbrowse()`
+
+```lua
+---@type fun(opts?: snacks.gitbrowse.Config)
+Snacks.gitbrowse()
 ```
 
 ### `Snacks.gitbrowse.get_url()`

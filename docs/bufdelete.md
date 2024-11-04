@@ -6,8 +6,14 @@
 
 ```lua
 ---@class snacks.bufdelete
----@overload fun(buf?: number)
 Snacks.bufdelete = {}
+```
+
+### `Snacks.bufdelete()`
+
+```lua
+---@type fun(buf?: number)
+Snacks.bufdelete()
 ```
 
 ### `Snacks.bufdelete.delete()`

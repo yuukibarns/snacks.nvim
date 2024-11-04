@@ -29,8 +29,14 @@
 
 ```lua
 ---@class snacks.statuscolumn
----@overload fun(): string
 Snacks.statuscolumn = {}
+```
+
+### `Snacks.statuscolumn()`
+
+```lua
+---@type fun(): string
+Snacks.statuscolumn()
 ```
 
 ### `Snacks.statuscolumn.buf_signs()`

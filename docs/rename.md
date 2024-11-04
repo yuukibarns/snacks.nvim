@@ -6,8 +6,14 @@
 
 ```lua
 ---@class snacks.rename
----@overload fun()
 Snacks.rename = {}
+```
+
+### `Snacks.rename()`
+
+```lua
+---@type fun()
+Snacks.rename()
 ```
 
 ### `Snacks.rename.on_rename()`

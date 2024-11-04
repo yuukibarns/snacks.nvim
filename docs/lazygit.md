@@ -47,8 +47,14 @@
 
 ```lua
 ---@class snacks.lazygit
----@overload fun(opts?: snacks.lazygit.Config): snacks.float
 Snacks.lazygit = {}
+```
+
+### `Snacks.lazygit()`
+
+```lua
+---@type fun(opts?: snacks.lazygit.Config): snacks.win
+Snacks.lazygit()
 ```
 
 ### `Snacks.lazygit.log()`

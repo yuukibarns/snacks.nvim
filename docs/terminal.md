@@ -8,7 +8,7 @@
 ---@class snacks.terminal.Config
 ---@field cwd? string
 ---@field env? table<string, string>
----@field float? snacks.float.Config
+---@field float? snacks.win.Config
 ---@field interactive? boolean
 ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
 {
@@ -49,11 +49,17 @@
 ## 📦 Module
 
 ```lua
----@class snacks.terminal: snacks.float
+---@class snacks.terminal: snacks.win
 ---@field cmd? string | string[]
 ---@field opts snacks.terminal.Config
----@overload fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
 Snacks.terminal = {}
+```
+
+### `Snacks.terminal()`
+
+```lua
+---@type fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
+Snacks.terminal()
 ```
 
 ### `Snacks.terminal.open()`

@@ -6,8 +6,14 @@
 
 ```lua
 ---@class snacks.debug
----@overload fun(msg: string|string[], opts?: snacks.notify.Opts)
 Snacks.debug = {}
+```
+
+### `Snacks.debug()`
+
+```lua
+---@type fun(msg: string|string[], opts?: snacks.notify.Opts)
+Snacks.debug()
 ```
 
 ### `Snacks.debug.backtrace()`
