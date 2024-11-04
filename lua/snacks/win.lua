@@ -18,6 +18,7 @@ local M = setmetatable({}, {
 ---@field mode? string|string[]
 
 ---@class snacks.win.Config
+---@field view? string merges with config from `Snacks.config.views[view]`
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
 ---@field file? string
@@ -102,12 +103,32 @@ vim.api.nvim_set_hl(0, "SnackFloatBackdrop", { bg = "#000000", default = true })
 local id = 0
 
 ---@param opts? snacks.win.Config
+---@return snacks.win.Config
+function M.resolve(opts)
+  opts = opts or {}
+  local done = {} ---@type string[]
+  local views = { opts } ---@type snacks.win.Config[]
+  local view = opts.view
+  while view and not vim.tbl_contains(done, view) do
+    table.insert(done, view)
+    if not Snacks.config.views[view] then
+      break
+    end
+    table.insert(views, 1, Snacks.config.views[view])
+    view = Snacks.config.views[view].view
+  end
+  local ret = #views == 0 and {} or #views == 1 and views[1] or vim.tbl_deep_extend("force", {}, unpack(views))
+  ret.view = nil
+  return ret
+end
+
+---@param opts? snacks.win.Config
 ---@return snacks.win
 function M.new(opts)
   local self = setmetatable({}, { __index = M })
   id = id + 1
   self.id = id
-  opts = Snacks.config.get("win", defaults, opts)
+  opts = Snacks.config.get("win", defaults, M.resolve(opts))
   opts =
     vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
   if opts.win.style == "minimal" then

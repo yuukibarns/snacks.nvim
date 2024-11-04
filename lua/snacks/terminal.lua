@@ -56,7 +56,7 @@ local terminals = {}
 function M.open(cmd, opts)
   local id = vim.v.count1
   ---@type snacks.terminal.Config
-  opts = Snacks.config.get("terminal", defaults, opts)
+  opts = Snacks.config.get("terminal", defaults, { win = Snacks.win.resolve(opts and opts.win) }, opts)
   opts.win.position = opts.win.position or (cmd and "float" or "bottom")
   opts.win.wo.winbar = opts.win.wo.winbar or (opts.win.position == "float" and "" or (id .. ": %{b:term_title}"))
 
@@ -109,8 +109,7 @@ end
 ---@param cmd? string | string[]
 ---@param opts? snacks.terminal.Config
 function M.toggle(cmd, opts)
-  ---@type snacks.terminal.Config
-  opts = vim.tbl_deep_extend("force", {}, defaults, opts or {})
+  opts = opts or {}
 
   local id = vim.inspect({ cmd = cmd, cwd = opts.cwd, env = opts.env, count = vim.v.count1 })
 

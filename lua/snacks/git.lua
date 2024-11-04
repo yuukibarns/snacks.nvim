@@ -15,19 +15,20 @@ end
 --- Show git log for the current line.
 ---@param opts? snacks.terminal.Config | {count?: number}
 function M.blame_line(opts)
+  Snacks.config.view("blame_line", {
+    win = {
+      width = 0.6,
+      height = 0.6,
+      border = "rounded",
+      title = " Git Blame ",
+      title_pos = "center",
+    },
+    bo = { filetype = "git" },
+  })
   opts = vim.tbl_deep_extend("force", {
     count = 5,
     interactive = false,
-    float = {
-      win = {
-        width = 0.6,
-        height = 0.6,
-        border = "rounded",
-        title = " Git Blame ",
-        title_pos = "center",
-      },
-      bo = { filetype = "git" },
-    },
+    win = { view = "blame_line" },
   }, opts or {})
   local cursor = vim.api.nvim_win_get_cursor(0)
   local line = cursor[1]

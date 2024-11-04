@@ -33,11 +33,13 @@ _G.Snacks = M
 ---@field terminal snacks.terminal.Config
 ---@field lazygit snacks.lazygit.Config
 ---@field gitbrowse snacks.gitbrowse.Config
+---@field views table<string, snacks.win.Config>
 local config = {
   bigfile = { enabled = true },
   quickfile = { enabled = true },
   statuscolumn = { enabled = true },
   words = { enabled = true },
+  views = {},
 }
 
 ---@class snacks.Config: snacks.Opts
@@ -50,10 +52,17 @@ M.config = setmetatable({}, {
 ---@generic T: table
 ---@param snack string
 ---@param defaults T
----@param opts? T
+---@param ... T[]
 ---@return T
-function M.config.get(snack, defaults, opts)
-  return vim.tbl_deep_extend("force", {}, vim.deepcopy(defaults), vim.deepcopy(config[snack] or {}), opts or {})
+function M.config.get(snack, defaults, ...)
+  return vim.tbl_deep_extend("force", {}, vim.deepcopy(defaults), vim.deepcopy(config[snack] or {}), ...)
+end
+
+--- Register a new window view config.
+---@param name string
+---@param defaults snacks.win.Config
+function M.config.view(name, defaults)
+  config.views[name] = vim.tbl_deep_extend("force", vim.deepcopy(defaults), config.views[name] or {})
 end
 
 ---@param opts snacks.Opts?
