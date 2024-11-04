@@ -54,6 +54,9 @@ SNACKS                                        *snacks.nvim-snacks.nvim-snacks*
   bufdelete                Delete buffers without   README
                            disrupting window layout 
 
+  debug                    Pretty inspect &         README
+                           backtraces for debugging 
+
   float                    Easily create and manage README
                            floating windows or      
                            splits                   
@@ -68,6 +71,9 @@ SNACKS                                        *snacks.nvim-snacks.nvim-snacks*
                            auto-configure           
                            colorscheme and          
                            integration with Neovim  
+
+  notify                   Small wrapper around     README
+                           Neovim’s vim.notify      
 
   quickfile                Render a file as quickly README
                            as possible before       
