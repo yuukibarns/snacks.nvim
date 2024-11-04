@@ -11,11 +11,11 @@ local M = setmetatable({}, {
 ---@class snacks.terminal.Config
 ---@field cwd? string
 ---@field env? table<string, string>
----@field float? snacks.win.Config
+---@field win? snacks.win.Config
 ---@field interactive? boolean
 ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
 local defaults = {
-  float = {
+  win = {
     bo = {
       filetype = "snacks_terminal",
     },
@@ -57,17 +57,17 @@ function M.open(cmd, opts)
   local id = vim.v.count1
   ---@type snacks.terminal.Config
   opts = Snacks.config.get("terminal", defaults, opts)
-  opts.float.position = opts.float.position or (cmd and "float" or "bottom")
-  opts.float.wo.winbar = opts.float.wo.winbar or (opts.float.position == "float" and "" or (id .. ": %{b:term_title}"))
+  opts.win.position = opts.win.position or (cmd and "float" or "bottom")
+  opts.win.wo.winbar = opts.win.wo.winbar or (opts.win.position == "float" and "" or (id .. ": %{b:term_title}"))
 
   if opts.override then
     return opts.override(cmd, opts)
   end
 
-  local on_buf = opts.float and opts.float.on_buf
+  local on_buf = opts.win and opts.win.on_buf
 
   ---@param self snacks.terminal
-  opts.float.on_buf = function(self)
+  opts.win.on_buf = function(self)
     self.cmd = cmd
     vim.b[self.buf].snacks_terminal = { cmd = cmd, id = id }
     if on_buf then
@@ -75,7 +75,7 @@ function M.open(cmd, opts)
     end
   end
 
-  local terminal = Snacks.win(opts.float)
+  local terminal = Snacks.win(opts.win)
 
   vim.api.nvim_buf_call(terminal.buf, function()
     local term_opts = {
