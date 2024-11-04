@@ -12,6 +12,11 @@ local M = setmetatable({}, {
   end,
 })
 
+---@class snacks.float.Keys: vim.api.keyset.keymap
+---@field [1]? string
+---@field [2]? string|fun(self: snacks.float): any
+---@field mode? string|string[]
+
 ---@class snacks.float.Config
 ---@field buf? number
 ---@field file? string
@@ -135,12 +140,26 @@ function M:show()
     end,
   })
 
-  for key, fn in pairs(self.opts.keys) do
-    if fn then
-      fn = type(fn) == "string" and self[fn] or fn
-      vim.keymap.set("n", key, function()
-        fn(self)
-      end, { buffer = self.buf })
+  for key, spec in pairs(self.opts.keys) do
+    if spec then
+      if type(spec) == "string" then
+        spec = { key, self[spec] and self[spec] or spec, desc = spec }
+      elseif type(spec) == "function" then
+        spec = { key, spec }
+      end
+      local opts = vim.deepcopy(spec)
+      opts[1] = nil
+      opts[2] = nil
+      opts.mode = nil
+      opts.buffer = self.buf
+      local rhs = spec[2]
+      if type(rhs) == "function" then
+        rhs = function()
+          return spec[2](self)
+        end
+      end
+      ---@cast spec snacks.float.Keys
+      vim.keymap.set(spec.mode or "n", spec[1], rhs, opts)
     end
   end
 
