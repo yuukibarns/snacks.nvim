@@ -168,7 +168,15 @@ function M:show()
   return self
 end
 
+function M:is_floating()
+  return self:valid() and vim.api.nvim_win_get_config(self.win).zindex ~= nil
+end
+
 function M:drop()
+  -- don't show a backdrop for non-floating windows
+  if not self:is_floating() then
+    return
+  end
   local has_bg = false
   if vim.fn.has("nvim-0.9.0") == 0 then
     local normal = vim.api.nvim_get_hl_by_name("Normal", true)
