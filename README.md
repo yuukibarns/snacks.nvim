@@ -6,8 +6,12 @@
 - [x] words `LspAttach`
 - [x] quickfile `BufReadPost`
 - [x] rename
-- [ ] lazygit
+- [x] terminal
+- [x] float
+- [x] lazygit
+- [x] git
+- [x] gitbrowse
+- [ ] zen
 - [ ] lsp
 - [ ] root
-- [ ] terminal
 - [ ] toggle
