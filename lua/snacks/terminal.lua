@@ -1,7 +1,7 @@
 ---@class snacks.terminal: snacks.float
 ---@field cmd? string | string[]
 ---@field opts snacks.terminal.Config
----@overload fun(opts?: snacks.terminal.Config): snacks.terminal
+---@overload fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.toggle(...)
@@ -13,6 +13,7 @@ local M = setmetatable({}, {
 ---@field env? table<string, string>
 ---@field float? snacks.float.Config
 ---@field interactive? boolean
+---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
 local defaults = {
   float = {
     bo = {
@@ -58,6 +59,10 @@ function M.open(cmd, opts)
   opts.float.position = opts.float.position or (cmd and "float" or "bottom")
   opts.float.wo.winbar = opts.float.wo.winbar
     or (opts.float.position == "float" and "" or (vim.v.count1 .. ": %{b:term_title}"))
+
+  if opts.override then
+    return opts.override(cmd, opts)
+  end
 
   local on_buf = opts.float and opts.float.on_buf
 
