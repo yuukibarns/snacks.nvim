@@ -11,7 +11,13 @@ Snacks.config.view("notification", {
     zindex = 100,
     noautocmd = true,
   },
-  wo = { winblend = 5 },
+  wo = {
+    winblend = 5,
+    wrap = false,
+    listchars = "eol: ,extends:…",
+    list = true,
+    showbreak = " ",
+  },
 })
 
 M.ns = vim.api.nvim_create_namespace("snacks.notifier")
@@ -282,7 +288,7 @@ function M:render(notif)
         }, ","),
       },
       keys = {
-        q = function(win)
+        q = function()
           self:hide(notif.id)
         end,
       },
@@ -290,7 +296,7 @@ function M:render(notif)
   local buf = win:open_buf()
   local render = self:get_render(notif.style)
 
-  render(buf, notif, {
+  local ctx = {
     opts = win.opts,
     notifier = self,
     ns = M.ns,
@@ -301,14 +307,35 @@ function M:render(notif)
       footer = hl("Footer", notif.level),
       msg = hl("", notif.level),
     },
-  })
+  }
+  render(buf, notif, ctx)
+
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  local width, height = 0, #lines
+
+  -- padding left
+  for l = 1, #lines do
+    vim.api.nvim_buf_set_extmark(win.buf, M.ns, l - 1, 0, {
+      virt_text = { { " ", ctx.hl.msg } },
+      virt_text_pos = "inline",
+    })
+  end
+
+  local width = 0
   for _, line in ipairs(lines) do
     width = math.max(width, vim.fn.strdisplaywidth(line))
   end
   width = dim(width, self.opts.width.min, self.opts.width.max, vim.o.columns)
+
+  local height = #lines
+  -- calculate wrapped height
+  if win.opts.wo.wrap then
+    height = 0
+    for _, line in ipairs(lines) do
+      height = height + math.ceil((vim.fn.strdisplaywidth(line) + 2) / width)
+    end
+  end
   height = dim(height, self.opts.height.min, self.opts.height.max, vim.o.lines)
+
   win.opts.win.width = width
   win.opts.win.height = height
   notif.win = win

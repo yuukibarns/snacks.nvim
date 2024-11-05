@@ -82,9 +82,9 @@ local split_commands = {
 local minimal = {
   wo = {
     cursorcolumn = false,
-    cursorline = true,
+    cursorline = false,
     cursorlineopt = "both",
-    fillchars = "eob: ",
+    fillchars = "eob: ,lastline:…",
     list = false,
     number = false,
     relativenumber = false,
@@ -131,8 +131,10 @@ function M.new(opts)
   opts = Snacks.config.get("win", defaults, M.resolve(opts))
   opts =
     vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
+  ---@cast opts snacks.win.Config
   if opts.win.style == "minimal" then
-    opts = vim.tbl_deep_extend("force", {}, vim.deepcopy(minimal), opts)
+    opts = vim.tbl_deep_extend("force", {}, vim.deepcopy(minimal), opts) --[[@as snacks.win.Config]]
+    opts.win.style = nil
   end
   self.opts = opts
   if opts.show ~= false then
@@ -417,7 +419,10 @@ function M:set_options(type)
       win = self.win,
     } or { buf = self.buf })
     if not ok then
-      Snacks.notify.error("Error setting option `" .. k .. "=" .. v .. "`\n\n" .. err, { title = "Snacks Float" })
+      Snacks.notify.error(
+        "Error setting option `" .. tostring(k) .. "=" .. tostring(v) .. "`\n\n" .. err,
+        { title = "Snacks Float" }
+      )
     end
   end
   vim.o.eventignore = ei
