@@ -3,12 +3,13 @@ local M = {}
 
 ---@class snacks.bigfile.Config
 local defaults = {
+  notify = true,
   size = 1.5 * 1024 * 1024, -- 1.5MB
-  ---@param ev {buf: number, ft:string}
-  behave = function(ev)
+  ---@param ctx {buf: number, ft:string}
+  setup = function(ctx)
     vim.b.minianimate_disable = true
     vim.schedule(function()
-      vim.bo[ev.buf].syntax = ev.ft
+      vim.bo[ctx.buf].syntax = ctx.ft
     end)
   end,
 }
@@ -35,8 +36,15 @@ function M.setup()
     group = vim.api.nvim_create_augroup("snacks_bigfile", { clear = true }),
     pattern = "bigfile",
     callback = function(ev)
+      if opts.notify then
+        local path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ev.buf), ":p:~:.")
+        Snacks.notify.warn({
+          ("Big file detected `%s`."):format(path),
+          "Some Neovim features have been **disabled**.",
+        }, { title = "Big File" })
+      end
       vim.api.nvim_buf_call(ev.buf, function()
-        opts.behave({
+        opts.setup({
           buf = ev.buf,
           ft = vim.filetype.match({ buf = ev.buf }) or "",
         })
