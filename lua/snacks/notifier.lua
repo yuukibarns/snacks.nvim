@@ -277,6 +277,11 @@ function M:render(notif)
           "FloatFooter:" .. hl("Footer", notif.level),
         }, ","),
       },
+      keys = {
+        q = function(win)
+          self:hide(notif.id)
+        end,
+      },
     })
   local buf = win:open_buf()
   local render = self:get_render(notif.style)
