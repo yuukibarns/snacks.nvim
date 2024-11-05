@@ -11,6 +11,7 @@ A collection of small QoL plugins for Neovim.
 - [x] float => win
 - [x] win views
 - [ ] cowboy
+- [x] notifier
 - [x] docgen
 - [x] plugin
 - [x] notify module
@@ -45,6 +46,7 @@ A collection of small QoL plugins for Neovim.
 | [gitbrowse](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/gitbrowse.lua)       | Open the repo of the active file in the browser (e.g., GitHub)                             | [README](https://github.com/folke/snacks.nvim/blob/main/docs/gitbrowse.md)    |
 | [lazygit](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/lazygit.lua)           | Open LazyGit in a float, auto-configure colorscheme and integration with Neovim            | [README](https://github.com/folke/snacks.nvim/blob/main/docs/lazygit.md)      |
 | [notify](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/notify.lua)             | Small wrapper around Neovim's `vim.notify`                                                 | [README](https://github.com/folke/snacks.nvim/blob/main/docs/notify.md)       |
+| [notifier](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/notifier.lua)         | Better `vim.notify`                                                                        | [README](https://github.com/folke/snacks.nvim/blob/main/docs/notifier.md)     |
 | [quickfile](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/quickfile.lua)       | Render a file as quickly as possible before loading all plugins (progressive rendering)    | [README](https://github.com/folke/snacks.nvim/blob/main/docs/quickfile.md)    |
 | [rename](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/rename.lua)             | LSP-integrated renaming with support for plugins like neo-tree, nvim-tree, oil, mini.files | [README](https://github.com/folke/snacks.nvim/blob/main/docs/rename.md)       |
 | [statuscolumn](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/statuscolumn.lua) | Customizable statuscolumn                                                                  | [README](https://github.com/folke/snacks.nvim/blob/main/docs/statuscolumn.md) |
