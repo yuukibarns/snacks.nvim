@@ -215,6 +215,7 @@ function M:update()
   self.queue = vim.tbl_filter(function(notif)
     local timeout = notif.timeout or self.opts.timeout
     local keep = not notif.shown -- not shown yet
+      or (notif.win and notif.win:win_valid() and vim.api.nvim_get_current_win() == notif.win.win) -- current window
       or (notif.keep and notif.keep(notif)) -- custom keep
       or (notif.shown + timeout > now) -- not timed out
     if not keep and notif.win then
