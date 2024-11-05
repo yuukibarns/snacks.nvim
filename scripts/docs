@@ -13,7 +13,7 @@ fi
 sudo apt update
 sudo apt install -y pandoc
 
-PANVIMDOC="$RUNNER_TEMP/panvimdoc"
+PANVIMDOC="/tmp/panvimdoc"
 
 git clone https://github.com/kdheepak/panvimdoc.git "$PANVIMDOC"
 
