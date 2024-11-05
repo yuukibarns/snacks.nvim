@@ -4,6 +4,7 @@ local M = {}
 function M.extract(lines)
   local code = table.concat(lines, "\n")
   local config = code:match("\n(%-%-%- ?@class snacks%.%w+%.Config.-\n})")
+  config = config or code:match("\n(%-%-%- ?@class snacks%.Config.-\n})")
   local mod = code:match("(%-%-%-.*\n)local M =")
   local comments = {} ---@type string[]
   local types = {} ---@type string[]
@@ -36,12 +37,24 @@ function M.extract(lines)
 
   ---@class snacks.docs.Info
   local ret = {
-    config = config and config:gsub("local defaults = ", "") or nil,
+    config = config and config:gsub("local defaults = ", ""):gsub("local config = ", "") or nil,
     mod = mod,
     methods = methods,
     types = types,
   }
   return ret
+end
+
+---@param tag string
+---@param readme string
+---@param content string
+function M.replace(tag, readme, content)
+  content = vim.trim(content)
+  local pattern = "(<%!%-%- " .. tag .. ":start %-%->).*(<%!%-%- " .. tag .. ":end %-%->)"
+  if not readme:find(pattern) then
+    error("tag " .. tag .. " not found")
+  end
+  return readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
 end
 
 function M.md(str)
@@ -173,6 +186,11 @@ function M.build()
       local lines = vim.fn.readfile(path)
       local info = M.extract(lines)
       M.write(name, M.render(name, info))
+      if name == "init" then
+        local readme = table.concat(vim.fn.readfile("README.md"), "\n")
+        readme = M.replace("config", readme, M.md(info.config))
+        vim.fn.writefile(vim.split(readme, "\n"), "README.md")
+      end
     end
   end
   vim.cmd.checktime()

@@ -5,35 +5,84 @@ A collection of small QoL plugins for Neovim.
 > [!CAUTION]
 > Do **NOT** use this for now, it's still in development.
 
-## Todo
+## ⚡️ Requirements
 
-- [ ] docs :)
-- [x] float => win
-- [x] win views
-- [ ] cowboy
-- [x] notifier
-- [x] docgen
-- [x] plugin
-- [x] notify module
-- [x] overload docgen
-- [x] bigfile `BufReadPre`
-- [x] bufdelete
-- [x] statuscolumn
-- [x] words `LspAttach`
-- [x] quickfile `BufReadPost`
-- [x] rename
-- [x] terminal
-- [x] float
-- [x] lazygit
-- [x] git
-- [x] gitbrowse
-- [x] toggle
+- **Neovim** >= 0.9.4
+- for proper icons support:
+  - [mini.icons](https://github.com/echasnovski/mini.icons) _(optional)_
+  - [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) _(optional)_
+  - a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
 
-### Maybe
+## 📦 Installation
 
-- [ ] zen
-- [ ] lsp
-- [ ] root
+Install the plugin with your package manager:
+
+### [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+> [!important]
+> A couple of plugins **require** `snacks.nvim` to be set-up early.
+> Setup only sets up some autocmds and does not load any plugins.
+> Check the [code](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/init.lua) to see exactly what is being set up.
+
+> [!tip]
+> If you don't need these plugins, you can disable them, or skip `setup` alltogether.
+
+```lua
+{
+  "folke/snacks.nvim",
+  priority = 1000,
+  lazy = false,
+  opts = {
+    -- your configuration comes here
+    -- or leave it empty to use the default settings
+    -- refer to the configuration section below
+  },
+  keys = {
+    {
+      "<leader>?",
+      function()
+        require("which-key").show({ global = false })
+      end,
+      desc = "Buffer Local Keymaps (which-key)",
+    },
+  },
+}
+```
+
+## ⚙️ Configuration
+
+Please refer to the readme of each plugin for their specific configuration.
+
+<details><summary>Default Options</summary>
+
+<!-- config:start -->
+
+```lua
+---@class snacks.Config
+---@field bigfile? snacks.bigfile.Config | { enabled: boolean }
+---@field gitbrowse? snacks.gitbrowse.Config
+---@field lazygit? snacks.lazygit.Config
+---@field notifier? snacks.notifier.Config | { enabled: boolean }
+---@field quickfile? { enabled: boolean }
+---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
+---@field terminal? snacks.terminal.Config
+---@field toggle? snacks.toggle.Config
+---@field views? table<string, snacks.win.Config>
+---@field win? snacks.win.Config
+---@field words? snacks.words.Config
+{
+  views = {},
+  bigfile = { enabled = true },
+  notifier = { enabled = true },
+  quickfile = { enabled = true },
+  statuscolumn = { enabled = true },
+  words = { enabled = true },
+}
+```
+
+<!-- config:end -->
+
+</details>
 
 ## 📦 Snacks
 

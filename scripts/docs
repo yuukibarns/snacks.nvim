@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+set -e
+
 nvim -u tests/minit.lua --headless +'lua require("snacks.docs").build()' +qa
 
 echo -e "\n\nGenerating Vim Help"

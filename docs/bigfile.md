@@ -7,12 +7,13 @@
 ```lua
 ---@class snacks.bigfile.Config
 {
+  notify = true,
   size = 1.5 * 1024 * 1024, -- 1.5MB
-  ---@param ev {buf: number, ft:string}
-  behave = function(ev)
+  ---@param ctx {buf: number, ft:string}
+  setup = function(ctx)
     vim.b.minianimate_disable = true
     vim.schedule(function()
-      vim.bo[ev.buf].syntax = ev.ft
+      vim.bo[ctx.buf].syntax = ctx.ft
     end)
   end,
 }

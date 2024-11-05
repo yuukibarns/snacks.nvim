@@ -1,19 +1,20 @@
 ---@class Snacks
+---@field config snacks.config
 ---@field bigfile snacks.bigfile
 ---@field bufdelete snacks.bufdelete
----@field quickfile snacks.quickfile
----@field statuscolumn snacks.statuscolumn
----@field words snacks.words
----@field rename snacks.rename
----@field win snacks.win
----@field terminal snacks.terminal
----@field lazygit snacks.lazygit
+---@field debug snacks.debug
 ---@field git snacks.git
 ---@field gitbrowse snacks.gitbrowse
----@field notify snacks.notify
----@field debug snacks.debug
----@field toggle snacks.toggle
+---@field lazygit snacks.lazygit
 ---@field notifier snacks.notifier
+---@field notify snacks.notify
+---@field quickfile snacks.quickfile
+---@field rename snacks.rename
+---@field statuscolumn snacks.statuscolumn
+---@field terminal snacks.terminal
+---@field toggle snacks.toggle
+---@field win snacks.win
+---@field words snacks.words
 local M = {}
 
 setmetatable(M, {
@@ -26,33 +27,29 @@ setmetatable(M, {
 
 _G.Snacks = M
 
----@class snacks.Opts
----@field bigfile snacks.bigfile.Config | { enabled: boolean }
----@field quickfile { enabled: boolean }
----@field statuscolumn snacks.statuscolumn.Config  | { enabled: boolean }
----@field words snacks.words.Config
----@field win snacks.win.Config
----@field terminal snacks.terminal.Config
----@field lazygit snacks.lazygit.Config
----@field gitbrowse snacks.gitbrowse.Config
----@field views table<string, snacks.win.Config>
----@field notifier snacks.notifier.Config | { enabled: boolean }
----@field toggle snacks.toggle.Config
+---@class snacks.Config
+---@field bigfile? snacks.bigfile.Config | { enabled: boolean }
+---@field gitbrowse? snacks.gitbrowse.Config
+---@field lazygit? snacks.lazygit.Config
+---@field notifier? snacks.notifier.Config | { enabled: boolean }
+---@field quickfile? { enabled: boolean }
+---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
+---@field terminal? snacks.terminal.Config
+---@field toggle? snacks.toggle.Config
+---@field views? table<string, snacks.win.Config>
+---@field win? snacks.win.Config
+---@field words? snacks.words.Config
 local config = {
+  views = {},
   bigfile = { enabled = true },
+  notifier = { enabled = true },
   quickfile = { enabled = true },
   statuscolumn = { enabled = true },
   words = { enabled = true },
-  views = {},
-  notifier = { enabled = true },
 }
 
----@class snacks.Config: snacks.Opts
-M.config = setmetatable({}, {
-  __index = function(_, k)
-    return config[k]
-  end,
-})
+---@class snacks.config: snacks.Config
+M.config = setmetatable({}, { __index = config })
 
 ---@generic T: table
 ---@param snack string
@@ -77,7 +74,7 @@ function M.config.view(name, defaults)
   config.views[name] = vim.tbl_deep_extend("force", vim.deepcopy(defaults), config.views[name] or {})
 end
 
----@param opts snacks.Opts?
+---@param opts snacks.Config?
 function M.setup(opts)
   config = vim.tbl_deep_extend("force", config, opts or {})
 
@@ -106,6 +103,7 @@ function M.setup(opts)
   if M.config.statuscolumn.enabled then
     vim.o.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
   end
+
   if M.config.notifier.enabled then
     vim.notify = function(msg, level, o)
       return Snacks.notifier:notify(msg, level, o)
