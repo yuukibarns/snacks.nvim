@@ -1,17 +1,16 @@
-*snacks.nvim-gitbrowse.txt*      For Neovim      Last change: 2024 November 05
+*snacks-gitbrowse.txt*         For Neovim        Last change: 2024 November 05
 
 ==============================================================================
-Table of Contents                    *snacks.nvim-gitbrowse-table-of-contents*
+Table of Contents                         *snacks-gitbrowse-table-of-contents*
 
-1. gitbrowse                                 |snacks.nvim-gitbrowse-gitbrowse|
-  - Config                            |snacks.nvim-gitbrowse-gitbrowse-config|
-  - Module                            |snacks.nvim-gitbrowse-gitbrowse-module|
+1. Config                                            |snacks-gitbrowse-config|
+2. Module                                            |snacks-gitbrowse-module|
+  - Snacks.gitbrowse()            |snacks-gitbrowse-module-snacks.gitbrowse()|
+  - Snacks.gitbrowse.get_url()|snacks-gitbrowse-module-snacks.gitbrowse.get_url()|
+  - Snacks.gitbrowse.open()  |snacks-gitbrowse-module-snacks.gitbrowse.open()|
 
 ==============================================================================
-1. gitbrowse                                 *snacks.nvim-gitbrowse-gitbrowse*
-
-
-CONFIG                                *snacks.nvim-gitbrowse-gitbrowse-config*
+1. Config                                            *snacks-gitbrowse-config*
 
 >lua
     ---@class snacks.gitbrowse.Config
@@ -42,7 +41,8 @@ CONFIG                                *snacks.nvim-gitbrowse-gitbrowse-config*
 <
 
 
-MODULE                                *snacks.nvim-gitbrowse-gitbrowse-module*
+==============================================================================
+2. Module                                            *snacks-gitbrowse-module*
 
 >lua
     ---@class snacks.gitbrowse
@@ -50,7 +50,7 @@ MODULE                                *snacks.nvim-gitbrowse-gitbrowse-module*
 <
 
 
-SNACKS.GITBROWSE() ~
+SNACKS.GITBROWSE()                *snacks-gitbrowse-module-snacks.gitbrowse()*
 
 >lua
     ---@type fun(opts?: snacks.gitbrowse.Config)
@@ -58,7 +58,7 @@ SNACKS.GITBROWSE() ~
 <
 
 
-SNACKS.GITBROWSE.GET_URL() ~
+SNACKS.GITBROWSE.GET_URL()*snacks-gitbrowse-module-snacks.gitbrowse.get_url()*
 
 >lua
     ---@param remote string
@@ -67,7 +67,7 @@ SNACKS.GITBROWSE.GET_URL() ~
 <
 
 
-SNACKS.GITBROWSE.OPEN() ~
+SNACKS.GITBROWSE.OPEN()      *snacks-gitbrowse-module-snacks.gitbrowse.open()*
 
 >lua
     ---@param opts? snacks.gitbrowse.Config

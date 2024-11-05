@@ -1,18 +1,18 @@
-*snacks.nvim-lazygit.txt*       For Neovim       Last change: 2024 November 05
+*snacks-lazygit.txt*          For Neovim         Last change: 2024 November 05
 
 ==============================================================================
-Table of Contents                      *snacks.nvim-lazygit-table-of-contents*
+Table of Contents                           *snacks-lazygit-table-of-contents*
 
-1. lazygit                                       |snacks.nvim-lazygit-lazygit|
-  - Config                                |snacks.nvim-lazygit-lazygit-config|
-  - Types                                  |snacks.nvim-lazygit-lazygit-types|
-  - Module                                |snacks.nvim-lazygit-lazygit-module|
+1. Config                                              |snacks-lazygit-config|
+2. Types                                                |snacks-lazygit-types|
+3. Module                                              |snacks-lazygit-module|
+  - Snacks.lazygit()                  |snacks-lazygit-module-snacks.lazygit()|
+  - Snacks.lazygit.log()          |snacks-lazygit-module-snacks.lazygit.log()|
+  - Snacks.lazygit.log_file()|snacks-lazygit-module-snacks.lazygit.log_file()|
+  - Snacks.lazygit.open()        |snacks-lazygit-module-snacks.lazygit.open()|
 
 ==============================================================================
-1. lazygit                                       *snacks.nvim-lazygit-lazygit*
-
-
-CONFIG                                    *snacks.nvim-lazygit-lazygit-config*
+1. Config                                              *snacks-lazygit-config*
 
 >lua
     ---@class snacks.lazygit.Config: snacks.terminal.Config
@@ -40,7 +40,8 @@ CONFIG                                    *snacks.nvim-lazygit-lazygit-config*
 <
 
 
-TYPES                                      *snacks.nvim-lazygit-lazygit-types*
+==============================================================================
+2. Types                                                *snacks-lazygit-types*
 
 >lua
     ---@alias snacks.lazygit.Color {fg?:string, bg?:string, bold?:boolean}
@@ -60,7 +61,8 @@ TYPES                                      *snacks.nvim-lazygit-lazygit-types*
 <
 
 
-MODULE                                    *snacks.nvim-lazygit-lazygit-module*
+==============================================================================
+3. Module                                              *snacks-lazygit-module*
 
 >lua
     ---@class snacks.lazygit
@@ -68,7 +70,7 @@ MODULE                                    *snacks.nvim-lazygit-lazygit-module*
 <
 
 
-SNACKS.LAZYGIT() ~
+SNACKS.LAZYGIT()                      *snacks-lazygit-module-snacks.lazygit()*
 
 >lua
     ---@type fun(opts?: snacks.lazygit.Config): snacks.win
@@ -76,7 +78,7 @@ SNACKS.LAZYGIT() ~
 <
 
 
-SNACKS.LAZYGIT.LOG() ~
+SNACKS.LAZYGIT.LOG()              *snacks-lazygit-module-snacks.lazygit.log()*
 
 >lua
     ---@param opts? snacks.lazygit.Config
@@ -84,7 +86,7 @@ SNACKS.LAZYGIT.LOG() ~
 <
 
 
-SNACKS.LAZYGIT.LOG_FILE() ~
+SNACKS.LAZYGIT.LOG_FILE()    *snacks-lazygit-module-snacks.lazygit.log_file()*
 
 >lua
     ---@param opts? snacks.lazygit.Config
@@ -92,7 +94,7 @@ SNACKS.LAZYGIT.LOG_FILE() ~
 <
 
 
-SNACKS.LAZYGIT.OPEN() ~
+SNACKS.LAZYGIT.OPEN()            *snacks-lazygit-module-snacks.lazygit.open()*
 
 Opens lazygit
 

@@ -1,18 +1,25 @@
-*snacks.nvim-notifier.txt*       For Neovim      Last change: 2024 November 05
+*snacks-notifier.txt*         For Neovim         Last change: 2024 November 05
 
 ==============================================================================
-Table of Contents                     *snacks.nvim-notifier-table-of-contents*
+Table of Contents                          *snacks-notifier-table-of-contents*
 
-1. notifier                                    |snacks.nvim-notifier-notifier|
-  - Config                              |snacks.nvim-notifier-notifier-config|
-  - Types                                |snacks.nvim-notifier-notifier-types|
-  - Module                              |snacks.nvim-notifier-notifier-module|
+1. Config                                             |snacks-notifier-config|
+2. Types                                               |snacks-notifier-types|
+3. Module                                             |snacks-notifier-module|
+  - Snacks.notifier.new()       |snacks-notifier-module-snacks.notifier.new()|
+  - notifier:add()                     |snacks-notifier-module-notifier:add()|
+  - notifier:get_render()       |snacks-notifier-module-notifier:get_render()|
+  - notifier:hide()                   |snacks-notifier-module-notifier:hide()|
+  - notifier:init()                   |snacks-notifier-module-notifier:init()|
+  - notifier:layout()               |snacks-notifier-module-notifier:layout()|
+  - notifier:notify()               |snacks-notifier-module-notifier:notify()|
+  - notifier:render()               |snacks-notifier-module-notifier:render()|
+  - notifier:sort()                   |snacks-notifier-module-notifier:sort()|
+  - notifier:start()                 |snacks-notifier-module-notifier:start()|
+  - notifier:update()               |snacks-notifier-module-notifier:update()|
 
 ==============================================================================
-1. notifier                                    *snacks.nvim-notifier-notifier*
-
-
-CONFIG                                  *snacks.nvim-notifier-notifier-config*
+1. Config                                             *snacks-notifier-config*
 
 >lua
     ---@class snacks.notifier.Config
@@ -35,7 +42,8 @@ CONFIG                                  *snacks.nvim-notifier-notifier-config*
 <
 
 
-TYPES                                    *snacks.nvim-notifier-notifier-types*
+==============================================================================
+2. Types                                               *snacks-notifier-types*
 
 >lua
     ---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
@@ -89,7 +97,8 @@ default nvim-notify style
 <
 
 
-MODULE                                  *snacks.nvim-notifier-notifier-module*
+==============================================================================
+3. Module                                             *snacks-notifier-module*
 
 >lua
     ---@class snacks.notifier
@@ -100,7 +109,7 @@ MODULE                                  *snacks.nvim-notifier-notifier-module*
 <
 
 
-SNACKS.NOTIFIER.NEW() ~
+SNACKS.NOTIFIER.NEW()           *snacks-notifier-module-snacks.notifier.new()*
 
 >lua
     ---@param opts? snacks.notifier.Config
@@ -109,7 +118,7 @@ SNACKS.NOTIFIER.NEW() ~
 <
 
 
-NOTIFIER:ADD() ~
+NOTIFIER:ADD()                         *snacks-notifier-module-notifier:add()*
 
 >lua
     ---@param opts snacks.notifier.Notif.opts
@@ -117,7 +126,7 @@ NOTIFIER:ADD() ~
 <
 
 
-NOTIFIER:GET_RENDER() ~
+NOTIFIER:GET_RENDER()           *snacks-notifier-module-notifier:get_render()*
 
 >lua
     ---@param style? snacks.notifier.style
@@ -126,7 +135,7 @@ NOTIFIER:GET_RENDER() ~
 <
 
 
-NOTIFIER:HIDE() ~
+NOTIFIER:HIDE()                       *snacks-notifier-module-notifier:hide()*
 
 >lua
     ---@param id? number|string
@@ -134,21 +143,21 @@ NOTIFIER:HIDE() ~
 <
 
 
-NOTIFIER:INIT() ~
+NOTIFIER:INIT()                       *snacks-notifier-module-notifier:init()*
 
 >lua
     notifier:init()
 <
 
 
-NOTIFIER:LAYOUT() ~
+NOTIFIER:LAYOUT()                   *snacks-notifier-module-notifier:layout()*
 
 >lua
     notifier:layout()
 <
 
 
-NOTIFIER:NOTIFY() ~
+NOTIFIER:NOTIFY()                   *snacks-notifier-module-notifier:notify()*
 
 >lua
     ---@param msg string
@@ -158,7 +167,7 @@ NOTIFIER:NOTIFY() ~
 <
 
 
-NOTIFIER:RENDER() ~
+NOTIFIER:RENDER()                   *snacks-notifier-module-notifier:render()*
 
 >lua
     ---@param notif snacks.notifier.Notif
@@ -166,21 +175,21 @@ NOTIFIER:RENDER() ~
 <
 
 
-NOTIFIER:SORT() ~
+NOTIFIER:SORT()                       *snacks-notifier-module-notifier:sort()*
 
 >lua
     notifier:sort()
 <
 
 
-NOTIFIER:START() ~
+NOTIFIER:START()                     *snacks-notifier-module-notifier:start()*
 
 >lua
     notifier:start()
 <
 
 
-NOTIFIER:UPDATE() ~
+NOTIFIER:UPDATE()                   *snacks-notifier-module-notifier:update()*
 
 >lua
     notifier:update()

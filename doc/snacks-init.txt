@@ -1,16 +1,15 @@
-*snacks.nvim-init.txt*         For Neovim        Last change: 2024 November 05
+*snacks-init.txt*           For Neovim           Last change: 2024 November 05
 
 ==============================================================================
-Table of Contents                         *snacks.nvim-init-table-of-contents*
+Table of Contents                              *snacks-init-table-of-contents*
 
-1. init                                                |snacks.nvim-init-init|
-  - Module                                      |snacks.nvim-init-init-module|
+1. Module                                                 |snacks-init-module|
+  - Snacks.config.get()               |snacks-init-module-snacks.config.get()|
+  - Snacks.config.view()             |snacks-init-module-snacks.config.view()|
+  - Snacks.setup()                         |snacks-init-module-snacks.setup()|
 
 ==============================================================================
-1. init                                                *snacks.nvim-init-init*
-
-
-MODULE                                          *snacks.nvim-init-init-module*
+1. Module                                                 *snacks-init-module*
 
 >lua
     ---@class Snacks
@@ -33,7 +32,7 @@ MODULE                                          *snacks.nvim-init-init-module*
 <
 
 
-SNACKS.CONFIG.GET() ~
+SNACKS.CONFIG.GET()                   *snacks-init-module-snacks.config.get()*
 
 >lua
     ---@generic T: table
@@ -45,7 +44,7 @@ SNACKS.CONFIG.GET() ~
 <
 
 
-SNACKS.CONFIG.VIEW() ~
+SNACKS.CONFIG.VIEW()                 *snacks-init-module-snacks.config.view()*
 
 Register a new window view config.
 
@@ -56,7 +55,7 @@ Register a new window view config.
 <
 
 
-SNACKS.SETUP() ~
+SNACKS.SETUP()                             *snacks-init-module-snacks.setup()*
 
 >lua
     ---@param opts snacks.Opts?

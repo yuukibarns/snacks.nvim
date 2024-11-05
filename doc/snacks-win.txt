@@ -1,0 +1,182 @@
+*snacks-win.txt*            For Neovim           Last change: 2024 November 05
+
+==============================================================================
+Table of Contents                               *snacks-win-table-of-contents*
+
+1. Config                                                  |snacks-win-config|
+2. Types                                                    |snacks-win-types|
+3. Module                                                  |snacks-win-module|
+  - Snacks.win()                              |snacks-win-module-snacks.win()|
+  - Snacks.win.new()                      |snacks-win-module-snacks.win.new()|
+  - Snacks.win.resolve()              |snacks-win-module-snacks.win.resolve()|
+  - win:buf_valid()                        |snacks-win-module-win:buf_valid()|
+  - win:close()                                |snacks-win-module-win:close()|
+  - win:hide()                                  |snacks-win-module-win:hide()|
+  - win:is_floating()                    |snacks-win-module-win:is_floating()|
+  - win:show()                                  |snacks-win-module-win:show()|
+  - win:size()                                  |snacks-win-module-win:size()|
+  - win:toggle()                              |snacks-win-module-win:toggle()|
+  - win:update()                              |snacks-win-module-win:update()|
+  - win:valid()                                |snacks-win-module-win:valid()|
+  - win:win_valid()                        |snacks-win-module-win:win_valid()|
+
+==============================================================================
+1. Config                                                  *snacks-win-config*
+
+>lua
+    ---@class snacks.win.Config
+    ---@field view? string merges with config from `Snacks.config.views[view]`
+    ---@field position? "float"|"bottom"|"top"|"left"|"right"
+    ---@field buf? number
+    ---@field file? string
+    ---@field enter? boolean
+    ---@field backdrop? number|false
+    ---@field win? vim.api.keyset.win_config
+    ---@field wo? vim.wo
+    ---@field bo? vim.bo
+    ---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys>
+    ---@field on_buf? fun(self: snacks.win)
+    ---@field on_win? fun(self: snacks.win)
+    {
+      position = "float",
+      win = {
+        relative = "editor",
+        style = "minimal",
+      },
+      wo = {
+        winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
+      },
+      bo = {},
+      keys = {
+        q = "close",
+      },
+    }
+<
+
+
+==============================================================================
+2. Types                                                    *snacks-win-types*
+
+>lua
+    ---@class snacks.win.Keys: vim.api.keyset.keymap
+    ---@field [1]? string
+    ---@field [2]? string|fun(self: snacks.win): any
+    ---@field mode? string|string[]
+<
+
+
+==============================================================================
+3. Module                                                  *snacks-win-module*
+
+>lua
+    ---@class snacks.win
+    ---@field id number
+    ---@field buf? number
+    ---@field win? number
+    ---@field opts snacks.win.Config
+    ---@field augroup? number
+    ---@field backdrop? snacks.win
+    Snacks.win = {}
+<
+
+
+SNACKS.WIN()                                  *snacks-win-module-snacks.win()*
+
+>lua
+    ---@type fun(opts? :snacks.win.Config): snacks.win
+    Snacks.win()
+<
+
+
+SNACKS.WIN.NEW()                          *snacks-win-module-snacks.win.new()*
+
+>lua
+    ---@param opts? snacks.win.Config | { show?: boolean }
+    ---@return snacks.win
+    Snacks.win.new(opts)
+<
+
+
+SNACKS.WIN.RESOLVE()                  *snacks-win-module-snacks.win.resolve()*
+
+>lua
+    ---@param opts? snacks.win.Config
+    ---@return snacks.win.Config
+    Snacks.win.resolve(opts)
+<
+
+
+WIN:BUF_VALID()                            *snacks-win-module-win:buf_valid()*
+
+>lua
+    win:buf_valid()
+<
+
+
+WIN:CLOSE()                                    *snacks-win-module-win:close()*
+
+>lua
+    ---@param opts? { buf: boolean }
+    win:close(opts)
+<
+
+
+WIN:HIDE()                                      *snacks-win-module-win:hide()*
+
+>lua
+    win:hide()
+<
+
+
+WIN:IS_FLOATING()                        *snacks-win-module-win:is_floating()*
+
+>lua
+    win:is_floating()
+<
+
+
+WIN:SHOW()                                      *snacks-win-module-win:show()*
+
+>lua
+    win:show()
+<
+
+
+WIN:SIZE()                                      *snacks-win-module-win:size()*
+
+>lua
+    ---@return { height: number, width: number }
+    win:size()
+<
+
+
+WIN:TOGGLE()                                  *snacks-win-module-win:toggle()*
+
+>lua
+    win:toggle()
+<
+
+
+WIN:UPDATE()                                  *snacks-win-module-win:update()*
+
+>lua
+    win:update()
+<
+
+
+WIN:VALID()                                    *snacks-win-module-win:valid()*
+
+>lua
+    win:valid()
+<
+
+
+WIN:WIN_VALID()                            *snacks-win-module-win:win_valid()*
+
+>lua
+    win:win_valid()
+<
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:

@@ -1,17 +1,16 @@
-*snacks.nvim-terminal.txt*       For Neovim      Last change: 2024 November 05
+*snacks-terminal.txt*         For Neovim         Last change: 2024 November 05
 
 ==============================================================================
-Table of Contents                     *snacks.nvim-terminal-table-of-contents*
+Table of Contents                          *snacks-terminal-table-of-contents*
 
-1. terminal                                    |snacks.nvim-terminal-terminal|
-  - Config                              |snacks.nvim-terminal-terminal-config|
-  - Module                              |snacks.nvim-terminal-terminal-module|
+1. Config                                             |snacks-terminal-config|
+2. Module                                             |snacks-terminal-module|
+  - Snacks.terminal()               |snacks-terminal-module-snacks.terminal()|
+  - Snacks.terminal.open()     |snacks-terminal-module-snacks.terminal.open()|
+  - Snacks.terminal.toggle() |snacks-terminal-module-snacks.terminal.toggle()|
 
 ==============================================================================
-1. terminal                                    *snacks.nvim-terminal-terminal*
-
-
-CONFIG                                  *snacks.nvim-terminal-terminal-config*
+1. Config                                             *snacks-terminal-config*
 
 >lua
     ---@class snacks.terminal.Config
@@ -56,7 +55,8 @@ CONFIG                                  *snacks.nvim-terminal-terminal-config*
 <
 
 
-MODULE                                  *snacks.nvim-terminal-terminal-module*
+==============================================================================
+2. Module                                             *snacks-terminal-module*
 
 >lua
     ---@class snacks.terminal: snacks.win
@@ -66,7 +66,7 @@ MODULE                                  *snacks.nvim-terminal-terminal-module*
 <
 
 
-SNACKS.TERMINAL() ~
+SNACKS.TERMINAL()                   *snacks-terminal-module-snacks.terminal()*
 
 >lua
     ---@type fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
@@ -74,7 +74,7 @@ SNACKS.TERMINAL() ~
 <
 
 
-SNACKS.TERMINAL.OPEN() ~
+SNACKS.TERMINAL.OPEN()         *snacks-terminal-module-snacks.terminal.open()*
 
 >lua
     ---@param cmd? string | string[]
@@ -83,7 +83,7 @@ SNACKS.TERMINAL.OPEN() ~
 <
 
 
-SNACKS.TERMINAL.TOGGLE() ~
+SNACKS.TERMINAL.TOGGLE()     *snacks-terminal-module-snacks.terminal.toggle()*
 
 >lua
     ---@param cmd? string | string[]
