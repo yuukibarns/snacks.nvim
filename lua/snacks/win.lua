@@ -198,7 +198,7 @@ function M:open_buf()
     self.buf = vim.api.nvim_create_buf(false, true)
   end
   if vim.bo[self.buf].filetype == "" and not self.opts.bo.filetype then
-    self.opts.bo.filetype = "snacks_float"
+    self.opts.bo.filetype = "snacks_win"
   end
   return self.buf
 end
@@ -217,9 +217,9 @@ function M:open_win()
     if parent == 0 then
       for _, win in ipairs(vim.api.nvim_list_wins()) do
         if
-          vim.w[win].snacks_float
-          and vim.w[win].snacks_float.relative == "editor"
-          and vim.w[win].snacks_float.position == position
+          vim.w[win].snacks_win
+          and vim.w[win].snacks_win.relative == "editor"
+          and vim.w[win].snacks_win.position == position
         then
           parent = win
           relative = "win"
@@ -240,7 +240,7 @@ function M:open_win()
       vim.api.nvim_set_current_win(self.win)
     end
   end
-  vim.w[self.win].snacks_float = {
+  vim.w[self.win].snacks_win = {
     id = self.id,
     position = self.opts.position,
     relative = self.opts.win.relative,
@@ -258,7 +258,7 @@ function M:show()
     self:update()
     return self
   end
-  self.augroup = vim.api.nvim_create_augroup("snacks_float_" .. id, { clear = true })
+  self.augroup = vim.api.nvim_create_augroup("snacks_win_" .. id, { clear = true })
 
   self:open_buf()
   self:set_options("buf")
