@@ -8,7 +8,7 @@ Table of Contents                              *snacks.nvim-table-of-contents*
   - Requirements                        |snacks.nvim-snacks.nvim-requirements|
   - Installation                        |snacks.nvim-snacks.nvim-installation|
   - Configuration                      |snacks.nvim-snacks.nvim-configuration|
-  - Example Config                    |snacks.nvim-snacks.nvim-example-config|
+  - Usage                                      |snacks.nvim-snacks.nvim-usage|
 
 ==============================================================================
 1. snacks.nvim                                       *snacks.nvim-snacks.nvim*
@@ -115,6 +115,9 @@ LAZY.NVIM ~
     }
 <
 
+For an in-depth setup of `snacks.nvim` with `lazy.nvim`, check the example
+<https://github.com/folke/snacks.nvim?tab=readme-ov-file#-usage> below.
+
 
 CONFIGURATION                          *snacks.nvim-snacks.nvim-configuration*
 
@@ -146,7 +149,9 @@ Default Options ~
 <
 
 
-EXAMPLE CONFIG                        *snacks.nvim-snacks.nvim-example-config*
+USAGE                                          *snacks.nvim-snacks.nvim-usage*
+
+See the example below for how to configure `snacks.nvim`.
 
 >lua
     {
