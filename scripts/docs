@@ -1,3 +1,24 @@
 #!/bin/env bash
 
 nvim -u tests/minit.lua --headless +'lua require("snacks.docs").build()' +qa
+
+echo -e "\n\nGenerating Vim Help"
+
+if [ "$GITHUB_ACTIONS" != "true" ]; then
+  exit 0
+fi
+
+apt update
+apt install -y pandoc
+
+PANVIMDOC="$RUNNER_TEMP/panvimdoc"
+
+git clone https://github.com/kdheepak/panvimdoc.git "$PANVIMDOC"
+
+ME=$(pwd)
+
+cd "$PANVIMDOC" || exit 1
+
+for f in "$ME"/docs/*.md; do
+  ./panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"$ME/doc/snacks.nvim-$(basename "$f" .md).txt"
+done
