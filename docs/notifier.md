@@ -6,6 +6,7 @@
 
 ```lua
 ---@class snacks.notifier.Config
+---@field keep? fun(notif: snacks.notifier.Notif): boolean
 {
   timeout = 3000,
   width = { min = 40, max = 0.4 },
