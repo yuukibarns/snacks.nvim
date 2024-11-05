@@ -6,7 +6,7 @@ local M = setmetatable({}, {
   end,
 })
 
----@alias snacks.notify.Opts {level?: number, title?: string, once?: boolean, lang?: string}
+---@alias snacks.notify.Opts {level?: number, title?: string, once?: boolean, ft?: string}
 
 ---@param msg string|string[]
 ---@param opts? snacks.notify.Opts
@@ -23,10 +23,14 @@ function M.notify(msg, opts)
       vim.wo[win].concealcursor = "n"
       vim.wo[win].spell = false
       local buf = vim.api.nvim_win_get_buf(win)
-      local lang = opts.lang or "markdown"
-      if not pcall(vim.treesitter.start, buf, lang) then
-        vim.bo[buf].filetype = lang
-        vim.bo[buf].syntax = lang
+      local ft = opts.ft or "markdown"
+      local lang = ft and vim.treesitter.language.get_lang(ft)
+      if lang and not vim.b[buf].ts_highlight and not pcall(vim.treesitter.start, buf, lang) then
+        lang = nil
+      end
+      if ft and not lang then
+        vim.bo[buf].filetype = ft
+        vim.bo[buf].syntax = ft
       end
     end,
   })
