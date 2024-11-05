@@ -18,6 +18,8 @@ function M.notify(msg, opts)
   msg = vim.trim(msg)
   notify(msg, opts.level, {
     title = opts.title or "Snacks",
+    ft = opts.ft,
+    -- used by nvim-notify
     on_open = function(win)
       vim.wo[win].conceallevel = 3
       vim.wo[win].concealcursor = "n"

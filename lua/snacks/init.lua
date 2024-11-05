@@ -13,6 +13,7 @@
 ---@field notify snacks.notify
 ---@field debug snacks.debug
 ---@field toggle snacks.toggle
+---@field notifier snacks.notifier
 local M = {}
 
 setmetatable(M, {
@@ -35,6 +36,7 @@ _G.Snacks = M
 ---@field lazygit snacks.lazygit.Config
 ---@field gitbrowse snacks.gitbrowse.Config
 ---@field views table<string, snacks.win.Config>
+---@field notifier snacks.notifier.Config | { enabled: boolean }
 ---@field toggle snacks.toggle.Config
 local config = {
   bigfile = { enabled = true },
@@ -42,6 +44,7 @@ local config = {
   statuscolumn = { enabled = true },
   words = { enabled = true },
   views = {},
+  notifier = { enabled = true },
 }
 
 ---@class snacks.Config: snacks.Opts
@@ -102,6 +105,11 @@ function M.setup(opts)
 
   if M.config.statuscolumn.enabled then
     vim.o.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
+  end
+  if M.config.notifier.enabled then
+    vim.notify = function(msg, level, o)
+      return Snacks.notifier:notify(msg, level, o)
+    end
   end
 end
 
