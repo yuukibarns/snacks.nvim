@@ -21,12 +21,6 @@ echo "dir: $PANVIMDOC"
 
 git clone https://github.com/kdheepak/panvimdoc.git "$PANVIMDOC"
 
-echo "panvimdoc cloned"
-
-cd "$PANVIMDOC" || exit 1
-echo "panvimdoc directory"
-ls -la
-
-for f in $ME/docs/*.md; do
-  ./panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"$ME/doc/snacks.nvim-$(basename "$f" .md).txt"
+for f in docs/*.md; do
+  GITHUB_ACTIONS=false $PANVIMDOC/panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"doc/snacks.nvim-$(basename "$f" .md).txt"
 done
