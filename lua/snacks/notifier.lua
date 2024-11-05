@@ -13,7 +13,7 @@ Snacks.config.view("notification", {
   },
   wo = {
     winblend = 5,
-    wrap = false,
+    wrap = true,
     listchars = "eol: ,extends:…",
     list = true,
     showbreak = " ",
@@ -293,6 +293,7 @@ function M:render(notif)
         end,
       },
     })
+  notif.win = win
   local buf = win:open_buf()
   local render = self:get_render(notif.style)
 
@@ -322,7 +323,7 @@ function M:render(notif)
 
   local width = 0
   for _, line in ipairs(lines) do
-    width = math.max(width, vim.fn.strdisplaywidth(line))
+    width = math.max(width, vim.fn.strdisplaywidth(line) + 2)
   end
   width = dim(width, self.opts.width.min, self.opts.width.max, vim.o.columns)
 
@@ -338,7 +339,6 @@ function M:render(notif)
 
   win.opts.win.width = width
   win.opts.win.height = height
-  notif.win = win
 end
 
 function M:sort()
