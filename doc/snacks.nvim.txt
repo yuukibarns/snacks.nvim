@@ -21,6 +21,7 @@ TODO                                            *snacks.nvim-snacks.nvim-todo*
 - float => win
 - win views
 - cowboy
+- notifier
 - docgen
 - plugin
 - notify module
@@ -72,6 +73,8 @@ SNACKS                                        *snacks.nvim-snacks.nvim-snacks*
 
   notify                   Small wrapper around     README
                            Neovim’s vim.notify      
+
+  notifier                 Better vim.notify        README
 
   quickfile                Render a file as quickly README
                            as possible before       
