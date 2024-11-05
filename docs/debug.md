@@ -12,7 +12,7 @@ Snacks.debug = {}
 ### `Snacks.debug()`
 
 ```lua
----@type fun(msg: string|string[], opts?: snacks.notify.Opts)
+---@type fun(...)
 Snacks.debug()
 ```
 
