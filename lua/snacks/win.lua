@@ -159,7 +159,7 @@ function M:close(opts)
       vim.api.nvim_buf_delete(buf, { force = true })
     end
     if self.augroup then
-      vim.api.nvim_del_augroup_by_id(self.augroup)
+      pcall(vim.api.nvim_del_augroup_by_id, self.augroup)
       self.augroup = nil
     end
   end)
