@@ -5,7 +5,7 @@
 ## 📦 Module
 
 ```lua
----@alias snacks.notify.Opts {level?: number, title?: string, once?: boolean, lang?: string}
+---@alias snacks.notify.Opts {level?: number, title?: string, once?: boolean, ft?: string}
 ```
 
 ```lua

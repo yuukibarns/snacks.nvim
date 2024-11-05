@@ -20,6 +20,7 @@
 ---@field notify snacks.notify
 ---@field debug snacks.debug
 ---@field toggle snacks.toggle
+---@field notifier snacks.notifier
 Snacks = {}
 ```
 

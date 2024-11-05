@@ -25,7 +25,7 @@
     style = "minimal",
   },
   wo = {
-    winhighlight = "EndOfBuffer:NormalFloat,Normal:NormalFloat,NormalNC:NormalFloat",
+    winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
   },
   bo = {},
   keys = {
@@ -64,7 +64,7 @@ Snacks.win()
 ### `Snacks.win.new()`
 
 ```lua
----@param opts? snacks.win.Config
+---@param opts? snacks.win.Config | { show?: boolean }
 ---@return snacks.win
 Snacks.win.new(opts)
 ```
@@ -108,10 +108,23 @@ win:is_floating()
 win:show()
 ```
 
+### `win:size()`
+
+```lua
+---@return { height: number, width: number }
+win:size()
+```
+
 ### `win:toggle()`
 
 ```lua
 win:toggle()
+```
+
+### `win:update()`
+
+```lua
+win:update()
 ```
 
 ### `win:valid()`

@@ -6,9 +6,6 @@
 
 ```lua
 ---@class snacks.toggle.Config
----@field name string
----@field get fun():boolean
----@field set fun(state:boolean)
 ---@field icon? string|{ enabled: string, disabled: string }
 ---@field color? string|{ enabled: string, disabled: string }
 {
@@ -29,15 +26,22 @@
 ## 📦 Module
 
 ```lua
+---@class snacks.toggle.Opts: snacks.toggle.Config
+---@field name string
+---@field get fun():boolean
+---@field set fun(state:boolean)
+```
+
+```lua
 ---@class snacks.toggle
----@field opts snacks.toggle.Config
+---@field opts snacks.toggle.Opts
 Snacks.toggle = {}
 ```
 
 ### `Snacks.toggle()`
 
 ```lua
----@type fun(... :snacks.toggle.Config): snacks.toggle
+---@type fun(... :snacks.toggle.Opts): snacks.toggle
 Snacks.toggle()
 ```
 
@@ -65,7 +69,7 @@ Snacks.toggle.line_number(opts)
 ### `Snacks.toggle.new()`
 
 ```lua
----@param ... snacks.toggle.Config
+---@param ... snacks.toggle.Opts
 ---@return snacks.toggle
 Snacks.toggle.new(...)
 ```
