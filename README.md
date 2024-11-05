@@ -60,6 +60,8 @@ Install the plugin with your package manager:
 }
 ```
 
+For an in-depth setup of `snacks.nvim` with `lazy.nvim`, check the [example](https://github.com/folke/snacks.nvim?tab=readme-ov-file#-usage) below.
+
 ## ⚙️ Configuration
 
 Please refer to the readme of each plugin for their specific configuration.
@@ -95,7 +97,9 @@ Please refer to the readme of each plugin for their specific configuration.
 
 </details>
 
-## 🚀 Example Config
+## 🚀 Usage
+
+See the example below for how to configure `snacks.nvim`.
 
 <!-- example:start -->
 
