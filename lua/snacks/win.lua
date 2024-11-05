@@ -262,6 +262,12 @@ function M:show()
     self.opts.on_win(self)
   end
 
+  local ft = vim.bo[self.buf].filetype
+  local lang = ft and vim.treesitter.language.get_lang(ft)
+  if lang and not vim.b[self.buf].ts_highlight and not pcall(vim.treesitter.start, self.buf, lang) and ft then
+    vim.bo[self.buf].syntax = ft
+  end
+
   vim.api.nvim_create_autocmd("VimResized", {
     group = self.augroup,
     callback = function()
@@ -370,6 +376,8 @@ end
 ---@private
 ---@param type "win" | "buf"
 function M:set_options(type)
+  local ei = vim.o.eventignore
+  vim.o.eventignore = "all"
   local opts = type == "win" and self.opts.wo or self.opts.bo
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(opts or {}) do
@@ -382,6 +390,7 @@ function M:set_options(type)
       Snacks.notify.error("Error setting option `" .. k .. "=" .. v .. "`\n\n" .. err, { title = "Snacks Float" })
     end
   end
+  vim.o.eventignore = ei
 end
 
 function M:buf_valid()
