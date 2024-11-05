@@ -4,8 +4,7 @@
 Table of Contents                             *snacks-words-table-of-contents*
 
 1. Config                                                |snacks-words-config|
-2. Types                                                  |snacks-words-types|
-3. Module                                                |snacks-words-module|
+2. Module                                                |snacks-words-module|
   - Snacks.words.is_enabled()  |snacks-words-module-snacks.words.is_enabled()|
   - Snacks.words.jump()              |snacks-words-module-snacks.words.jump()|
 
@@ -22,15 +21,7 @@ Table of Contents                             *snacks-words-table-of-contents*
 
 
 ==============================================================================
-2. Types                                                  *snacks-words-types*
-
->lua
-    ---@alias LspWord {from:{[1]:number, [2]:number}, to:{[1]:number, [2]:number}} 1-0 indexed
-<
-
-
-==============================================================================
-3. Module                                                *snacks-words-module*
+2. Module                                                *snacks-words-module*
 
 >lua
     ---@class snacks.words

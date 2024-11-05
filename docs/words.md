@@ -12,12 +12,6 @@
 }
 ```
 
-## 📚 Types
-
-```lua
----@alias LspWord {from:{[1]:number, [2]:number}, to:{[1]:number, [2]:number}} 1-0 indexed
-```
-
 ## 📦 Module
 
 ```lua
