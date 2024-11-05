@@ -85,13 +85,14 @@ function M.render(name, info)
     add(M.md(info.config))
   end
 
-  add("## 📦 Module\n")
-
   if #info.types > 0 then
+    add("## 📚 Types\n")
     for _, t in ipairs(info.types) do
       add(M.md(t))
     end
   end
+
+  add("## 📦 Module\n")
 
   if info.mod then
     local mod_lines = vim.split(info.mod, "\n")
