@@ -31,10 +31,15 @@ M.ns = vim.api.nvim_create_namespace("snacks.notifier")
 ---@field ns number
 
 ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
+
+--- Render styles:
+--- * compact: simple border title with message
+--- * fancy: similar to the default nvim-notify style
 ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
 
 ---@type table<string, snacks.notifier.render>
 M.styles = {
+  -- compact style using border title
   compact = function(buf, notif, ctx)
     ctx.opts.win.title = {
       { " " .. vim.trim(notif.icon .. " " .. (notif.title or "")) .. " ", ctx.hl.title },
@@ -42,6 +47,7 @@ M.styles = {
     ctx.opts.win.title_pos = "center"
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(notif.msg, "\n"))
   end,
+  -- similar to the default nvim-notify style
   fancy = function(buf, notif, ctx)
     vim.api.nvim_buf_set_lines(buf, 0, 1, false, { "", "" })
     vim.api.nvim_buf_set_lines(buf, 2, -1, false, vim.split(notif.msg, "\n"))
