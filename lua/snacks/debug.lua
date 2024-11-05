@@ -1,5 +1,5 @@
 ---@class snacks.debug
----@overload fun(msg: string|string[], opts?: snacks.notify.Opts)
+---@overload fun(...)
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.inspect(...)
