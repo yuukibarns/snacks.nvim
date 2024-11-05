@@ -122,7 +122,7 @@ function M.resolve(opts)
   return ret
 end
 
----@param opts? snacks.win.Config
+---@param opts? snacks.win.Config | { show?: boolean }
 ---@return snacks.win
 function M.new(opts)
   local self = setmetatable({}, { __index = M })
@@ -135,7 +135,9 @@ function M.new(opts)
     opts = vim.tbl_deep_extend("force", {}, vim.deepcopy(minimal), opts)
   end
   self.opts = opts
-  self:show()
+  if opts.show ~= false then
+    self:show()
+  end
   return self
 end
 
@@ -198,6 +200,7 @@ function M:open_buf()
   if vim.bo[self.buf].filetype == "" and not self.opts.bo.filetype then
     self.opts.bo.filetype = "snacks_float"
   end
+  return self.buf
 end
 
 ---@private
@@ -244,8 +247,15 @@ function M:open_win()
   }
 end
 
+function M:update()
+  if self:valid() and self:is_floating() then
+    vim.api.nvim_win_set_config(self.win, self:win_opts())
+  end
+end
+
 function M:show()
   if self:valid() then
+    self:update()
     return self
   end
   self.augroup = vim.api.nvim_create_augroup("snacks_float_" .. id, { clear = true })
@@ -271,9 +281,7 @@ function M:show()
   vim.api.nvim_create_autocmd("VimResized", {
     group = self.augroup,
     callback = function()
-      if self:valid() then
-        vim.api.nvim_win_set_config(self.win, self:win_opts())
-      end
+      self:update()
     end,
   })
 
@@ -365,12 +373,27 @@ function M:win_opts()
     height = opts.relative == "win" and vim.api.nvim_win_get_height(opts.win) or vim.o.lines,
     width = opts.relative == "win" and vim.api.nvim_win_get_width(opts.win) or vim.o.columns,
   }
-  opts.height = math.floor(opts.height <= 1 and parent.height * opts.height or opts.height)
-  opts.width = math.floor(opts.width <= 1 and parent.width * opts.width or opts.width)
+  -- Spcial case for 0, which means 100%
+  opts.height = opts.height == 0 and parent.height or opts.height
+  opts.width = opts.width == 0 and parent.width or opts.width
+  opts.height = math.floor(opts.height < 1 and parent.height * opts.height or opts.height)
+  opts.width = math.floor(opts.width < 1 and parent.width * opts.width or opts.width)
 
   opts.row = opts.row or math.floor((parent.height - opts.height) / 2)
   opts.col = opts.col or math.floor((parent.width - opts.width) / 2)
   return opts
+end
+
+---@return { height: number, width: number }
+function M:size()
+  local win_opts = self:win_opts()
+  local height = win_opts.height
+  local width = win_opts.width
+  if win_opts.border and win_opts.border ~= "none" then
+    height = height + 2
+    width = width + 2
+  end
+  return { height = height, width = width }
 end
 
 ---@private
