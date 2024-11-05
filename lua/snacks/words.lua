@@ -13,6 +13,7 @@ local config = Snacks.config.get("words", defaults)
 local ns = vim.api.nvim_create_namespace("vim_lsp_references")
 local timer = (vim.uv or vim.loop).new_timer()
 
+---@private
 function M.setup()
   local group = vim.api.nvim_create_augroup("snacks_words", { clear = true })
 
@@ -26,6 +27,7 @@ function M.setup()
   })
 end
 
+---@private
 function M.update()
   local buf = vim.api.nvim_get_current_buf()
   timer:start(config.debounce, 0, function()
@@ -53,6 +55,7 @@ function M.is_enabled(buf)
       > 0
 end
 
+---@private
 ---@return LspWord[] words, number? current
 function M.get()
   local cursor = vim.api.nvim_win_get_cursor(0)

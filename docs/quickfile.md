@@ -11,16 +11,3 @@
   exclude = { "latex" },
 }
 ```
-
-## 📦 Module
-
-```lua
----@class snacks.quickfile
-Snacks.quickfile = {}
-```
-
-### `Snacks.quickfile.setup()`
-
-```lua
-Snacks.quickfile.setup()
-```

@@ -7,8 +7,9 @@
 ```lua
 ---@class snacks.bigfile.Config
 {
-  notify = true,
+  notify = true, -- show notification when big file detected
   size = 1.5 * 1024 * 1024, -- 1.5MB
+  -- Enable or disable features when big file detected
   ---@param ctx {buf: number, ft:string}
   setup = function(ctx)
     vim.b.minianimate_disable = true
@@ -17,17 +18,4 @@
     end)
   end,
 }
-```
-
-## 📦 Module
-
-```lua
----@class snacks.bigfile
-Snacks.bigfile = {}
-```
-
-### `Snacks.bigfile.setup()`
-
-```lua
-Snacks.bigfile.setup()
 ```

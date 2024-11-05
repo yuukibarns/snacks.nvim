@@ -1,3 +1,4 @@
+---@private
 ---@class snacks.quickfile
 local M = {}
 

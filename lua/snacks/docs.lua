@@ -5,7 +5,7 @@ function M.extract(lines)
   local code = table.concat(lines, "\n")
   local config = code:match("\n(%-%-%- ?@class snacks%.%w+%.Config.-\n})")
   config = config or code:match("\n(%-%-%- ?@class snacks%.Config.-\n})")
-  local mod = code:match("(%-%-%-.*\n)local M =")
+  local mod ---@type string
   local comments = {} ---@type string[]
   local types = {} ---@type string[]
 
@@ -17,7 +17,9 @@ function M.extract(lines)
       table.insert(comments, line)
     else
       local comment = table.concat(comments, "\n")
-      if comment:find("@private") then
+      if line:find("^local M =") then
+        mod = comment
+      elseif comment:find("@private") then
       else
         local t, name, args = line:match("^function M([:%.])([%w_%.]+)%((.-)%)")
         if name and args then
@@ -35,14 +37,17 @@ function M.extract(lines)
     end
   end
 
+  local private = mod and mod:find("@private")
+  config = config and config:gsub("local defaults = ", ""):gsub("local config = ", "") or nil
+
   ---@class snacks.docs.Info
   local ret = {
-    config = config and config:gsub("local defaults = ", ""):gsub("local config = ", "") or nil,
+    config = config,
     mod = mod,
     methods = methods,
     types = types,
   }
-  return ret
+  return private and { config = config, methods = {}, types = {} } or ret
 end
 
 ---@param tag string
@@ -105,7 +110,9 @@ function M.render(name, info)
     end
   end
 
-  add("## 📦 Module\n")
+  if info.mod or #info.methods > 0 then
+    add("## 📦 Module\n")
+  end
 
   if info.mod then
     local mod_lines = vim.split(info.mod, "\n")

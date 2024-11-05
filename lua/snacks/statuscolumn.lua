@@ -1,3 +1,4 @@
+---@private
 ---@class snacks.statuscolumn
 ---@overload fun(): string
 local M = setmetatable({}, {

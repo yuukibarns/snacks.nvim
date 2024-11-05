@@ -1,10 +1,12 @@
+---@private
 ---@class snacks.bigfile
 local M = {}
 
 ---@class snacks.bigfile.Config
 local defaults = {
-  notify = true,
+  notify = true, -- show notification when big file detected
   size = 1.5 * 1024 * 1024, -- 1.5MB
+  -- Enable or disable features when big file detected
   ---@param ctx {buf: number, ft:string}
   setup = function(ctx)
     vim.b.minianimate_disable = true

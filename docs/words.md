@@ -25,13 +25,6 @@
 Snacks.words = {}
 ```
 
-### `Snacks.words.get()`
-
-```lua
----@return LspWord[] words, number? current
-Snacks.words.get()
-```
-
 ### `Snacks.words.is_enabled()`
 
 ```lua
@@ -45,16 +38,4 @@ Snacks.words.is_enabled(buf)
 ---@param count number
 ---@param cycle? boolean
 Snacks.words.jump(count, cycle)
-```
-
-### `Snacks.words.setup()`
-
-```lua
-Snacks.words.setup()
-```
-
-### `Snacks.words.update()`
-
-```lua
-Snacks.words.update()
 ```
