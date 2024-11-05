@@ -29,7 +29,7 @@
 }
 ```
 
-## 📦 Module
+## 📚 Types
 
 ```lua
 ---@alias snacks.lazygit.Color {fg?:string, bg?:string, bold?:boolean}
@@ -47,6 +47,8 @@
 ---@field selectedLineBgColor snacks.lazygit.Color
 ---@field unstagedChangesColor snacks.lazygit.Color
 ```
+
+## 📦 Module
 
 ```lua
 ---@class snacks.lazygit

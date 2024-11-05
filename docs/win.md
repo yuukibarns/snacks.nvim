@@ -34,7 +34,7 @@
 }
 ```
 
-## 📦 Module
+## 📚 Types
 
 ```lua
 ---@class snacks.win.Keys: vim.api.keyset.keymap
@@ -42,6 +42,8 @@
 ---@field [2]? string|fun(self: snacks.win): any
 ---@field mode? string|string[]
 ```
+
+## 📦 Module
 
 ```lua
 ---@class snacks.win

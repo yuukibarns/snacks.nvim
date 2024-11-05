@@ -23,7 +23,7 @@
 }
 ```
 
-## 📦 Module
+## 📚 Types
 
 ```lua
 ---@class snacks.toggle.Opts: snacks.toggle.Config
@@ -31,6 +31,8 @@
 ---@field get fun():boolean
 ---@field set fun(state:boolean)
 ```
+
+## 📦 Module
 
 ```lua
 ---@class snacks.toggle

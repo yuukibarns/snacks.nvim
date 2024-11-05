@@ -24,7 +24,7 @@
 }
 ```
 
-## 📦 Module
+## 📚 Types
 
 ```lua
 ---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
@@ -77,6 +77,8 @@ Render styles:
 ---@field added number timestamp in ms
 ---@field layout? { width: number, height: number, top?: number }
 ```
+
+## 📦 Module
 
 ```lua
 ---@class snacks.notifier

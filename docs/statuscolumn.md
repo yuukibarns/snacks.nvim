@@ -20,12 +20,14 @@
 }
 ```
 
-## 📦 Module
+## 📚 Types
 
 ```lua
 ---@alias snacks.statuscolumn.Sign.type "mark"|"sign"|"fold"|"git"
 ---@alias snacks.statuscolumn.Sign {name:string, text:string, texthl:string, priority:number, type:snacks.statuscolumn.Sign.type}
 ```
+
+## 📦 Module
 
 ```lua
 ---@class snacks.statuscolumn

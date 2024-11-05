@@ -2,11 +2,13 @@
 
 <!-- docgen -->
 
-## 📦 Module
+## 📚 Types
 
 ```lua
 ---@alias snacks.notify.Opts {level?: number, title?: string, once?: boolean, ft?: string}
 ```
+
+## 📦 Module
 
 ```lua
 ---@class snacks.notify
