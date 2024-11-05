@@ -14,23 +14,19 @@ sudo apt install -y pandoc
 echo "apt installed"
 
 PANVIMDOC="$RUNNER_TEMP/panvimdoc"
+ME=$GITHUB_WORKSPACE
 
-mkdir -p "$PANVIMDOC"
-
-echo "panvimdoc created"
-wget -q https://github.com/kdheepak/panvimdoc/archive/refs/tags/v4.0.1.tar.gz -O /tmp/panvimdoc.tar.gz
-echo "panvimdoc downloaded"
-tar -xzvf /tmp/panvimdoc.tar.gz -C "$PANVIMDOC" --strip-components=1
-echo "panvimdoc extracted"
-
-ME=$(pwd)
-
+echo "me: $ME"
 echo "dir: $PANVIMDOC"
+
+git clone https://github.com/kdheepak/panvimdoc.git "$PANVIMDOC"
+
+echo "panvimdoc cloned"
 
 cd "$PANVIMDOC" || exit 1
 echo "panvimdoc directory"
 ls -la
 
-for f in "$ME"/docs/*.md; do
+for f in $ME/docs/*.md; do
   ./panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"$ME/doc/snacks.nvim-$(basename "$f" .md).txt"
 done
