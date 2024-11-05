@@ -13,13 +13,16 @@ fi
 sudo apt update
 sudo apt install -y pandoc
 
-git config --global --add safe.directory "$GITHUB_WORKSPACE"
+PANVIMDOC="$RUNNER_TEMP/panvimdoc"
 
-git clone https://github.com/kdheepak/panvimdoc.git
+mkdir -p "$PANVIMDOC"
+wget -q https://github.com/kdheepak/panvimdoc/archive/refs/tags/v4.0.1.tar.gz -O /tmp/panvimdoc.tar.gz
+tar -xzf /tmp/panvimdoc.tar.gz -C "$PANVIMDOC" --strip-components=1
 
-cd ./panvimdoc
+ME=$(pwd)
 
-for f in ../docs/*.md; do
-  ./panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"../doc/snacks.nvim-$(basename "$f" .md).txt"
+cd "$PANVIMDOC"
+
+for f in "$ME"/docs/*.md; do
+  ./panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"$ME/doc/snacks.nvim-$(basename "$f" .md).txt"
 done
-rm -rf panvimdoc
