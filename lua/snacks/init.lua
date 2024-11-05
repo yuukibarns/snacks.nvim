@@ -35,6 +35,7 @@ _G.Snacks = M
 ---@field lazygit snacks.lazygit.Config
 ---@field gitbrowse snacks.gitbrowse.Config
 ---@field views table<string, snacks.win.Config>
+---@field toggle snacks.toggle.Config
 local config = {
   bigfile = { enabled = true },
   quickfile = { enabled = true },

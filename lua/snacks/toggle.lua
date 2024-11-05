@@ -1,6 +1,6 @@
 ---@class snacks.toggle
----@field opts snacks.toggle.Config
----@overload fun(... :snacks.toggle.Config): snacks.toggle
+---@field opts snacks.toggle.Opts
+---@overload fun(... :snacks.toggle.Opts): snacks.toggle
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.new(...)
@@ -8,9 +8,6 @@ local M = setmetatable({}, {
 })
 
 ---@class snacks.toggle.Config
----@field name string
----@field get fun():boolean
----@field set fun(state:boolean)
 ---@field icon? string|{ enabled: string, disabled: string }
 ---@field color? string|{ enabled: string, disabled: string }
 local defaults = {
@@ -27,11 +24,16 @@ local defaults = {
   },
 }
 
----@param ... snacks.toggle.Config
+---@class snacks.toggle.Opts: snacks.toggle.Config
+---@field name string
+---@field get fun():boolean
+---@field set fun(state:boolean)
+
+---@param ... snacks.toggle.Opts
 ---@return snacks.toggle
 function M.new(...)
   local self = setmetatable({}, { __index = M })
-  self.opts = Snacks.config.get("toggle", defaults, ...)
+  self.opts = Snacks.config.get("toggle", defaults, ...) --[[@as snacks.toggle.Opts]]
   return self
 end
 
