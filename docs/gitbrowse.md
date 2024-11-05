@@ -14,7 +14,6 @@
     end
     vim.ui.open(url)
   end,
-  -- stylua: ignore
   patterns = {
     { "^(https?://.*)%.git$"              , "%1" },
     { "^git@(.+):(.+)%.git$"              , "https://%1/%2" },

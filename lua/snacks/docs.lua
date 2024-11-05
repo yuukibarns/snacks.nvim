@@ -63,6 +63,7 @@ function M.replace(tag, readme, content)
 end
 
 function M.md(str)
+  str = str:gsub("\n%s*%-%-%s*stylua: ignore\n", "\n")
   local comments = {} ---@type string[]
   local lines = vim.split(str, "\n", { plain = true })
 
