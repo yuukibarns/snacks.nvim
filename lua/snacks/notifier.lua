@@ -57,6 +57,7 @@ M.styles = {
 }
 
 ---@class snacks.notifier.Config
+---@field keep? fun(notif: snacks.notifier.Notif): boolean
 local defaults = {
   timeout = 3000,
   width = { min = 40, max = 0.4 },
@@ -217,6 +218,7 @@ function M:update()
     local keep = not notif.shown -- not shown yet
       or (notif.win and notif.win:win_valid() and vim.api.nvim_get_current_win() == notif.win.win) -- current window
       or (notif.keep and notif.keep(notif)) -- custom keep
+      or (self.opts.keep and self.opts.keep(notif)) -- global keep
       or (notif.shown + timeout > now) -- not timed out
     if not keep and notif.win then
       notif.win:close()
