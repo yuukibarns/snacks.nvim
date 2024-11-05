@@ -273,9 +273,14 @@ function M:show()
   end
 
   local ft = vim.bo[self.buf].filetype
-  local lang = ft and vim.treesitter.language.get_lang(ft)
-  if lang and not vim.b[self.buf].ts_highlight and not pcall(vim.treesitter.start, self.buf, lang) and ft then
-    vim.bo[self.buf].syntax = ft
+  if ft then
+    local lang = ft and vim.treesitter.language.get_lang(ft)
+    if lang and not vim.b[self.buf].ts_highlight and not pcall(vim.treesitter.start, self.buf, lang) then
+      lang = nil
+    end
+    if ft and not lang then
+      vim.bo[self.buf].syntax = ft
+    end
   end
 
   vim.api.nvim_create_autocmd("VimResized", {
