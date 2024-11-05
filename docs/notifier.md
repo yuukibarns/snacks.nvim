@@ -40,6 +40,13 @@
 
 ```lua
 ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
+```
+
+Render styles:
+* compact: simple border title with message
+* fancy: similar to the default nvim-notify style
+
+```lua
 ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
 ```
 
