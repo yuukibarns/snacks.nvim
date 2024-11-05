@@ -343,8 +343,8 @@ function M:drop()
       backdrop = false,
       win = {
         relative = "editor",
-        height = 1,
-        width = 1,
+        height = 0,
+        width = 0,
         style = "minimal",
         focusable = false,
         zindex = self.opts.win.zindex - 1,
