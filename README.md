@@ -41,8 +41,8 @@ Install the plugin with your package manager:
 
 > [!important]
 > A couple of plugins **require** `snacks.nvim` to be set-up early.
-> Setup only sets up some autocmds and does not load any plugins.
-> Check the [code](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/init.lua) to see exactly what is being set up.
+> Setup creates some autocmds and does not load any plugins.
+> Check the [code](https://github.com/folke/snacks.nvim/blob/main/lua/snacks/init.lua) to see what it does.
 
 > [!tip]
 > If you don't need these plugins, you can disable them, or skip `setup` alltogether.
