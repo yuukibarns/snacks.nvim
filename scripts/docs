@@ -27,6 +27,7 @@ ME=$(pwd)
 
 cd "$PANVIMDOC" | exit 1
 echo "panvimdoc directory"
+ls -la
 
 for f in "$ME"/docs/*.md; do
   ./panvimdoc.sh --project-name "snacks.nvim" --input-file "$f" --vim-version "Neovim" --demojify "true" >"$ME/doc/snacks.nvim-$(basename "$f" .md).txt"
