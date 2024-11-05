@@ -9,6 +9,7 @@ Snacks.config.view("notification", {
   win = {
     border = "rounded",
     zindex = 100,
+    noautocmd = true,
   },
   wo = { winblend = 5 },
 })

@@ -249,7 +249,9 @@ end
 
 function M:update()
   if self:valid() and self:is_floating() then
-    vim.api.nvim_win_set_config(self.win, self:win_opts())
+    local opts = self:win_opts()
+    opts.noautocmd = nil
+    vim.api.nvim_win_set_config(self.win, opts)
   end
 end
 
