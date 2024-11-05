@@ -188,7 +188,10 @@ function M.build()
       M.write(name, M.render(name, info))
       if name == "init" then
         local readme = table.concat(vim.fn.readfile("README.md"), "\n")
+        local example = table.concat(vim.fn.readfile("docs/example.lua"), "\n")
+        example = example:gsub(".*\nreturn {", "{", 1)
         readme = M.replace("config", readme, M.md(info.config))
+        readme = M.replace("example", readme, M.md(example))
         vim.fn.writefile(vim.split(readme, "\n"), "README.md")
       end
     end
