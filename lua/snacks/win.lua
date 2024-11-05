@@ -37,7 +37,7 @@ local defaults = {
     style = "minimal",
   },
   wo = {
-    winhighlight = "EndOfBuffer:NormalFloat,Normal:NormalFloat,NormalNC:NormalFloat",
+    winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
   },
   bo = {},
   keys = {
