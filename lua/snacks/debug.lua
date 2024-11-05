@@ -12,7 +12,13 @@ function M.inspect(...)
   local caller = debug.getinfo(1, "S")
   for level = 2, 10 do
     local info = debug.getinfo(level, "S")
-    if info and info.source ~= caller.source and info.what == "Lua" and info.source ~= "lua" then
+    if
+      info
+      and info.source ~= caller.source
+      and info.what == "Lua"
+      and info.source ~= "lua"
+      and info.source ~= "@" .. vim.env.MYVIMRC
+    then
       caller = info
       break
     end
