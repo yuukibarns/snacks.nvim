@@ -13,7 +13,7 @@
   border = "rounded",
   title = " Git Blame ",
   title_pos = "center",
-  bo = { filetype = "git" },
+  ft = "git",
 }
 ```
 

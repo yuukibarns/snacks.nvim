@@ -49,11 +49,12 @@ end
 {
   border = "rounded",
   zindex = 100,
+  ft = "markdown",
   wo = {
     winblend = 5,
     wrap = false,
   },
-  bo = { filetype = "markdown" },
+  bo = { filetype = "snacks_notif" },
 }
 ```
 
