@@ -151,7 +151,8 @@ gui:
   dirty = false
 end
 
--- Opens lazygit
+-- Opens lazygit, properly configured to use the current colorscheme
+-- and integrate with the current neovim instance
 ---@param opts? snacks.lazygit.Config
 function M.open(opts)
   ---@type snacks.lazygit.Config
@@ -170,6 +171,7 @@ function M.open(opts)
   return Snacks.terminal(cmd, opts)
 end
 
+-- Opens lazygit with the log view
 ---@param opts? snacks.lazygit.Config
 function M.log(opts)
   opts = opts or {}
@@ -177,6 +179,7 @@ function M.log(opts)
   return M.open(opts)
 end
 
+-- Opens lazygit with the log of the current file
 ---@param opts? snacks.lazygit.Config
 function M.log_file(opts)
   local file = vim.trim(vim.api.nvim_buf_get_name(0))

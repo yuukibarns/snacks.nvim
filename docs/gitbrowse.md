@@ -1,5 +1,7 @@
 # 🍿 gitbrowse
 
+Open the repo of the active file in the browser (e.g., GitHub)
+
 <!-- docgen -->
 
 ## ⚙️ Config
@@ -7,6 +9,8 @@
 ```lua
 ---@class snacks.gitbrowse.Config
 {
+  -- Handler to open the url in a browser
+  ---@param url string
   open = function(url)
     if vim.fn.has("nvim-0.10") == 0 then
       require("lazy.util").open(url, { system = true })
@@ -14,6 +18,7 @@
     end
     vim.ui.open(url)
   end,
+  -- patterns to transform remotes to an actual URL
   patterns = {
     { "^(https?://.*)%.git$"              , "%1" },
     { "^git@(.+):(.+)%.git$"              , "https://%1/%2" },
@@ -38,14 +43,6 @@
 ```lua
 ---@type fun(opts?: snacks.gitbrowse.Config)
 Snacks.gitbrowse()
-```
-
-### `Snacks.gitbrowse.get_url()`
-
-```lua
----@param remote string
----@param opts? snacks.gitbrowse.Config
-Snacks.gitbrowse.get_url(remote, opts)
 ```
 
 ### `Snacks.gitbrowse.open()`
