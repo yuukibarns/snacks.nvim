@@ -48,9 +48,9 @@ FEATURES                                    *snacks.nvim-snacks.nvim-features*
                                  render the file as quickly as possible, 
                                  before loading your plugins.            
 
-  rename                         LSP-integratedrenaming with support for 
-                                 plugins like neo-tree, nvim-tree, oil,  
-                                 mini.files                              
+  rename                         LSP-integratedfile renaming with        
+                                 support for plugins like neo-tree,      
+                                 nvim-tree, oil, mini.files              
 
   statuscolumn                   Pretty statuscolumn                     
 
