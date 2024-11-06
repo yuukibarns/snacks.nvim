@@ -38,6 +38,7 @@ local M = setmetatable({}, {
 ---@field dirty? boolean
 ---@field shown? number timestamp in ms
 ---@field added number timestamp in ms
+---@field added_hr number hrtime in ms
 ---@field layout? { width: number, height: number, top?: number }
 
 --- ### Rendering
@@ -228,6 +229,7 @@ function N:add(opts)
   notif.icon = notif.icon or self.opts.icons[notif.level]
   notif.timeout = notif.timeout or self.opts.timeout
   notif.added = os.time()
+  notif.added_hr = now
   if opts.id then
     for i, n in ipairs(self.queue) do
       if n.id == notif.id then
@@ -367,14 +369,15 @@ function N:render(notif)
 end
 
 function N:sort()
-  local idx = {} ---@type table<snacks.notifier.Notif, number>
-  for i, notif in ipairs(self.queue) do
-    idx[notif] = i
-  end
   table.sort(self.queue, function(a, b)
     for _, key in ipairs(self.opts.sort) do
       local function v(n)
-        return key == "level" and (10 - vim.log.levels[n[key]:upper()]) or key == "added" and idx[n] or n[key]
+        if key == "level" then
+          return 10 - vim.log.levels[n[key]:upper()]
+        elseif key == "added" then
+          return n.added_hr
+        end
+        return n[key]
       end
       local av, bv = v(a), v(b)
       if av ~= bv then
