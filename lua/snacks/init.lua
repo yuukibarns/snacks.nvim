@@ -49,7 +49,11 @@ local config = {
 }
 
 ---@class snacks.config: snacks.Config
-M.config = setmetatable({}, { __index = config })
+M.config = setmetatable({}, {
+  __index = function(_, k)
+    return config[k]
+  end,
+})
 
 ---@generic T: table
 ---@param snack string
