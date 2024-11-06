@@ -20,52 +20,48 @@ A collection of small QoL plugins for Neovim.
 
 FEATURES                                    *snacks.nvim-snacks.nvim-features*
 
-  ------------------------------------------------------------------------------
-  Snack                          Description                              Setup
-  ------------------------------ --------------------------------------- -------
-  bigfile                        Deal with big files                     
+  -----------------------------------------------------------------------------
+  Snack                 Description                                      Setup
+  --------------------- ----------------------------------------------- -------
+  bigfile               Deal with big files                             
 
-  bufdelete                      Deletebuffers without disrupting window 
-                                 layout                                  
+  bufdelete             Deletebuffers without disrupting window layout  
 
-  debug                          Pretty inspect & backtraces for         
-                                 debugging                               
+  debug                 Pretty inspect & backtraces for debugging       
 
-  git                            Useful functions for Git                
+  git                   Useful functions for Git                        
 
-  gitbrowse                      Open the repo of the active file in the 
-                                 browser (e.g., GitHub)                  
+  gitbrowse             Open the repo of the active file in the browser 
+                        (e.g., GitHub)                                  
 
-  lazygit                        Open LazyGit in a float, auto-configure 
-                                 colorscheme and integration with Neovim 
+  lazygit               Open LazyGit in a float, auto-configure         
+                        colorscheme and integration with Neovim         
 
-  notify                         Utility functions to work with Neovim’s 
-                                 vim.notify                              
+  notify                Utility functions to work with Neovim’s         
+                        vim.notify                                      
 
-  notifier                       Better and prettier vim.notify          
+  notifier              Better and prettier vim.notify                  
 
-  quickfile                      Whendoing nvim somefile.txt, it will    
-                                 render the file as quickly as possible, 
-                                 before loading your plugins.            
+  quickfile             Whendoing nvim somefile.txt, it will render the 
+                        file as quickly as possible, before loading     
+                        your plugins.                                   
 
-  rename                         LSP-integratedfile renaming with        
-                                 support for plugins like neo-tree,      
-                                 nvim-tree, oil, mini.files              
+  rename                LSP-integratedfile renaming with support for    
+                        plugins like neo-tree.nvim and mini.files.      
 
-  statuscolumn                   Pretty statuscolumn                     
+  statuscolumn          Pretty statuscolumn                             
 
-  terminal                       Createand toggle floating/split         
-                                 terminals                               
+  terminal              Createand toggle floating/split terminals       
 
-  toggle                         Toggle keymaps integrated with          
-                                 which-key icons / colors                
+  toggle                Toggle keymaps integrated with which-key icons  
+                        / colors                                        
 
-  win                            Easily create and manage floating       
-                                 windows or splits                       
+  win                   Easily create and manage floating windows or    
+                        splits                                          
 
-  words                          Auto-show LSP references and quickly    
-                                 navigate between them                   
-  ------------------------------------------------------------------------------
+  words                 Auto-show LSP references and quickly navigate   
+                        between them                                    
+  -----------------------------------------------------------------------------
 
 REQUIREMENTS                            *snacks.nvim-snacks.nvim-requirements*
 
