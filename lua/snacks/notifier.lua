@@ -7,6 +7,50 @@ local M = setmetatable({}, {
   end,
 })
 
+--- Render styles:
+--- * compact: simple border title with message
+--- * fancy: similar to the default nvim-notify style
+---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
+
+--- ### Notifications
+---
+--- Notification options
+---@class snacks.notifier.Notif.opts
+---@field id? number|string
+---@field msg? string
+---@field level? number|snacks.notifier.level
+---@field title? string
+---@field icon? string
+---@field timeout? number
+---@field once? boolean
+---@field ft? string
+---@field keep? fun(notif: snacks.notifier.Notif): boolean
+---@field style? snacks.notifier.style
+
+--- Notification object
+---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
+---@field msg string
+---@field id number|string
+---@field win? snacks.win
+---@field icon string
+---@field level snacks.notifier.level
+---@field timeout number
+---@field dirty? boolean
+---@field shown? number timestamp in ms
+---@field added number timestamp in ms
+---@field layout? { width: number, height: number, top?: number }
+
+--- ### Rendering
+---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
+
+---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
+
+---@class snacks.notifier.ctx
+---@field opts snacks.win.Config
+---@field notifier snacks.notifier
+---@field hl table<snacks.notifier.hl, string>
+---@field ns number
+
 Snacks.config.style("notification", {
   border = "rounded",
   zindex = 100,
@@ -23,21 +67,6 @@ Snacks.config.style("notification", {
 local N = {}
 
 N.ns = vim.api.nvim_create_namespace("snacks.notifier")
-
----@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
-
----@class snacks.notifier.ctx
----@field opts snacks.win.Config
----@field notifier snacks.notifier
----@field hl table<snacks.notifier.hl, string>
----@field ns number
-
----@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
-
---- Render styles:
---- * compact: simple border title with message
---- * fancy: similar to the default nvim-notify style
----@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
 
 ---@type table<string, snacks.notifier.render>
 N.styles = {
@@ -114,30 +143,6 @@ end
 local function hl(name, level)
   return "SnacksNotifier" .. name .. (level and (level:sub(1, 1):upper() .. level:sub(2):lower()) or "")
 end
-
----@class snacks.notifier.Notif.opts
----@field id? number|string
----@field msg? string
----@field level? number|snacks.notifier.level
----@field title? string
----@field icon? string
----@field timeout? number
----@field once? boolean
----@field ft? string
----@field keep? fun(notif: snacks.notifier.Notif): boolean
----@field style? snacks.notifier.style
-
----@class snacks.notifier.Notif: snacks.notifier.Notif.opts
----@field msg string
----@field id number|string
----@field win? snacks.win
----@field icon string
----@field level snacks.notifier.level
----@field timeout number
----@field dirty? boolean
----@field shown? number timestamp in ms
----@field added number timestamp in ms
----@field layout? { width: number, height: number, top?: number }
 
 local _id = 0
 
@@ -426,8 +431,6 @@ end
 
 -- Global instance
 local notifier = N.new()
-
--- Public functions
 
 ---@param msg string
 ---@param level? snacks.notifier.level|number

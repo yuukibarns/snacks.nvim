@@ -42,22 +42,6 @@
 
 ## 📚 Types
 
-```lua
----@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
-```
-
-```lua
----@class snacks.notifier.ctx
----@field opts snacks.win.Config
----@field notifier snacks.notifier
----@field hl table<snacks.notifier.hl, string>
----@field ns number
-```
-
-```lua
----@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
-```
-
 Render styles:
 * compact: simple border title with message
 * fancy: similar to the default nvim-notify style
@@ -65,6 +49,10 @@ Render styles:
 ```lua
 ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
 ```
+
+### Notifications
+
+Notification options
 
 ```lua
 ---@class snacks.notifier.Notif.opts
@@ -80,6 +68,8 @@ Render styles:
 ---@field style? snacks.notifier.style
 ```
 
+Notification object
+
 ```lua
 ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
 ---@field msg string
@@ -94,7 +84,23 @@ Render styles:
 ---@field layout? { width: number, height: number, top?: number }
 ```
 
-Public functions
+### Rendering
+
+```lua
+---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
+```
+
+```lua
+---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
+```
+
+```lua
+---@class snacks.notifier.ctx
+---@field opts snacks.win.Config
+---@field notifier snacks.notifier
+---@field hl table<snacks.notifier.hl, string>
+---@field ns number
+```
 
 ## 📦 Module
 
