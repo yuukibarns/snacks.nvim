@@ -64,6 +64,7 @@ Snacks.config.style("notification", {
     winblend = 5,
     wrap = false,
   },
+  bo = { filetype = "markdown" },
 })
 
 ---@class snacks.notifier.Config
@@ -308,7 +309,7 @@ function N:render(notif)
       style = "notification",
       enter = false,
       backdrop = false,
-      bo = { filetype = notif.ft or "markdown", modifiable = false },
+      bo = { filetype = notif.ft },
       noautocmd = true,
       wo = {
         winhighlight = table.concat({
