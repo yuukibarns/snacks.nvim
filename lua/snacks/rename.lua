@@ -1,11 +1,6 @@
 ---@hide
 ---@class snacks.rename
----@overload fun()
-local M = setmetatable({}, {
-  __call = function(t)
-    return t.rename()
-  end,
-})
+local M = {}
 
 local uv = vim.uv or vim.loop
 
@@ -14,7 +9,7 @@ function M.realpath(path)
   return vim.fs.normalize(uv.fs_realpath(path) or path)
 end
 
-function M.rename()
+function M.rename_file()
   local buf = vim.api.nvim_get_current_buf()
   local old = assert(M.realpath(vim.api.nvim_buf_get_name(buf)))
   local root = assert(M.realpath(uv.cwd() or "."))
@@ -35,7 +30,7 @@ function M.rename()
     end
     new = vim.fs.normalize(root .. "/" .. new)
     vim.fn.mkdir(vim.fs.dirname(new), "p")
-    M.on_rename(old, new, function()
+    M.on_rename_file(old, new, function()
       vim.fn.rename(old, new)
       vim.cmd.edit(new)
       vim.api.nvim_buf_delete(buf, { force = true })
@@ -47,7 +42,7 @@ end
 ---@param from string
 ---@param to string
 ---@param rename? fun()
-function M.on_rename(from, to, rename)
+function M.on_rename_file(from, to, rename)
   local changes = { files = { {
     oldUri = vim.uri_from_fname(from),
     newUri = vim.uri_from_fname(to),

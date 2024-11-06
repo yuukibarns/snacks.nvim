@@ -4,20 +4,13 @@
 
 ## 📦 Module
 
-### `Snacks.rename()`
-
-```lua
----@type fun()
-Snacks.rename()
-```
-
-### `Snacks.rename.on_rename()`
+### `Snacks.rename.on_rename_file()`
 
 ```lua
 ---@param from string
 ---@param to string
 ---@param rename? fun()
-Snacks.rename.on_rename(from, to, rename)
+Snacks.rename.on_rename_file(from, to, rename)
 ```
 
 ### `Snacks.rename.realpath()`
@@ -27,8 +20,8 @@ Snacks.rename.on_rename(from, to, rename)
 Snacks.rename.realpath(path)
 ```
 
-### `Snacks.rename.rename()`
+### `Snacks.rename.rename_file()`
 
 ```lua
-Snacks.rename.rename()
+Snacks.rename.rename_file()
 ```

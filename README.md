@@ -18,7 +18,7 @@ A collection of small QoL plugins for Neovim.
 | [notify](https://github.com/folke/snacks.nvim/blob/main/docs/notify.md)             | Utility functions to work with Neovim's `vim.notify`                                                         |       |
 | [notifier](https://github.com/folke/snacks.nvim/blob/main/docs/notifier.md)         | Better and prettier `vim.notify`                                                                             |  ‼️   |
 | [quickfile](https://github.com/folke/snacks.nvim/blob/main/docs/quickfile.md)       | When doing `nvim somefile.txt`, it will render the file as quickly as possible, before loading your plugins. |  ‼️   |
-| [rename](https://github.com/folke/snacks.nvim/blob/main/docs/rename.md)             | LSP-integrated renaming with support for plugins like neo-tree, nvim-tree, oil, mini.files                   |       |
+| [rename](https://github.com/folke/snacks.nvim/blob/main/docs/rename.md)             | LSP-integrated file renaming with support for plugins like neo-tree, nvim-tree, oil, mini.files              |       |
 | [statuscolumn](https://github.com/folke/snacks.nvim/blob/main/docs/statuscolumn.md) | Pretty statuscolumn                                                                                          |  ‼️   |
 | [terminal](https://github.com/folke/snacks.nvim/blob/main/docs/terminal.md)         | Create and toggle floating/split terminals                                                                   |       |
 | [toggle](https://github.com/folke/snacks.nvim/blob/main/docs/toggle.md)             | Toggle keymaps integrated with which-key icons / colors                                                      |       |
