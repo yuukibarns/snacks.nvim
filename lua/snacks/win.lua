@@ -86,6 +86,7 @@ local minimal = {
     cursorlineopt = "both",
     fillchars = "eob: ,lastline:…",
     list = false,
+    listchars = "extends:…",
     number = false,
     relativenumber = false,
     signcolumn = "no",
@@ -320,6 +321,23 @@ function M:show()
   self:drop()
 
   return self
+end
+
+function M:add_padding()
+  if not self:buf_valid() then
+    return
+  end
+  local ns = vim.api.nvim_create_namespace("snacks_win_padding")
+  vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
+  self.opts.wo.list = true
+  self.opts.wo.showbreak = " "
+  self.opts.wo.listchars = ("eol: ," .. (self.opts.wo.listchars or "")):gsub(",$", "")
+  for l = 1, vim.api.nvim_buf_line_count(self.buf) do
+    vim.api.nvim_buf_set_extmark(self.buf, ns, l - 1, 0, {
+      virt_text = { { " " } },
+      virt_text_pos = "inline",
+    })
+  end
 end
 
 function M:is_floating()

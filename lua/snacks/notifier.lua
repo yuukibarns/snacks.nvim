@@ -5,18 +5,13 @@
 local M = {}
 
 Snacks.config.view("notification", {
-  backdrop = false,
   win = {
     border = "rounded",
     zindex = 100,
-    noautocmd = true,
   },
   wo = {
     winblend = 5,
-    wrap = true,
-    listchars = "eol: ,extends:…",
-    list = true,
-    showbreak = " ",
+    wrap = false,
   },
 })
 
@@ -75,6 +70,7 @@ local defaults = {
   timeout = 3000,
   width = { min = 40, max = 0.4 },
   height = { min = 1, max = 0.6 },
+  padding = false, -- add 1 cell of left/right padding to the notification window
   sort = { "level", "added" }, -- sort by level and time
   icons = {
     error = " ",
@@ -284,6 +280,7 @@ function M:render(notif)
       enter = false,
       backdrop = false,
       bo = { filetype = notif.ft or "markdown" },
+      win = { noautocmd = true },
       wo = {
         winhighlight = table.concat({
           "Normal:" .. hl("", notif.level),
@@ -301,6 +298,7 @@ function M:render(notif)
     })
   notif.win = win
   local buf = win:open_buf()
+  vim.api.nvim_buf_clear_namespace(buf, M.ns, 0, -1)
   local render = self:get_render(notif.style)
 
   local ctx = {
@@ -319,17 +317,10 @@ function M:render(notif)
 
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 
-  -- padding left
-  for l = 1, #lines do
-    vim.api.nvim_buf_set_extmark(win.buf, M.ns, l - 1, 0, {
-      virt_text = { { " ", ctx.hl.msg } },
-      virt_text_pos = "inline",
-    })
-  end
-
+  local pad = self.opts.padding and (win:add_padding() or 2) or 0
   local width = 0
   for _, line in ipairs(lines) do
-    width = math.max(width, vim.fn.strdisplaywidth(line) + 2)
+    width = math.max(width, vim.fn.strdisplaywidth(line) + pad)
   end
   width = dim(width, self.opts.width.min, self.opts.width.max, vim.o.columns)
 
@@ -338,7 +329,7 @@ function M:render(notif)
   if win.opts.wo.wrap then
     height = 0
     for _, line in ipairs(lines) do
-      height = height + math.ceil((vim.fn.strdisplaywidth(line) + 2) / width)
+      height = height + math.ceil((vim.fn.strdisplaywidth(line) + pad) / width)
     end
   end
   height = dim(height, self.opts.height.min, self.opts.height.max, vim.o.lines)
