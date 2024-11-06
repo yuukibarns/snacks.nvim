@@ -1,5 +1,7 @@
 # 🍿 notifier
 
+![image](https://github.com/user-attachments/assets/b89eb279-08fb-40b2-9330-9a77014b9389)
+
 <!-- docgen -->
 
 ## ⚙️ Config
