@@ -23,7 +23,6 @@ local M = setmetatable({}, {
 ---@field title? string
 ---@field icon? string
 ---@field timeout? number
----@field once? boolean
 ---@field ft? string
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style
@@ -325,6 +324,7 @@ function N:render(notif)
       },
     })
   notif.win = win
+  ---@diagnostic disable-next-line: invisible
   local buf = win:open_buf()
   vim.api.nvim_buf_clear_namespace(buf, N.ns, 0, -1)
   local render = self:get_render(notif.style)
@@ -430,6 +430,7 @@ function N:layout()
       if not notif.win or notif.dirty or not notif.win:buf_valid() then
         notif.dirty = false
         self:render(notif)
+        ---@diagnostic disable-next-line: assign-type-mismatch
         notif.layout = notif.win:size()
       end
       notif.layout.top = find(notif.layout.height, notif.layout.top)

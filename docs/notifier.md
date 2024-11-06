@@ -65,7 +65,6 @@ Notification options
 ---@field title? string
 ---@field icon? string
 ---@field timeout? number
----@field once? boolean
 ---@field ft? string
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style

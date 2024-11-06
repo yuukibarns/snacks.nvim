@@ -117,10 +117,11 @@ local win_opts = {
   "zindex",
 }
 
-vim.api.nvim_set_hl(0, "SnackFloatBackdrop", { bg = "#000000", default = true })
+vim.api.nvim_set_hl(0, "SnacksWinBackdrop", { bg = "#000000", default = true })
 
 local id = 0
 
+---@private
 ---@param ... snacks.win.Config|string
 ---@return snacks.win.Config
 function M.resolve(...)
@@ -393,12 +394,12 @@ function M:drop()
       focusable = false,
       zindex = self.opts.zindex - 1,
       wo = {
-        winhighlight = "Normal:SnackFloatBackdrop",
+        winhighlight = "Normal:SnacksWinBackdrop",
         winblend = self.opts.backdrop,
       },
       bo = {
         buftype = "nofile",
-        filetype = "snack_float_backdrop",
+        filetype = "snacks_win_backdrop",
       },
     })
     vim.api.nvim_create_autocmd("WinClosed", {

@@ -15,7 +15,7 @@ Table of Contents                            *snacks-notify-table-of-contents*
 1. Types                                                 *snacks-notify-types*
 
 >lua
-    ---@alias snacks.notify.Opts {level?: number, title?: string, once?: boolean, ft?: string}
+    ---@alias snacks.notify.Opts snacks.notifier.Notif.opts|{once?: boolean}
 <
 
 

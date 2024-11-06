@@ -7,6 +7,8 @@ Table of Contents                             *snacks-words-table-of-contents*
 2. Module                                                |snacks-words-module|
   - Snacks.words.is_enabled()  |snacks-words-module-snacks.words.is_enabled()|
   - Snacks.words.jump()              |snacks-words-module-snacks.words.jump()|
+Auto-show LSP references and quickly navigate between them
+
 
 ==============================================================================
 1. Config                                                *snacks-words-config*

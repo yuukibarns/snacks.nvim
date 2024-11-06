@@ -4,6 +4,9 @@
 Table of Contents                         *snacks-quickfile-table-of-contents*
 
 1. Config                                            |snacks-quickfile-config|
+When doing `nvim somefile.txt`, it will render the file as quickly as possible,
+before loading your plugins.
+
 
 ==============================================================================
 1. Config                                            *snacks-quickfile-config*

@@ -1,5 +1,24 @@
 # 🍿 win
 
+Easily create and manage floating windows or splits
+
+## 🚀 Usage
+
+```lua
+Snacks.win({
+  file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
+  width = 0.6,
+  height = 0.6,
+  wo = {
+    spell = false,
+    wrap = false,
+    signcolumn = "yes",
+    statuscolumn = " ",
+    conceallevel = 3,
+  },
+})
+```
+
 <!-- docgen -->
 
 ## ⚙️ Config
@@ -117,14 +136,6 @@ Snacks.win()
 ---@param opts? snacks.win.Config
 ---@return snacks.win
 Snacks.win.new(opts)
-```
-
-### `Snacks.win.resolve()`
-
-```lua
----@param ... snacks.win.Config|string
----@return snacks.win.Config
-Snacks.win.resolve(...)
 ```
 
 ### `win:add_padding()`

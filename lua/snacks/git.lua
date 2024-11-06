@@ -23,7 +23,7 @@ function M.get_root(path)
 end
 
 --- Show git log for the current line.
----@param opts? snacks.terminal.Config | {count?: number}
+---@param opts? snacks.terminal.Opts | {count?: number}
 function M.blame_line(opts)
   opts = vim.tbl_deep_extend("force", {
     count = 5,

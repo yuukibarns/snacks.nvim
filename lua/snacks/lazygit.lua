@@ -20,7 +20,7 @@ local M = setmetatable({}, {
 ---@field selectedLineBgColor snacks.lazygit.Color
 ---@field unstagedChangesColor snacks.lazygit.Color
 
----@class snacks.lazygit.Config: snacks.terminal.Config
+---@class snacks.lazygit.Config: snacks.terminal.Opts
 ---@field args? string[]
 ---@field theme? snacks.lazygit.Theme
 local defaults = {

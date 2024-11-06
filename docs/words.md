@@ -1,5 +1,7 @@
 # 🍿 words
 
+Auto-show LSP references and quickly navigate between them
+
 <!-- docgen -->
 
 ## ⚙️ Config

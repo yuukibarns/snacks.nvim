@@ -24,7 +24,7 @@
 Show git log for the current line.
 
 ```lua
----@param opts? snacks.terminal.Config | {count?: number}
+---@param opts? snacks.terminal.Opts | {count?: number}
 Snacks.git.blame_line(opts)
 ```
 

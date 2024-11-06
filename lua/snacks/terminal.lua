@@ -1,7 +1,7 @@
 ---@class snacks.terminal: snacks.win
 ---@field cmd? string | string[]
----@field opts snacks.terminal.Config
----@overload fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
+---@field opts snacks.terminal.Opts
+---@overload fun(cmd?: string|string[], opts?: snacks.terminal.Opts): snacks.terminal
 local M = setmetatable({}, {
   __call = function(t, ...)
     return t.toggle(...)
@@ -9,14 +9,16 @@ local M = setmetatable({}, {
 })
 
 ---@class snacks.terminal.Config
----@field cwd? string
----@field env? table<string, string>
 ---@field win? snacks.win.Config
----@field interactive? boolean
----@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
+---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Opts) Use this to use a different terminal implementation
 local defaults = {
   win = { style = "terminal" },
 }
+
+---@class snacks.terminal.Opts: snacks.terminal.Config
+---@field cwd? string
+---@field env? table<string, string>
+---@field interactive? boolean
 
 Snacks.config.style("terminal", {
   bo = {
@@ -55,12 +57,17 @@ Snacks.config.style("terminal", {
 ---@type table<string, snacks.win>
 local terminals = {}
 
+--- Open a new terminal window.
 ---@param cmd? string | string[]
----@param opts? snacks.terminal.Config
+---@param opts? snacks.terminal.Opts
 function M.open(cmd, opts)
   local id = vim.v.count1
-  ---@type snacks.terminal.Config
-  opts = Snacks.config.get("terminal", defaults, { win = { position = cmd and "float" or "bottom" } }, opts)
+  opts = Snacks.config.get(
+    "terminal",
+    defaults --[[@as snacks.terminal.Opts]],
+    { win = { position = cmd and "float" or "bottom" } },
+    opts
+  )
   opts.win = Snacks.win.resolve("terminal", opts.win)
   opts.win.wo.winbar = opts.win.wo.winbar or (opts.win.position == "float" and "" or (id .. ": %{b:term_title}"))
 
@@ -110,8 +117,10 @@ function M.open(cmd, opts)
   return terminal
 end
 
+--- Toggle a terminal window.
+--- The terminal id is based on the `cmd`, `cwd`, `env` and `vim.v.count1` options.
 ---@param cmd? string | string[]
----@param opts? snacks.terminal.Config
+---@param opts? snacks.terminal.Opts
 function M.toggle(cmd, opts)
   opts = opts or {}
 

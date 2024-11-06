@@ -1,5 +1,7 @@
 # 🍿 toggle
 
+Toggle keymaps integrated with which-key icons / colors
+
 <!-- docgen -->
 
 ## ⚙️ Config

@@ -17,7 +17,7 @@ Table of Contents                           *snacks-lazygit-table-of-contents*
 1. Config                                              *snacks-lazygit-config*
 
 >lua
-    ---@class snacks.lazygit.Config: snacks.terminal.Config
+    ---@class snacks.lazygit.Config: snacks.terminal.Opts
     ---@field args? string[]
     ---@field theme? snacks.lazygit.Theme
     {

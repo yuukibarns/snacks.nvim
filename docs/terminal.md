@@ -1,16 +1,21 @@
 # 🍿 terminal
 
+Create and toggle terminal windows.
+
+Based on the provided options, some defaults will be set:
+
+- if no `cmd` is provided, the window will be opened in a bottom split
+- if `cmd` is provided, the window will be opened in a floating window
+- for splits, a `winbar` will be added with the terminal title
+
 <!-- docgen -->
 
 ## ⚙️ Config
 
 ```lua
 ---@class snacks.terminal.Config
----@field cwd? string
----@field env? table<string, string>
 ---@field win? snacks.win.Config
----@field interactive? boolean
----@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
+---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Opts) Use this to use a different terminal implementation
 {
   win = { style = "terminal" },
 }
@@ -56,34 +61,48 @@
 }
 ```
 
+## 📚 Types
+
+```lua
+---@class snacks.terminal.Opts: snacks.terminal.Config
+---@field cwd? string
+---@field env? table<string, string>
+---@field interactive? boolean
+```
+
 ## 📦 Module
 
 ```lua
 ---@class snacks.terminal: snacks.win
 ---@field cmd? string | string[]
----@field opts snacks.terminal.Config
+---@field opts snacks.terminal.Opts
 Snacks.terminal = {}
 ```
 
 ### `Snacks.terminal()`
 
 ```lua
----@type fun(cmd?: string|string[], opts?: snacks.terminal.Config): snacks.terminal
+---@type fun(cmd?: string|string[], opts?: snacks.terminal.Opts): snacks.terminal
 Snacks.terminal()
 ```
 
 ### `Snacks.terminal.open()`
 
+Open a new terminal window.
+
 ```lua
 ---@param cmd? string | string[]
----@param opts? snacks.terminal.Config
+---@param opts? snacks.terminal.Opts
 Snacks.terminal.open(cmd, opts)
 ```
 
 ### `Snacks.terminal.toggle()`
 
+Toggle a terminal window.
+The terminal id is based on the `cmd`, `cwd`, `env` and `vim.v.count1` options.
+
 ```lua
 ---@param cmd? string | string[]
----@param opts? snacks.terminal.Config
+---@param opts? snacks.terminal.Opts
 Snacks.terminal.toggle(cmd, opts)
 ```

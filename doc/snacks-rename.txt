@@ -58,6 +58,8 @@ LSP-integrated file renaming with support for plugins like neo-tree.nvim
 
 SNACKS.RENAME.ON_RENAME_FILE()*snacks-rename-module-snacks.rename.on_rename_file()*
 
+Lets LSP clients know that a file has been renamed
+
 >lua
     ---@param from string
     ---@param to string

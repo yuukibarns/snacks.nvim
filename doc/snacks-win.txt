@@ -3,16 +3,16 @@
 ==============================================================================
 Table of Contents                               *snacks-win-table-of-contents*
 
-1. Config                                                  |snacks-win-config|
-2. Styles                                                  |snacks-win-styles|
+1. Usage                                                    |snacks-win-usage|
+2. Config                                                  |snacks-win-config|
+3. Styles                                                  |snacks-win-styles|
   - float                                            |snacks-win-styles-float|
   - minimal                                        |snacks-win-styles-minimal|
   - split                                            |snacks-win-styles-split|
-3. Types                                                    |snacks-win-types|
-4. Module                                                  |snacks-win-module|
+4. Types                                                    |snacks-win-types|
+5. Module                                                  |snacks-win-module|
   - Snacks.win()                              |snacks-win-module-snacks.win()|
   - Snacks.win.new()                      |snacks-win-module-snacks.win.new()|
-  - Snacks.win.resolve()              |snacks-win-module-snacks.win.resolve()|
   - win:add_padding()                    |snacks-win-module-win:add_padding()|
   - win:buf_valid()                        |snacks-win-module-win:buf_valid()|
   - win:close()                                |snacks-win-module-win:close()|
@@ -24,9 +24,30 @@ Table of Contents                               *snacks-win-table-of-contents*
   - win:update()                              |snacks-win-module-win:update()|
   - win:valid()                                |snacks-win-module-win:valid()|
   - win:win_valid()                        |snacks-win-module-win:win_valid()|
+Easily create and manage floating windows or splits
+
 
 ==============================================================================
-1. Config                                                  *snacks-win-config*
+1. Usage                                                    *snacks-win-usage*
+
+>lua
+    Snacks.win({
+      file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
+      width = 0.6,
+      height = 0.6,
+      wo = {
+        spell = false,
+        wrap = false,
+        signcolumn = "yes",
+        statuscolumn = " ",
+        conceallevel = 3,
+      },
+    })
+<
+
+
+==============================================================================
+2. Config                                                  *snacks-win-config*
 
 >lua
     ---@class snacks.win.Config: vim.api.keyset.win_config
@@ -60,7 +81,7 @@ Table of Contents                               *snacks-win-table-of-contents*
 
 
 ==============================================================================
-2. Styles                                                  *snacks-win-styles*
+3. Styles                                                  *snacks-win-styles*
 
 
 FLOAT                                                *snacks-win-styles-float*
@@ -113,7 +134,7 @@ SPLIT                                                *snacks-win-styles-split*
 
 
 ==============================================================================
-3. Types                                                    *snacks-win-types*
+4. Types                                                    *snacks-win-types*
 
 >lua
     ---@class snacks.win.Keys: vim.api.keyset.keymap
@@ -124,7 +145,7 @@ SPLIT                                                *snacks-win-styles-split*
 
 
 ==============================================================================
-4. Module                                                  *snacks-win-module*
+5. Module                                                  *snacks-win-module*
 
 >lua
     ---@class snacks.win
@@ -152,15 +173,6 @@ SNACKS.WIN.NEW()                          *snacks-win-module-snacks.win.new()*
     ---@param opts? snacks.win.Config
     ---@return snacks.win
     Snacks.win.new(opts)
-<
-
-
-SNACKS.WIN.RESOLVE()                  *snacks-win-module-snacks.win.resolve()*
-
->lua
-    ---@param ... snacks.win.Config|string
-    ---@return snacks.win.Config
-    Snacks.win.resolve(...)
 <
 
 

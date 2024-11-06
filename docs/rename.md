@@ -41,6 +41,8 @@ vim.api.nvim_create_autocmd("User", {
 
 ### `Snacks.rename.on_rename_file()`
 
+Lets LSP clients know that a file has been renamed
+
 ```lua
 ---@param from string
 ---@param to string

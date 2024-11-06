@@ -5,7 +5,7 @@
 ## ⚙️ Config
 
 ```lua
----@class snacks.lazygit.Config: snacks.terminal.Config
+---@class snacks.lazygit.Config: snacks.terminal.Opts
 ---@field args? string[]
 ---@field theme? snacks.lazygit.Theme
 {

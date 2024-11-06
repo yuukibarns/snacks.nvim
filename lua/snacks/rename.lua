@@ -41,6 +41,7 @@ function M.rename_file()
   end)
 end
 
+--- Lets LSP clients know that a file has been renamed
 ---@param from string
 ---@param to string
 ---@param rename? fun()
