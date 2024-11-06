@@ -19,11 +19,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.git
-Snacks.git = {}
-```
-
 ### `Snacks.git.blame_line()`
 
 Show git log for the current line.

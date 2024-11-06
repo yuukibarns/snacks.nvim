@@ -4,11 +4,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.rename
-Snacks.rename = {}
-```
-
 ### `Snacks.rename()`
 
 ```lua

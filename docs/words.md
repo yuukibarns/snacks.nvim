@@ -14,11 +14,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.words
-Snacks.words = {}
-```
-
 ### `Snacks.words.is_enabled()`
 
 ```lua

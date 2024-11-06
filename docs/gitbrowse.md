@@ -33,11 +33,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.gitbrowse
-Snacks.gitbrowse = {}
-```
-
 ### `Snacks.gitbrowse()`
 
 ```lua

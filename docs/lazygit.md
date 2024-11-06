@@ -58,11 +58,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.lazygit
-Snacks.lazygit = {}
-```
-
 ### `Snacks.lazygit()`
 
 ```lua

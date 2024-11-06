@@ -77,11 +77,6 @@ LAZYGIT                                        *snacks-lazygit-styles-lazygit*
 ==============================================================================
 4. Module                                              *snacks-lazygit-module*
 
->lua
-    ---@class snacks.lazygit
-    Snacks.lazygit = {}
-<
-
 
 SNACKS.LAZYGIT()                      *snacks-lazygit-module-snacks.lazygit()*
 

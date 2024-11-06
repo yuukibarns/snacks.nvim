@@ -12,11 +12,6 @@ Table of Contents                             *snacks-debug-table-of-contents*
 ==============================================================================
 1. Module                                                *snacks-debug-module*
 
->lua
-    ---@class snacks.debug
-    Snacks.debug = {}
-<
-
 
 SNACKS.DEBUG()                            *snacks-debug-module-snacks.debug()*
 

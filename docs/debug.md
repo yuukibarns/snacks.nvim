@@ -4,11 +4,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.debug
-Snacks.debug = {}
-```
-
 ### `Snacks.debug()`
 
 ```lua

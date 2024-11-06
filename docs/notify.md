@@ -10,11 +10,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.notify
-Snacks.notify = {}
-```
-
 ### `Snacks.notify()`
 
 ```lua

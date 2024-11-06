@@ -1,3 +1,4 @@
+---@hide
 ---@class snacks.rename
 ---@overload fun()
 local M = setmetatable({}, {

@@ -8,12 +8,12 @@ function M.extract(lines)
   local mod ---@type string
   local comments = {} ---@type string[]
   local types = {} ---@type string[]
-  local styles = {} ---@type table<string, string>
+  local styles = {} ---@type {name:string, opts:string}[]
 
   local style_pattern = 'Snacks%.config%.style%("([^"]+)"%s*,%s*({.-}%s*)%)'
 
   for style_name, style in code:gmatch(style_pattern) do
-    styles[style_name] = style
+    table.insert(styles, { name = style_name, opts = style })
   end
 
   ---@type {name: string, args: string, comment?: string, types?: string, type: "method"|"function"}[]
@@ -30,12 +30,14 @@ function M.extract(lines)
       else
         local t, name, args = line:match("^function M([:%.])([%w_%.]+)%((.-)%)")
         if name and args then
-          table.insert(methods, {
-            name = name,
-            args = args,
-            type = t,
-            comment = comment,
-          })
+          if not name:find("^_") then
+            table.insert(methods, {
+              name = name,
+              args = args,
+              type = t,
+              comment = comment,
+            })
+          end
         elseif #comments > 0 and line == "" then
           table.insert(types, table.concat(comments, "\n"))
         end
@@ -112,11 +114,14 @@ function M.render(name, info)
     add(M.md(info.config))
   end
 
-  if not vim.tbl_isempty(info.styles) then
+  if #info.styles > 0 then
+    table.sort(info.styles, function(a, b)
+      return a.name < b.name
+    end)
     add("## 🎨 Styles\n")
-    for style, value in pairs(info.styles) do
-      add(("### `%s`\n"):format(style))
-      add(M.md(value))
+    for _, style in pairs(info.styles) do
+      add(("### `%s`\n"):format(style.name))
+      add(M.md(style.opts))
     end
   end
 
@@ -148,8 +153,10 @@ function M.render(name, info)
       end
       return true
     end, mod_lines)
-    table.insert(mod_lines, prefix .. " = {}")
-    add(M.md(table.concat(mod_lines, "\n")))
+    if not info.mod:find("@hide") then
+      table.insert(mod_lines, prefix .. " = {}")
+      add(M.md(table.concat(mod_lines, "\n")))
+    end
   end
 
   table.sort(info.methods, function(a, b)

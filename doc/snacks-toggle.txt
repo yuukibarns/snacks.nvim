@@ -13,7 +13,6 @@ Table of Contents                            *snacks-toggle-table-of-contents*
   - Snacks.toggle.new()             |snacks-toggle-module-snacks.toggle.new()|
   - Snacks.toggle.option()       |snacks-toggle-module-snacks.toggle.option()|
   - Snacks.toggle.treesitter()|snacks-toggle-module-snacks.toggle.treesitter()|
-  - toggle:_wk()                           |snacks-toggle-module-toggle:_wk()|
   - toggle:get()                           |snacks-toggle-module-toggle:get()|
   - toggle:map()                           |snacks-toggle-module-toggle:map()|
   - toggle:set()                           |snacks-toggle-module-toggle:set()|
@@ -118,13 +117,6 @@ SNACKS.TOGGLE.TREESITTER()   *snacks-toggle-module-snacks.toggle.treesitter()*
 >lua
     ---@param opts? snacks.toggle.Config
     Snacks.toggle.treesitter(opts)
-<
-
-
-TOGGLE:_WK()                               *snacks-toggle-module-toggle:_wk()*
-
->lua
-    toggle:_wk(keys, mode)
 <
 
 

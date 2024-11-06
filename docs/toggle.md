@@ -91,12 +91,6 @@ Snacks.toggle.option(option, opts)
 Snacks.toggle.treesitter(opts)
 ```
 
-### `toggle:_wk()`
-
-```lua
-toggle:_wk(keys, mode)
-```
-
 ### `toggle:get()`
 
 ```lua

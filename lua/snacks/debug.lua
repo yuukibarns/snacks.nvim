@@ -1,4 +1,5 @@
 ---@class snacks.debug
+---@hide
 ---@overload fun(...)
 local M = setmetatable({}, {
   __call = function(t, ...)

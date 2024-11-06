@@ -1,4 +1,5 @@
 ---@class snacks.gitbrowse
+---@hide
 ---@overload fun(opts?: snacks.gitbrowse.Config)
 local M = setmetatable({}, {
   __call = function(t, ...)

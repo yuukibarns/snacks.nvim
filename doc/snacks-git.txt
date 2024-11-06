@@ -30,11 +30,6 @@ BLAME_LINE                                      *snacks-git-styles-blame_line*
 ==============================================================================
 2. Module                                                  *snacks-git-module*
 
->lua
-    ---@class snacks.git
-    Snacks.git = {}
-<
-
 
 SNACKS.GIT.BLAME_LINE()            *snacks-git-module-snacks.git.blame_line()*
 

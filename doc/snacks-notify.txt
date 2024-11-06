@@ -22,11 +22,6 @@ Table of Contents                            *snacks-notify-table-of-contents*
 ==============================================================================
 2. Module                                               *snacks-notify-module*
 
->lua
-    ---@class snacks.notify
-    Snacks.notify = {}
-<
-
 
 SNACKS.NOTIFY()                         *snacks-notify-module-snacks.notify()*
 

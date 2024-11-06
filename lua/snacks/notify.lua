@@ -1,3 +1,4 @@
+---@hide
 ---@class snacks.notify
 ---@overload fun(msg: string|string[], opts?: snacks.notify.Opts)
 local M = setmetatable({}, {

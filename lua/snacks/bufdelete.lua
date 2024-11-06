@@ -1,4 +1,5 @@
 ---@class snacks.bufdelete
+---@hide
 ---@overload fun(buf?: number)
 local M = setmetatable({}, {
   __call = function(t, ...)

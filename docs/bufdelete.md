@@ -4,11 +4,6 @@
 
 ## 📦 Module
 
-```lua
----@class snacks.bufdelete
-Snacks.bufdelete = {}
-```
-
 ### `Snacks.bufdelete()`
 
 ```lua
