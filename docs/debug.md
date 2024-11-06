@@ -23,6 +23,8 @@ What this does:
   backtrace.
 - Override Neovim's `vim.print`, which is also used by `:= {something = 123}`
 
+![image](https://github.com/user-attachments/assets/0517aed7-fbd0-42ee-8058-c213410d80a7)
+
 <!-- docgen -->
 
 ## 📦 Module
