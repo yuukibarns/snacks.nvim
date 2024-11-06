@@ -1,5 +1,10 @@
 # 🍿 bufdelete
 
+Delete buffers without disrupting window layout.
+
+If the buffer you want to close has changes,
+a prompt will be shown to save or discard.
+
 <!-- docgen -->
 
 ## 📦 Module
