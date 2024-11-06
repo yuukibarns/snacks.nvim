@@ -6,7 +6,7 @@ Table of Contents                              *snacks-init-table-of-contents*
 1. Config                                                 |snacks-init-config|
 2. Module                                                 |snacks-init-module|
   - Snacks.config.get()               |snacks-init-module-snacks.config.get()|
-  - Snacks.config.view()             |snacks-init-module-snacks.config.view()|
+  - Snacks.config.style()           |snacks-init-module-snacks.config.style()|
   - Snacks.setup()                         |snacks-init-module-snacks.setup()|
 
 ==============================================================================
@@ -22,11 +22,11 @@ Table of Contents                              *snacks-init-table-of-contents*
     ---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
     ---@field terminal? snacks.terminal.Config
     ---@field toggle? snacks.toggle.Config
-    ---@field views? table<string, snacks.win.Config>
+    ---@field styles? table<string, snacks.win.Config>
     ---@field win? snacks.win.Config
     ---@field words? snacks.words.Config
     {
-      views = {},
+      styles = {},
       bigfile = { enabled = true },
       notifier = { enabled = true },
       quickfile = { enabled = true },
@@ -73,14 +73,14 @@ SNACKS.CONFIG.GET()                   *snacks-init-module-snacks.config.get()*
 <
 
 
-SNACKS.CONFIG.VIEW()                 *snacks-init-module-snacks.config.view()*
+SNACKS.CONFIG.STYLE()               *snacks-init-module-snacks.config.style()*
 
-Register a new window view config.
+Register a new window style config.
 
 >lua
     ---@param name string
     ---@param defaults snacks.win.Config
-    Snacks.config.view(name, defaults)
+    Snacks.config.style(name, defaults)
 <
 
 

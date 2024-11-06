@@ -5,8 +5,10 @@
 ## ⚙️ Config
 
 ```lua
----@class snacks.win.Config
----@field view? string merges with config from `Snacks.config.views[view]`
+---@class snacks.win.Config: vim.api.keyset.win_config
+---@field style? string merges with config from `Snacks.config.views[view]`
+---@field show? boolean Show the window immediately (default: true)
+---@field minimal? boolean
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
 ---@field file? string
@@ -19,11 +21,10 @@
 ---@field on_buf? fun(self: snacks.win)
 ---@field on_win? fun(self: snacks.win)
 {
+  show = true,
+  relative = "editor",
   position = "float",
-  win = {
-    relative = "editor",
-    style = "minimal",
-  },
+  minimal = true,
   wo = {
     winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
   },
@@ -31,6 +32,54 @@
   keys = {
     q = "close",
   },
+}
+```
+
+## 🎨 Styles
+
+### `minimal`
+
+```lua
+{
+  wo = {
+    cursorcolumn = false,
+    cursorline = false,
+    cursorlineopt = "both",
+    fillchars = "eob: ,lastline:…",
+    list = false,
+    listchars = "extends:…,tab:  ",
+    number = false,
+    relativenumber = false,
+    signcolumn = "no",
+    spell = false,
+    winbar = "",
+    statuscolumn = "",
+    winfixheight = true,
+    winfixwidth = true,
+    wrap = false,
+  },
+}
+```
+
+### `float`
+
+```lua
+{
+  position = "float",
+  backdrop = 60,
+  height = 0.9,
+  width = 0.9,
+  zindex = 50,
+}
+```
+
+### `split`
+
+```lua
+{
+  position = "bottom",
+  height = 0.4,
+  width = 0.4,
 }
 ```
 
@@ -66,7 +115,7 @@ Snacks.win()
 ### `Snacks.win.new()`
 
 ```lua
----@param opts? snacks.win.Config | { show?: boolean }
+---@param opts? snacks.win.Config
 ---@return snacks.win
 Snacks.win.new(opts)
 ```
@@ -74,9 +123,15 @@ Snacks.win.new(opts)
 ### `Snacks.win.resolve()`
 
 ```lua
----@param opts? snacks.win.Config
+---@param ... snacks.win.Config|string
 ---@return snacks.win.Config
-Snacks.win.resolve(opts)
+Snacks.win.resolve(...)
+```
+
+### `win:add_padding()`
+
+```lua
+win:add_padding()
 ```
 
 ### `win:buf_valid()`

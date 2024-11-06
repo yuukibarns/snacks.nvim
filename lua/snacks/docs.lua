@@ -8,6 +8,13 @@ function M.extract(lines)
   local mod ---@type string
   local comments = {} ---@type string[]
   local types = {} ---@type string[]
+  local styles = {} ---@type table<string, string>
+
+  local style_pattern = 'Snacks%.config%.style%("([^"]+)"%s*,%s*({.-}%s*)%)'
+
+  for style_name, style in code:gmatch(style_pattern) do
+    styles[style_name] = style
+  end
 
   ---@type {name: string, args: string, comment?: string, types?: string, type: "method"|"function"}[]
   local methods = {}
@@ -46,8 +53,9 @@ function M.extract(lines)
     mod = mod,
     methods = methods,
     types = types,
+    styles = styles,
   }
-  return private and { config = config, methods = {}, types = {} } or ret
+  return private and { config = config, methods = {}, types = {}, styles = styles } or ret
 end
 
 ---@param tag string
@@ -102,6 +110,14 @@ function M.render(name, info)
   if info.config then
     add("## ⚙️ Config\n")
     add(M.md(info.config))
+  end
+
+  if not vim.tbl_isempty(info.styles) then
+    add("## 🎨 Styles\n")
+    for style, value in pairs(info.styles) do
+      add(("### `%s`\n"):format(style))
+      add(M.md(value))
+    end
   end
 
   if #info.types > 0 then
@@ -184,7 +200,7 @@ function M.write(name, lines)
   vim.fn.writefile(top, path)
 end
 
-function M.build()
+function M._build()
   local skip = { "docs" }
   for file, t in vim.fs.dir("lua/snacks", { depth = 1 }) do
     local name = vim.fn.fnamemodify(file, ":t:r")
@@ -205,6 +221,14 @@ function M.build()
     end
   end
   vim.cmd.checktime()
+end
+
+function M.build()
+  local ok, err = pcall(M._build)
+  if not ok then
+    vim.api.nvim_err_writeln(err)
+    os.exit(1)
+  end
 end
 
 return M

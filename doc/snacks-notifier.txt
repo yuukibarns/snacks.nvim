@@ -4,8 +4,10 @@
 Table of Contents                          *snacks-notifier-table-of-contents*
 
 1. Config                                             |snacks-notifier-config|
-2. Types                                               |snacks-notifier-types|
-3. Module                                             |snacks-notifier-module|
+2. Styles                                             |snacks-notifier-styles|
+  - notification                         |snacks-notifier-styles-notification|
+3. Types                                               |snacks-notifier-types|
+4. Module                                             |snacks-notifier-module|
   - Snacks.notifier.new()       |snacks-notifier-module-snacks.notifier.new()|
   - notifier:add()                     |snacks-notifier-module-notifier:add()|
   - notifier:get_render()       |snacks-notifier-module-notifier:get_render()|
@@ -28,6 +30,7 @@ Table of Contents                          *snacks-notifier-table-of-contents*
       timeout = 3000,
       width = { min = 40, max = 0.4 },
       height = { min = 1, max = 0.6 },
+      padding = true, -- add 1 cell of left/right padding to the notification window
       sort = { "level", "added" }, -- sort by level and time
       icons = {
         error = " ",
@@ -43,7 +46,25 @@ Table of Contents                          *snacks-notifier-table-of-contents*
 
 
 ==============================================================================
-2. Types                                               *snacks-notifier-types*
+2. Styles                                             *snacks-notifier-styles*
+
+
+NOTIFICATION                             *snacks-notifier-styles-notification*
+
+>lua
+    {
+      border = "rounded",
+      zindex = 100,
+      wo = {
+        winblend = 5,
+        wrap = false,
+      },
+    }
+<
+
+
+==============================================================================
+3. Types                                               *snacks-notifier-types*
 
 >lua
     ---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
@@ -98,7 +119,7 @@ default nvim-notify style
 
 
 ==============================================================================
-3. Module                                             *snacks-notifier-module*
+4. Module                                             *snacks-notifier-module*
 
 >lua
     ---@class snacks.notifier

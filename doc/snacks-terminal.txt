@@ -4,7 +4,9 @@
 Table of Contents                          *snacks-terminal-table-of-contents*
 
 1. Config                                             |snacks-terminal-config|
-2. Module                                             |snacks-terminal-module|
+2. Styles                                             |snacks-terminal-styles|
+  - terminal                                 |snacks-terminal-styles-terminal|
+3. Module                                             |snacks-terminal-module|
   - Snacks.terminal()               |snacks-terminal-module-snacks.terminal()|
   - Snacks.terminal.open()     |snacks-terminal-module-snacks.terminal.open()|
   - Snacks.terminal.toggle() |snacks-terminal-module-snacks.terminal.toggle()|
@@ -20,35 +22,48 @@ Table of Contents                          *snacks-terminal-table-of-contents*
     ---@field interactive? boolean
     ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
     {
-      win = {
-        bo = {
-          filetype = "snacks_terminal",
-        },
-        wo = {},
-        keys = {
-          gf = function(self)
-            local f = vim.fn.findfile(vim.fn.expand("<cfile>"))
-            if f ~= "" then
-              vim.cmd("close")
-              vim.cmd("e " .. f)
+      win = { style = "terminal" },
+    }
+<
+
+
+==============================================================================
+2. Styles                                             *snacks-terminal-styles*
+
+
+TERMINAL                                     *snacks-terminal-styles-terminal*
+
+>lua
+    {
+      bo = {
+        filetype = "snacks_terminal",
+      },
+      wo = {},
+      keys = {
+        gf = function(self)
+          local f = vim.fn.findfile(vim.fn.expand("<cfile>"))
+          if f == "" then
+            Snacks.notify.warn("No file under cursor")
+          else
+            self:close()
+            vim.cmd("e " .. f)
+          end
+        end,
+        term_normal = {
+          "<esc>",
+          function(self)
+            self.esc_timer = self.esc_timer or (vim.uv or vim.loop).new_timer()
+            if self.esc_timer:is_active() then
+              self.esc_timer:stop()
+              vim.cmd("stopinsert")
+            else
+              self.esc_timer:start(200, 0, function() end)
+              return "<esc>"
             end
           end,
-          term_normal = {
-            "<esc>",
-            function(self)
-              self.esc_timer = self.esc_timer or (vim.uv or vim.loop).new_timer()
-              if self.esc_timer:is_active() then
-                self.esc_timer:stop()
-                vim.cmd("stopinsert")
-              else
-                self.esc_timer:start(200, 0, function() end)
-                return "<esc>"
-              end
-            end,
-            mode = "t",
-            expr = true,
-            desc = "Double escape to normal mode",
-          },
+          mode = "t",
+          expr = true,
+          desc = "Double escape to normal mode",
         },
       },
     }
@@ -56,7 +71,7 @@ Table of Contents                          *snacks-terminal-table-of-contents*
 
 
 ==============================================================================
-2. Module                                             *snacks-terminal-module*
+3. Module                                             *snacks-terminal-module*
 
 >lua
     ---@class snacks.terminal: snacks.win

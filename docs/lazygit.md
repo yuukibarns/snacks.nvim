@@ -24,9 +24,17 @@
     unstagedChangesColor = { fg = "DiagnosticError" },
   },
   win = {
-    view = "lazygit",
+    style = "lazygit",
   },
 }
+```
+
+## 🎨 Styles
+
+### `lazygit`
+
+```lua
+{}
 ```
 
 ## 📚 Types

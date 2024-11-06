@@ -11,6 +11,7 @@
   timeout = 3000,
   width = { min = 40, max = 0.4 },
   height = { min = 1, max = 0.6 },
+  padding = true, -- add 1 cell of left/right padding to the notification window
   sort = { "level", "added" }, -- sort by level and time
   icons = {
     error = " ",
@@ -21,6 +22,21 @@
   },
   ---@type snacks.notifier.style
   style = "compact",
+}
+```
+
+## 🎨 Styles
+
+### `notification`
+
+```lua
+{
+  border = "rounded",
+  zindex = 100,
+  wo = {
+    winblend = 5,
+    wrap = false,
+  },
 }
 ```
 

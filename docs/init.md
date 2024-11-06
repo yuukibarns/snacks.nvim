@@ -14,11 +14,11 @@
 ---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
 ---@field terminal? snacks.terminal.Config
 ---@field toggle? snacks.toggle.Config
----@field views? table<string, snacks.win.Config>
+---@field styles? table<string, snacks.win.Config>
 ---@field win? snacks.win.Config
 ---@field words? snacks.words.Config
 {
-  views = {},
+  styles = {},
   bigfile = { enabled = true },
   notifier = { enabled = true },
   quickfile = { enabled = true },
@@ -61,14 +61,14 @@ Snacks = {}
 Snacks.config.get(snack, defaults, ...)
 ```
 
-### `Snacks.config.view()`
+### `Snacks.config.style()`
 
-Register a new window view config.
+Register a new window style config.
 
 ```lua
 ---@param name string
 ---@param defaults snacks.win.Config
-Snacks.config.view(name, defaults)
+Snacks.config.style(name, defaults)
 ```
 
 ### `Snacks.setup()`

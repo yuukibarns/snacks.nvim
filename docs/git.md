@@ -2,6 +2,21 @@
 
 <!-- docgen -->
 
+## 🎨 Styles
+
+### `blame_line`
+
+```lua
+{
+  width = 0.6,
+  height = 0.6,
+  border = "rounded",
+  title = " Git Blame ",
+  title_pos = "center",
+  bo = { filetype = "git" },
+}
+```
+
 ## 📦 Module
 
 ```lua

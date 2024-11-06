@@ -80,11 +80,11 @@ Please refer to the readme of each plugin for their specific configuration.
 ---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
 ---@field terminal? snacks.terminal.Config
 ---@field toggle? snacks.toggle.Config
----@field views? table<string, snacks.win.Config>
+---@field styles? table<string, snacks.win.Config>
 ---@field win? snacks.win.Config
 ---@field words? snacks.words.Config
 {
-  views = {},
+  styles = {},
   bigfile = { enabled = true },
   notifier = { enabled = true },
   quickfile = { enabled = true },
@@ -135,7 +135,8 @@ See the example below for how to configure `snacks.nvim`.
       function()
         Snacks.win({
           file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
-          win = { width = 0.6, height = 0.6 },
+          width = 0.6,
+          height = 0.6,
           wo = {
             spell = false,
             wrap = false,

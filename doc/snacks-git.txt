@@ -3,12 +3,32 @@
 ==============================================================================
 Table of Contents                               *snacks-git-table-of-contents*
 
-1. Module                                                  |snacks-git-module|
+1. Styles                                                  |snacks-git-styles|
+  - blame_line                                  |snacks-git-styles-blame_line|
+2. Module                                                  |snacks-git-module|
   - Snacks.git.blame_line()        |snacks-git-module-snacks.git.blame_line()|
   - Snacks.git.get_root()            |snacks-git-module-snacks.git.get_root()|
 
 ==============================================================================
-1. Module                                                  *snacks-git-module*
+1. Styles                                                  *snacks-git-styles*
+
+
+BLAME_LINE                                      *snacks-git-styles-blame_line*
+
+>lua
+    {
+      width = 0.6,
+      height = 0.6,
+      border = "rounded",
+      title = " Git Blame ",
+      title_pos = "center",
+      bo = { filetype = "git" },
+    }
+<
+
+
+==============================================================================
+2. Module                                                  *snacks-git-module*
 
 >lua
     ---@class snacks.git

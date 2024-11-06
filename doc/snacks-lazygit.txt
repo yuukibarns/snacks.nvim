@@ -4,8 +4,10 @@
 Table of Contents                           *snacks-lazygit-table-of-contents*
 
 1. Config                                              |snacks-lazygit-config|
-2. Types                                                |snacks-lazygit-types|
-3. Module                                              |snacks-lazygit-module|
+2. Styles                                              |snacks-lazygit-styles|
+  - lazygit                                    |snacks-lazygit-styles-lazygit|
+3. Types                                                |snacks-lazygit-types|
+4. Module                                              |snacks-lazygit-module|
   - Snacks.lazygit()                  |snacks-lazygit-module-snacks.lazygit()|
   - Snacks.lazygit.log()          |snacks-lazygit-module-snacks.lazygit.log()|
   - Snacks.lazygit.log_file()|snacks-lazygit-module-snacks.lazygit.log_file()|
@@ -34,14 +36,25 @@ Table of Contents                           *snacks-lazygit-table-of-contents*
         unstagedChangesColor = { fg = "DiagnosticError" },
       },
       win = {
-        view = "lazygit",
+        style = "lazygit",
       },
     }
 <
 
 
 ==============================================================================
-2. Types                                                *snacks-lazygit-types*
+2. Styles                                              *snacks-lazygit-styles*
+
+
+LAZYGIT                                        *snacks-lazygit-styles-lazygit*
+
+>lua
+    {}
+<
+
+
+==============================================================================
+3. Types                                                *snacks-lazygit-types*
 
 >lua
     ---@alias snacks.lazygit.Color {fg?:string, bg?:string, bold?:boolean}
@@ -62,7 +75,7 @@ Table of Contents                           *snacks-lazygit-table-of-contents*
 
 
 ==============================================================================
-3. Module                                              *snacks-lazygit-module*
+4. Module                                              *snacks-lazygit-module*
 
 >lua
     ---@class snacks.lazygit
