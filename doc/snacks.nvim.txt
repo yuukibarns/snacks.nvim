@@ -20,61 +20,52 @@ A collection of small QoL plugins for Neovim.
 
 FEATURES                                    *snacks.nvim-snacks.nvim-features*
 
-  ------------------------------------------------------------------------
-  Module                Description                     Readme
-  --------------------- ------------------------------- ------------------
-  bigfile               Deal with big files ( requires  README
-                        setup)                          
+  ------------------------------------------------------------------------------
+  Snack                          Description                              Setup
+  ------------------------------ --------------------------------------- -------
+  bigfile                        Deal with big files                     
 
-  bufdelete             Delete buffers without          README
-                        disrupting window layout        
+  bufdelete                      Deletebuffers without disrupting window 
+                                 layout                                  
 
-  debug                 Pretty inspect & backtraces for README
-                        debugging                       
+  debug                          Pretty inspect & backtraces for         
+                                 debugging                               
 
-  git                   Useful functions for Git        README
+  git                            Useful functions for Git                
 
-  gitbrowse             Open the repo of the active     README
-                        file in the browser (e.g.,      
-                        GitHub)                         
+  gitbrowse                      Open the repo of the active file in the 
+                                 browser (e.g., GitHub)                  
 
-  lazygit               Open LazyGit in a float,        README
-                        auto-configure colorscheme and  
-                        integration with Neovim         
+  lazygit                        Open LazyGit in a float, auto-configure 
+                                 colorscheme and integration with Neovim 
 
-  notify                Utility functions to work with  README
-                        Neovim’s vim.notify             
+  notify                         Utility functions to work with Neovim’s 
+                                 vim.notify                              
 
-  notifier              Better and prettier vim.notify  README
-                        ( requires setup)               
+  notifier                       Better and prettier vim.notify          
 
-  quickfile             When doing nvim somefile.txt,   README
-                        it will render the file as      
-                        quickly as possible, before     
-                        loading your plugins. (         
-                        requires setup)                 
+  quickfile                      Whendoing nvim somefile.txt, it will    
+                                 render the file as quickly as possible, 
+                                 before loading your plugins.            
 
-  rename                LSP-integrated renaming with    README
-                        support for plugins like        
-                        neo-tree, nvim-tree, oil,       
-                        mini.files                      
+  rename                         LSP-integratedrenaming with support for 
+                                 plugins like neo-tree, nvim-tree, oil,  
+                                 mini.files                              
 
-  statuscolumn          Pretty statuscolumn ( requires  README
-                        setup)                          
+  statuscolumn                   Pretty statuscolumn                     
 
-  terminal              Create and toggle               README
-                        floating/split terminals        
+  terminal                       Createand toggle floating/split         
+                                 terminals                               
 
-  toggle                Toggle keymaps integrated with  README
-                        which-key icons / colors        
+  toggle                         Toggle keymaps integrated with          
+                                 which-key icons / colors                
 
-  win                   Easily create and manage        README
-                        floating windows or splits      
+  win                            Easily create and manage floating       
+                                 windows or splits                       
 
-  words                 Auto-show LSP references and    README
-                        quickly navigate between them ( 
-                        requires setup)                 
-  ------------------------------------------------------------------------
+  words                          Auto-show LSP references and quickly    
+                                 navigate between them                   
+  ------------------------------------------------------------------------------
 
 REQUIREMENTS                            *snacks.nvim-snacks.nvim-requirements*
 

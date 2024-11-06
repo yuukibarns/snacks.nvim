@@ -37,6 +37,18 @@
 
 ## 🎨 Styles
 
+### `float`
+
+```lua
+{
+  position = "float",
+  backdrop = 60,
+  height = 0.9,
+  width = 0.9,
+  zindex = 50,
+}
+```
+
 ### `minimal`
 
 ```lua
@@ -68,18 +80,6 @@
   position = "bottom",
   height = 0.4,
   width = 0.4,
-}
-```
-
-### `float`
-
-```lua
-{
-  position = "float",
-  backdrop = 60,
-  height = 0.9,
-  width = 0.9,
-  zindex = 50,
 }
 ```
 
