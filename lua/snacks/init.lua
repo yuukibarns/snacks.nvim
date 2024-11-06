@@ -65,7 +65,7 @@ function M.config.get(snack, defaults, ...)
   for i = 1, select("#", ...) do
     local v = select(i, ...)
     if v then
-      table.insert(merge, v)
+      table.insert(merge, vim.deepcopy(v))
     end
   end
   return vim.tbl_deep_extend("force", unpack(merge))

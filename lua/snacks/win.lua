@@ -130,7 +130,7 @@ function M.resolve(...)
   local stack = { ... }
   while #stack > 0 do
     local next = table.remove(stack)
-    next = type(next) == "table" and next or Snacks.config.styles[next]
+    next = type(next) == "table" and next or vim.deepcopy(Snacks.config.styles[next])
     ---@cast next snacks.win.Config?
     if next then
       table.insert(merge, 1, next)
