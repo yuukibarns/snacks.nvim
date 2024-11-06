@@ -18,6 +18,7 @@ Snacks.win({
   },
 })
 ```
+![image](https://github.com/user-attachments/assets/250acfbd-a624-4f42-a36b-9aab316ebf64)
 
 <!-- docgen -->
 
