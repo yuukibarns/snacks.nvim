@@ -9,8 +9,9 @@ local M = setmetatable({}, {
 
 --- Render styles:
 --- * compact: simple border title with message
+--- * minimal: no border, only icon and message
 --- * fancy: similar to the default nvim-notify style
----@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
+---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"|"minimal"
 
 --- ### Notifications
 ---
@@ -43,12 +44,17 @@ local M = setmetatable({}, {
 --- ### Rendering
 ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
 
----@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
+---@class snacks.notifier.hl
+---@field title string
+---@field icon string
+---@field border string
+---@field footer string
+---@field msg string
 
 ---@class snacks.notifier.ctx
 ---@field opts snacks.win.Config
 ---@field notifier snacks.notifier
----@field hl table<snacks.notifier.hl, string>
+---@field hl snacks.notifier.hl
 ---@field ns number
 
 Snacks.config.style("notification", {
@@ -60,6 +66,27 @@ Snacks.config.style("notification", {
   },
 })
 
+---@class snacks.notifier.Config
+---@field keep? fun(notif: snacks.notifier.Notif): boolean
+local defaults = {
+  timeout = 3000, -- default timeout in ms
+  width = { min = 40, max = 0.4 },
+  height = { min = 1, max = 0.6 },
+  -- editor margin to keep free. tabline and statusline are taken into account automatically
+  margin = { top = 0, right = 1, bottom = 0 },
+  padding = true, -- add 1 cell of left/right padding to the notification window
+  sort = { "level", "added" }, -- sort by level and time
+  icons = {
+    error = " ",
+    warn = " ",
+    info = " ",
+    debug = " ",
+    trace = " ",
+  },
+  ---@type snacks.notifier.style
+  style = "compact",
+}
+
 ---@class snacks.notifier.Class
 ---@field queue snacks.notifier.Notif[]
 ---@field opts snacks.notifier.Config
@@ -70,13 +97,23 @@ N.ns = vim.api.nvim_create_namespace("snacks.notifier")
 
 ---@type table<string, snacks.notifier.render>
 N.styles = {
-  -- compact style using border title
+  -- style using border title
   compact = function(buf, notif, ctx)
     ctx.opts.title = {
       { " " .. vim.trim(notif.icon .. " " .. (notif.title or "")) .. " ", ctx.hl.title },
     }
     ctx.opts.title_pos = "center"
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(notif.msg, "\n"))
+  end,
+  minimal = function(buf, notif, ctx)
+    ctx.opts.border = "none"
+    local whl = ctx.opts.wo.winhighlight
+    ctx.opts.wo.winhighlight = whl:gsub(ctx.hl.msg, "NormalFloat")
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(notif.msg, "\n"))
+    vim.api.nvim_buf_set_extmark(buf, ctx.ns, 0, 0, {
+      virt_text = { { notif.icon, ctx.hl.icon } },
+      virt_text_pos = "right_align",
+    })
   end,
   -- similar to the default nvim-notify style
   fancy = function(buf, notif, ctx)
@@ -98,25 +135,6 @@ N.styles = {
       priority = 10,
     })
   end,
-}
-
----@class snacks.notifier.Config
----@field keep? fun(notif: snacks.notifier.Notif): boolean
-local defaults = {
-  timeout = 3000, -- default timeout in ms
-  width = { min = 40, max = 0.4 },
-  height = { min = 1, max = 0.6 },
-  padding = true, -- add 1 cell of left/right padding to the notification window
-  sort = { "level", "added" }, -- sort by level and time
-  icons = {
-    error = " ",
-    warn = " ",
-    info = " ",
-    debug = " ",
-    trace = " ",
-  },
-  ---@type snacks.notifier.style
-  style = "compact",
 }
 
 ---@alias snacks.notifier.level "trace"|"debug"|"info"|"warn"|"error"
@@ -372,6 +390,19 @@ function N:layout()
   for i = 1, vim.o.lines do
     free[i] = true
   end
+  local margin = vim.deepcopy(self.opts.margin)
+  if vim.o.tabline ~= "" then
+    margin.top = margin.top + 1
+  end
+  if vim.o.laststatus ~= 0 then
+    margin.bottom = margin.bottom + 1
+  end
+  for i = 1, margin.top do
+    free[i] = false
+  end
+  for i = vim.o.lines - margin.bottom + 1, vim.o.lines do
+    free[i] = false
+  end
   local function mark(row, height)
     for i = row, row + height - 1 do
       free[i] = false
@@ -406,8 +437,8 @@ function N:layout()
     if not skip and notif.layout.top then
       shown = shown + 1
       mark(notif.layout.top, notif.layout.height)
-      notif.win.opts.row = notif.layout.top
-      notif.win.opts.col = vim.o.columns - notif.layout.width - 1
+      notif.win.opts.row = notif.layout.top - 1
+      notif.win.opts.col = vim.o.columns - notif.layout.width - margin.right
       notif.shown = notif.shown or vim.uv.now()
       notif.win:show()
       notif.win:update()
