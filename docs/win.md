@@ -174,6 +174,12 @@ win:hide()
 win:is_floating()
 ```
 
+### `win:parent_size()`
+
+```lua
+win:parent_size()
+```
+
 ### `win:show()`
 
 ```lua
