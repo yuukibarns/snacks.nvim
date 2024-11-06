@@ -173,6 +173,12 @@ function M.new(opts)
   return self
 end
 
+function M:focus()
+  if self:valid() then
+    vim.api.nvim_set_current_win(self.win)
+  end
+end
+
 ---@param opts? { buf: boolean }
 function M:close(opts)
   opts = opts or {}
