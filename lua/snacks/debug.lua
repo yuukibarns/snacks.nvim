@@ -7,6 +7,8 @@ local M = setmetatable({}, {
   end,
 })
 
+-- Show a notification with a pretty printed dump of the object(s)
+-- with lua treesitter highlighting and the location of the caller
 function M.inspect(...)
   local len = select("#", ...) ---@type number
   local obj = { ... } ---@type unknown[]
@@ -28,6 +30,7 @@ function M.inspect(...)
   Snacks.notify.warn(vim.inspect(len == 1 and obj[1] or len > 0 and obj or nil), { title = title, ft = "lua" })
 end
 
+-- Show a notification with a pretty backtrace
 function M.backtrace()
   local trace = {}
   for level = 2, 20 do
@@ -43,6 +46,9 @@ function M.backtrace()
   Snacks.notify.warn(#trace > 0 and (table.concat(trace, "\n")) or "", { title = "Backtrace" })
 end
 
+-- Very simple function to profile a lua function.
+-- * **flush**: set to `true` to use `jit.flush` in every iteration.
+-- * **count**: defaults to 100
 ---@param fn fun()
 ---@param opts? {count?: number, flush?: boolean}
 function M.profile(fn, opts)
