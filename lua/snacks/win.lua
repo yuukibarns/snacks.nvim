@@ -28,6 +28,7 @@ local M = setmetatable({}, {
 ---@field backdrop? number|false Opacity of the backdrop (default: 60)
 ---@field wo? vim.wo window options
 ---@field bo? vim.bo buffer options
+---@field ft? string filetype to use for treesitter/syntax highlighting. Won't override existing filetype
 ---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys> Key mappings
 ---@field on_buf? fun(self: snacks.win) Callback after opening the buffer
 ---@field on_win? fun(self: snacks.win) Callback after opening the window
@@ -338,7 +339,7 @@ function M:show()
     self.opts.on_win(self)
   end
 
-  local ft = vim.bo[self.buf].filetype
+  local ft = self.opts.ft or vim.bo[self.buf].filetype
   if ft then
     local lang = ft and vim.treesitter.language.get_lang(ft)
     if lang and not vim.b[self.buf].ts_highlight and not pcall(vim.treesitter.start, self.buf, lang) then
@@ -492,8 +493,6 @@ end
 ---@private
 ---@param type "win" | "buf"
 function M:set_options(type)
-  local ei = vim.o.eventignore
-  vim.o.eventignore = "all"
   local opts = type == "win" and self.opts.wo or self.opts.bo
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(opts or {}) do
@@ -509,7 +508,6 @@ function M:set_options(type)
       )
     end
   end
-  vim.o.eventignore = ei
 end
 
 function M:buf_valid()

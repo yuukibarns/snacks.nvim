@@ -60,11 +60,12 @@ local M = setmetatable({}, {
 Snacks.config.style("notification", {
   border = "rounded",
   zindex = 100,
+  ft = "markdown",
   wo = {
     winblend = 5,
     wrap = false,
   },
-  bo = { filetype = "markdown" },
+  bo = { filetype = "snacks_notif" },
 })
 
 ---@class snacks.notifier.Config
@@ -309,7 +310,7 @@ function N:render(notif)
       style = "notification",
       enter = false,
       backdrop = false,
-      bo = { filetype = notif.ft },
+      ft = notif.ft,
       noautocmd = true,
       wo = {
         winhighlight = table.concat({

@@ -8,7 +8,7 @@ Snacks.config.style("blame_line", {
   border = "rounded",
   title = " Git Blame ",
   title_pos = "center",
-  bo = { filetype = "git" },
+  ft = "git",
 })
 
 --- Gets the git root for a buffer or path.
