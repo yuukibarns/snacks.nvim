@@ -45,7 +45,7 @@ Snacks.win({
   position = "float",
   minimal = true,
   wo = {
-    winhighlight = "Normal:SnacksNormal,NormalNC:SnacksWinBarNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
+    winhighlight = "Normal:SnacksNormal,NormalNC:SnacksNormalNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
   },
   bo = {},
   keys = {
@@ -85,8 +85,6 @@ Snacks.win({
     spell = false,
     winbar = "",
     statuscolumn = "",
-    winfixheight = true,
-    winfixwidth = true,
     wrap = false,
   },
 }
@@ -156,6 +154,12 @@ win:buf_valid()
 ```lua
 ---@param opts? { buf: boolean }
 win:close(opts)
+```
+
+### `win:focus()`
+
+```lua
+win:focus()
 ```
 
 ### `win:hide()`
