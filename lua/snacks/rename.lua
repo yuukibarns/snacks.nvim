@@ -5,14 +5,16 @@ local M = {}
 local uv = vim.uv or vim.loop
 
 ---@param path string
-function M.realpath(path)
+local function realpath(path)
   return vim.fs.normalize(uv.fs_realpath(path) or path)
 end
 
+-- Prompt for the new filename,
+-- do the rename, and trigger LSP handlers
 function M.rename_file()
   local buf = vim.api.nvim_get_current_buf()
-  local old = assert(M.realpath(vim.api.nvim_buf_get_name(buf)))
-  local root = assert(M.realpath(uv.cwd() or "."))
+  local old = assert(realpath(vim.api.nvim_buf_get_name(buf)))
+  local root = assert(realpath(uv.cwd() or "."))
 
   if old:find(root, 1, true) ~= 1 then
     root = vim.fn.fnamemodify(old, ":p:h")
