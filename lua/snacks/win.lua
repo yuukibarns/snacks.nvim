@@ -37,7 +37,7 @@ local defaults = {
   position = "float",
   minimal = true,
   wo = {
-    winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
+    winhighlight = "Normal:SnacksNormal,NormalNC:SnacksWinBarNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
   },
   bo = {},
   keys = {
@@ -117,7 +117,11 @@ local win_opts = {
   "zindex",
 }
 
-vim.api.nvim_set_hl(0, "SnacksWinBackdrop", { bg = "#000000", default = true })
+vim.api.nvim_set_hl(0, "SnacksBackdrop", { bg = "#000000", default = true })
+vim.api.nvim_set_hl(0, "SnacksNormal", { link = "NormalFloat", default = true })
+vim.api.nvim_set_hl(0, "SnacksNormalNC", { link = "NormalFloat", default = true })
+vim.api.nvim_set_hl(0, "SnacksWinBar", { link = "Title", default = true })
+vim.api.nvim_set_hl(0, "SnacksWinBarNC", { link = "SnacksWinBar", default = true })
 
 local id = 0
 
@@ -394,7 +398,7 @@ function M:drop()
       focusable = false,
       zindex = self.opts.zindex - 1,
       wo = {
-        winhighlight = "Normal:SnacksWinBackdrop",
+        winhighlight = "Normal:SnacksBackdrop",
         winblend = self.opts.backdrop,
       },
       bo = {
