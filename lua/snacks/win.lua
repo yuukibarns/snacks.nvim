@@ -37,7 +37,7 @@ local defaults = {
   position = "float",
   minimal = true,
   wo = {
-    winhighlight = "Normal:SnacksNormal,NormalNC:SnacksWinBarNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
+    winhighlight = "Normal:SnacksNormal,NormalNC:SnacksNormalNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
   },
   bo = {},
   keys = {
@@ -73,8 +73,6 @@ Snacks.config.style("minimal", {
     spell = false,
     winbar = "",
     statuscolumn = "",
-    winfixheight = true,
-    winfixwidth = true,
     wrap = false,
   },
 })
@@ -163,6 +161,9 @@ function M.new(opts)
     opts = M.resolve("float", opts)
   else
     opts = M.resolve("split", opts)
+    local vertical = opts.position == "left" or opts.position == "right"
+    opts.wo.winfixheight = not vertical
+    opts.wo.winfixwidth = vertical
   end
   ---@cast opts snacks.win.Config
   self.opts = opts
