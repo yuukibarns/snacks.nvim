@@ -72,14 +72,22 @@ function M.replace(tag, readme, content)
   return readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
 end
 
-function M.md(str)
+---@param str string
+---@param opts? {extract_comment: boolean} -- default true
+function M.md(str, opts)
+  opts = opts or {}
+  if opts.extract_comment == nil then
+    opts.extract_comment = true
+  end
   str = str:gsub("\n%s*%-%-%s*stylua: ignore\n", "\n")
   local comments = {} ---@type string[]
   local lines = vim.split(str, "\n", { plain = true })
 
-  while lines[1] and lines[1]:find("^%-%-") and not lines[1]:find("^%-%-%-%s*@") do
-    local line = table.remove(lines, 1):gsub("^[%-]*%s*", "")
-    table.insert(comments, line)
+  if opts.extract_comment then
+    while lines[1] and lines[1]:find("^%-%-") and not lines[1]:find("^%-%-%-%s*@") do
+      local line = table.remove(lines, 1):gsub("^[%-]*%s*", "")
+      table.insert(comments, line)
+    end
   end
 
   local ret = {} ---@type string[]

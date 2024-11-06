@@ -1,8 +1,11 @@
+---@hide
 ---@class snacks.notifier
----@field queue snacks.notifier.Notif[]
----@field opts snacks.notifier.Config
----@field dirty boolean
-local M = {}
+---@overload fun(msg: string, level?: snacks.notifier.level|number, opts?: snacks.notifier.Notif.opts): number|string
+local M = setmetatable({}, {
+  __call = function(t, ...)
+    return t.notify(...)
+  end,
+})
 
 Snacks.config.style("notification", {
   border = "rounded",
@@ -13,7 +16,13 @@ Snacks.config.style("notification", {
   },
 })
 
-M.ns = vim.api.nvim_create_namespace("snacks.notifier")
+---@class snacks.notifier.Class
+---@field queue snacks.notifier.Notif[]
+---@field opts snacks.notifier.Config
+---@field dirty boolean
+local N = {}
+
+N.ns = vim.api.nvim_create_namespace("snacks.notifier")
 
 ---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
 
@@ -31,7 +40,7 @@ M.ns = vim.api.nvim_create_namespace("snacks.notifier")
 ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
 
 ---@type table<string, snacks.notifier.render>
-M.styles = {
+N.styles = {
   -- compact style using border title
   compact = function(buf, notif, ctx)
     ctx.opts.title = {
@@ -83,20 +92,20 @@ local defaults = {
 
 ---@alias snacks.notifier.level "trace"|"debug"|"info"|"warn"|"error"
 ---@type table<number, snacks.notifier.level>
-M.levels = {
+N.levels = {
   [vim.log.levels.TRACE] = "trace",
   [vim.log.levels.DEBUG] = "debug",
   [vim.log.levels.INFO] = "info",
   [vim.log.levels.WARN] = "warn",
   [vim.log.levels.ERROR] = "error",
 }
-M.level_names = vim.tbl_values(M.levels) ---@type snacks.notifier.level[]
+N.level_names = vim.tbl_values(N.levels) ---@type snacks.notifier.level[]
 
 ---@param level number|string
 ---@return snacks.notifier.level
 local function normlevel(level)
-  return type(level) == "string" and (vim.tbl_contains(M.level_names, level:lower()) and level:lower() or "info")
-    or M.levels[level]
+  return type(level) == "string" and (vim.tbl_contains(N.level_names, level:lower()) and level:lower() or "info")
+    or N.levels[level]
     or "info"
 end
 
@@ -138,9 +147,9 @@ local function next_id()
 end
 
 ---@param opts? snacks.notifier.Config
----@return snacks.notifier
-function M.new(opts)
-  local self = setmetatable({}, { __index = M })
+---@return snacks.notifier.Class
+function N.new(opts)
+  local self = setmetatable({}, { __index = N })
   self.opts = Snacks.config.get("notifier", defaults, opts)
   self.queue = {}
   self.dirty = false
@@ -149,10 +158,9 @@ function M.new(opts)
   return self
 end
 
----@private
-function M:init()
+function N:init()
   local links = {} ---@type table<string, string>
-  for _, level in ipairs(M.level_names) do
+  for _, level in ipairs(N.level_names) do
     local cap = level:sub(1, 1):upper() .. level:sub(2):lower()
     cap = (cap == "Trace" or cap == "Debug") and "Hint" or cap
     links[hl("", level)] = "Normal"
@@ -166,8 +174,7 @@ function M:init()
   end
 end
 
----@private
-function M:start()
+function N:start()
   vim.uv.new_timer():start(
     100,
     100,
@@ -190,7 +197,7 @@ function M:start()
 end
 
 ---@param opts snacks.notifier.Notif.opts
-function M:add(opts)
+function N:add(opts)
   local now = vim.uv.hrtime() / 1e6
   local notif = vim.deepcopy(opts) --[[@as snacks.notifier.Notif]]
   notif.msg = notif.msg or ""
@@ -216,8 +223,7 @@ function M:add(opts)
   return notif.id
 end
 
----@private
-function M:update()
+function N:update()
   local now = vim.uv.now()
   --- Cleanup queue
   ---@param notif snacks.notifier.Notif
@@ -242,7 +248,7 @@ function M:update()
 end
 
 ---@param id? number|string
-function M:hide(id)
+function N:hide(id)
   ---@param notif snacks.notifier.Notif
   self.queue = vim.tbl_filter(function(notif)
     if notif.win and id == nil or notif.id == id then
@@ -265,14 +271,13 @@ end
 
 ---@param style? snacks.notifier.style
 ---@return snacks.notifier.render
-function M:get_render(style)
+function N:get_render(style)
   style = style or self.opts.style
-  return type(style) == "function" and style or M.styles[style] or M.styles.compact
+  return type(style) == "function" and style or N.styles[style] or N.styles.compact
 end
 
----@private
 ---@param notif snacks.notifier.Notif
-function M:render(notif)
+function N:render(notif)
   local win = notif.win
     or Snacks.win({
       show = false,
@@ -298,13 +303,13 @@ function M:render(notif)
     })
   notif.win = win
   local buf = win:open_buf()
-  vim.api.nvim_buf_clear_namespace(buf, M.ns, 0, -1)
+  vim.api.nvim_buf_clear_namespace(buf, N.ns, 0, -1)
   local render = self:get_render(notif.style)
 
   local ctx = {
     opts = win.opts,
     notifier = self,
-    ns = M.ns,
+    ns = N.ns,
     hl = {
       title = hl("Title", notif.level),
       icon = hl("Icon", notif.level),
@@ -338,8 +343,7 @@ function M:render(notif)
   win.opts.height = height
 end
 
----@private
-function M:sort()
+function N:sort()
   local idx = {} ---@type table<snacks.notifier.Notif, number>
   for i, notif in ipairs(self.queue) do
     idx[notif] = i
@@ -358,8 +362,7 @@ function M:sort()
   end)
 end
 
----@private
-function M:layout()
+function N:layout()
   local free = {} ---@type boolean[]
   for i = 1, vim.o.lines do
     free[i] = true
@@ -411,17 +414,31 @@ function M:layout()
   vim.cmd.redraw()
 end
 
+---@param msg string
+---@param level? snacks.notifier.level|number
+---@param opts? snacks.notifier.Notif.opts
+function N:notify(msg, level, opts)
+  opts = opts or {}
+  opts.msg = msg
+  opts.level = level
+  return self:add(opts)
+end
+
 -- Global instance
-local notifier = M.new()
+local notifier = N.new()
+
+-- Public functions
 
 ---@param msg string
 ---@param level? snacks.notifier.level|number
 ---@param opts? snacks.notifier.Notif.opts
 function M.notify(msg, level, opts)
-  opts = opts or {}
-  opts.msg = msg
-  opts.level = level
-  return notifier:add(opts)
+  return notifier:notify(msg, level, opts)
 end
 
-return notifier
+---@param id? number|string
+function M.hide(id)
+  return notifier:hide(id)
+end
+
+return M

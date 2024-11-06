@@ -94,22 +94,22 @@ Render styles:
 ---@field layout? { width: number, height: number, top?: number }
 ```
 
+Public functions
+
 ## 📦 Module
 
+### `Snacks.notifier()`
+
 ```lua
----@class snacks.notifier
----@field queue snacks.notifier.Notif[]
----@field opts snacks.notifier.Config
----@field dirty boolean
-Snacks.notifier = {}
+---@type fun(msg: string, level?: snacks.notifier.level|number, opts?: snacks.notifier.Notif.opts): number|string
+Snacks.notifier()
 ```
 
-### `Snacks.notifier.new()`
+### `Snacks.notifier.hide()`
 
 ```lua
----@param opts? snacks.notifier.Config
----@return snacks.notifier
-Snacks.notifier.new(opts)
+---@param id? number|string
+Snacks.notifier.hide(id)
 ```
 
 ### `Snacks.notifier.notify()`
@@ -119,26 +119,4 @@ Snacks.notifier.new(opts)
 ---@param level? snacks.notifier.level|number
 ---@param opts? snacks.notifier.Notif.opts
 Snacks.notifier.notify(msg, level, opts)
-```
-
-### `notifier:add()`
-
-```lua
----@param opts snacks.notifier.Notif.opts
-notifier:add(opts)
-```
-
-### `notifier:get_render()`
-
-```lua
----@param style? snacks.notifier.style
----@return snacks.notifier.render
-notifier:get_render(style)
-```
-
-### `notifier:hide()`
-
-```lua
----@param id? number|string
-notifier:hide(id)
 ```
