@@ -9,6 +9,8 @@ local M = setmetatable({}, {
 
 ---@class snacks.gitbrowse.Config
 local defaults = {
+  -- Handler to open the url in a browser
+  ---@param url string
   open = function(url)
     if vim.fn.has("nvim-0.10") == 0 then
       require("lazy.util").open(url, { system = true })
@@ -16,6 +18,7 @@ local defaults = {
     end
     vim.ui.open(url)
   end,
+  -- patterns to transform remotes to an actual URL
   -- stylua: ignore
   patterns = {
     { "^(https?://.*)%.git$"              , "%1" },
@@ -33,6 +36,7 @@ local defaults = {
   },
 }
 
+---@private
 ---@param remote string
 ---@param opts? snacks.gitbrowse.Config
 function M.get_url(remote, opts)
