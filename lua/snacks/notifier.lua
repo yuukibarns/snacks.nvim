@@ -175,8 +175,14 @@ function M:start()
       if #self.queue == 0 then
         return
       end
-      self:update()
-      self:layout()
+      local ok, err = pcall(function()
+        self:update()
+        self:layout()
+      end)
+      if not ok then
+        vim.api.nvim_err_writeln("Snacks notifier failed. Dropping queue. Error:\n " .. err)
+        self.queue = {}
+      end
     end)
   )
 end
