@@ -17,7 +17,7 @@ local M = setmetatable({}, {
 ---@field [2]? string|fun(self: snacks.win): any
 ---@field mode? string|string[]
 
----@class snacks.win.Config
+---@class snacks.win.Config: vim.api.keyset.win_config
 ---@field view? string merges with config from `Snacks.config.views[view]`
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
@@ -32,10 +32,8 @@ local M = setmetatable({}, {
 ---@field on_win? fun(self: snacks.win)
 local defaults = {
   position = "float",
-  win = {
-    relative = "editor",
-    style = "minimal",
-  },
+  relative = "editor",
+  style = "minimal",
   wo = {
     winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
   },
@@ -48,19 +46,15 @@ local defaults = {
 ---@type snacks.win.Config
 local defaults_float = {
   backdrop = 60,
-  win = {
-    height = 0.9,
-    width = 0.9,
-    zindex = 50,
-  },
+  height = 0.9,
+  width = 0.9,
+  zindex = 50,
 }
 
 ---@type snacks.win.Config
 local defaults_split = {
-  win = {
-    height = 0.4,
-    width = 0.4,
-  },
+  height = 0.4,
+  width = 0.4,
 }
 
 local split_commands = {
@@ -99,6 +93,29 @@ local minimal = {
   },
 }
 
+local win_opts = {
+  "anchor",
+  "border",
+  "bufpos",
+  "col",
+  "external",
+  "fixed",
+  "focusable",
+  "footer",
+  "footer_pos",
+  "height",
+  "hide",
+  "noautocmd",
+  "relative",
+  "row",
+  "style",
+  "title",
+  "title_pos",
+  "width",
+  "win",
+  "zindex",
+}
+
 vim.api.nvim_set_hl(0, "SnackFloatBackdrop", { bg = "#000000", default = true })
 
 local id = 0
@@ -133,9 +150,9 @@ function M.new(opts)
   opts =
     vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
   ---@cast opts snacks.win.Config
-  if opts.win.style == "minimal" then
+  if opts.style == "minimal" then
     opts = vim.tbl_deep_extend("force", {}, vim.deepcopy(minimal), opts) --[[@as snacks.win.Config]]
-    opts.win.style = nil
+    opts.style = nil
   end
   self.opts = opts
   if opts.show ~= false then
@@ -208,14 +225,14 @@ end
 
 ---@private
 function M:open_win()
-  local relative = self.opts.win.relative or "editor"
+  local relative = self.opts.relative or "editor"
   local position = self.opts.position or "float"
   local enter = self.opts.enter == nil or self.opts.enter or false
   local opts = self:win_opts()
   if position == "float" then
     self.win = vim.api.nvim_open_win(self.buf, enter, opts)
   else
-    local parent = self.opts.win.win or 0
+    local parent = self.opts.win or 0
     local vertical = position == "left" or position == "right"
     if parent == 0 then
       for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -246,7 +263,7 @@ function M:open_win()
   vim.w[self.win].snacks_win = {
     id = self.id,
     position = self.opts.position,
-    relative = self.opts.win.relative,
+    relative = self.opts.relative,
   }
 end
 
@@ -363,14 +380,12 @@ function M:drop()
     self.backdrop = M.new({
       enter = false,
       backdrop = false,
-      win = {
-        relative = "editor",
-        height = 0,
-        width = 0,
-        style = "minimal",
-        focusable = false,
-        zindex = self.opts.win.zindex - 1,
-      },
+      relative = "editor",
+      height = 0,
+      width = 0,
+      style = "minimal",
+      focusable = false,
+      zindex = self.opts.zindex - 1,
       wo = {
         winhighlight = "Normal:SnackFloatBackdrop",
         winblend = self.opts.backdrop,
@@ -395,7 +410,10 @@ end
 
 ---@private
 function M:win_opts()
-  local opts = vim.deepcopy(self.opts.win or {})
+  local opts = {} ---@type vim.api.keyset.win_config
+  for _, k in ipairs(win_opts) do
+    opts[k] = self.opts[k]
+  end
   local parent = {
     height = opts.relative == "win" and vim.api.nvim_win_get_height(opts.win) or vim.o.lines,
     width = opts.relative == "win" and vim.api.nvim_win_get_width(opts.win) or vim.o.columns,
@@ -413,10 +431,10 @@ end
 
 ---@return { height: number, width: number }
 function M:size()
-  local win_opts = self:win_opts()
-  local height = win_opts.height
-  local width = win_opts.width
-  if win_opts.border and win_opts.border ~= "none" then
+  local opts = self:win_opts()
+  local height = opts.height
+  local width = opts.width
+  if opts.border and opts.border ~= "none" then
     height = height + 2
     width = width + 2
   end

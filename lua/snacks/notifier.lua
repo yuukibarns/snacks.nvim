@@ -5,10 +5,8 @@
 local M = {}
 
 Snacks.config.view("notification", {
-  win = {
-    border = "rounded",
-    zindex = 100,
-  },
+  border = "rounded",
+  zindex = 100,
   wo = {
     winblend = 5,
     wrap = false,
@@ -36,10 +34,10 @@ M.ns = vim.api.nvim_create_namespace("snacks.notifier")
 M.styles = {
   -- compact style using border title
   compact = function(buf, notif, ctx)
-    ctx.opts.win.title = {
+    ctx.opts.title = {
       { " " .. vim.trim(notif.icon .. " " .. (notif.title or "")) .. " ", ctx.hl.title },
     }
-    ctx.opts.win.title_pos = "center"
+    ctx.opts.title_pos = "center"
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(notif.msg, "\n"))
   end,
   -- similar to the default nvim-notify style
@@ -70,7 +68,7 @@ local defaults = {
   timeout = 3000,
   width = { min = 40, max = 0.4 },
   height = { min = 1, max = 0.6 },
-  padding = false, -- add 1 cell of left/right padding to the notification window
+  padding = true, -- add 1 cell of left/right padding to the notification window
   sort = { "level", "added" }, -- sort by level and time
   icons = {
     error = " ",
@@ -286,7 +284,7 @@ function M:render(notif)
       enter = false,
       backdrop = false,
       bo = { filetype = notif.ft or "markdown", modifiable = false },
-      win = { noautocmd = true },
+      noautocmd = true,
       wo = {
         winhighlight = table.concat({
           "Normal:" .. hl("", notif.level),
@@ -340,8 +338,8 @@ function M:render(notif)
   end
   height = dim(height, self.opts.height.min, self.opts.height.max, vim.o.lines)
 
-  win.opts.win.width = width
-  win.opts.win.height = height
+  win.opts.width = width
+  win.opts.height = height
 end
 
 function M:sort()
@@ -402,8 +400,8 @@ function M:layout()
     if not skip and notif.layout.top then
       shown = shown + 1
       mark(notif.layout.top, notif.layout.height)
-      notif.win.opts.win.row = notif.layout.top
-      notif.win.opts.win.col = vim.o.columns - notif.layout.width - 1
+      notif.win.opts.row = notif.layout.top
+      notif.win.opts.col = vim.o.columns - notif.layout.width - 1
       notif.shown = notif.shown or vim.uv.now()
       notif.win:show()
       notif.win:update()
