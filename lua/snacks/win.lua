@@ -256,7 +256,7 @@ function M:open_win()
       for _, win in ipairs(vim.api.nvim_list_wins()) do
         if
           vim.w[win].snacks_win
-          and vim.w[win].snacks_win.relative == "editor"
+          and vim.w[win].snacks_win.relative == relative
           and vim.w[win].snacks_win.position == position
         then
           parent = win
@@ -277,12 +277,38 @@ function M:open_win()
     if enter then
       vim.api.nvim_set_current_win(self.win)
     end
+    vim.schedule(function()
+      self:equalize()
+    end)
   end
   vim.w[self.win].snacks_win = {
     id = self.id,
     position = self.opts.position,
     relative = self.opts.relative,
   }
+end
+
+---@private
+function M:equalize()
+  if self:is_floating() then
+    return
+  end
+  local all = vim.tbl_filter(function(win)
+    return vim.w[win].snacks_win
+      and vim.w[win].snacks_win.relative == self.opts.relative
+      and vim.w[win].snacks_win.position == self.opts.position
+  end, vim.api.nvim_list_wins())
+  if #all <= 1 then
+    return
+  end
+  local vertical = self.opts.position == "left" or self.opts.position == "right"
+  local parent_size = self:parent_size()[vertical and "height" or "width"]
+  local size = math.floor(parent_size / #all)
+  for _, win in ipairs(all) do
+    vim.api.nvim_win_call(win, function()
+      vim.cmd(("%s resize %s"):format(vertical and "horizontal" or "vertical", size))
+    end)
+  end
 end
 
 function M:update()
@@ -426,16 +452,20 @@ function M:drop()
   end
 end
 
+function M:parent_size()
+  return {
+    height = self.opts.relative == "win" and vim.api.nvim_win_get_height(self.opts.win) or vim.o.lines,
+    width = self.opts.relative == "win" and vim.api.nvim_win_get_width(self.opts.win) or vim.o.columns,
+  }
+end
+
 ---@private
 function M:win_opts()
   local opts = {} ---@type vim.api.keyset.win_config
   for _, k in ipairs(win_opts) do
     opts[k] = self.opts[k]
   end
-  local parent = {
-    height = opts.relative == "win" and vim.api.nvim_win_get_height(opts.win) or vim.o.lines,
-    width = opts.relative == "win" and vim.api.nvim_win_get_width(opts.win) or vim.o.columns,
-  }
+  local parent = self:parent_size()
   -- Spcial case for 0, which means 100%
   opts.height = opts.height == 0 and parent.height or opts.height
   opts.width = opts.width == 0 and parent.width or opts.width
