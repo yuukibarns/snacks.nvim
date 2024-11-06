@@ -67,7 +67,7 @@ Snacks.config.style("notification", {
 })
 
 ---@class snacks.notifier.Config
----@field keep? fun(notif: snacks.notifier.Notif): boolean
+---@field keep? fun(notif: snacks.notifier.Notif): boolean # global keep function
 local defaults = {
   timeout = 3000, -- default timeout in ms
   width = { min = 40, max = 0.4 },
@@ -343,7 +343,9 @@ function N:render(notif)
       msg = hl("", notif.level),
     },
   }
+  vim.bo[buf].modifiable = true
   render(buf, notif, ctx)
+  vim.bo[buf].modifiable = false
 
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 
