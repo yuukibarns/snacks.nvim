@@ -111,13 +111,21 @@ See the example below for how to configure `snacks.nvim`.
   ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
-    notifier = { enabled = true },
+    notifier = {
+      enabled = true,
+      timeout = 3000,
+    },
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = true },
+    styles = {
+      notification = {
+        wo = { wrap = true } -- Wrap notifications
+      }
+    }
   },
   keys = {
-    { "<leader>un", function() Snacks.notifier:hide() end, desc = "Dismiss All Notifications" },
+    { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
     { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gb", function() Snacks.git.blame_line() end, desc = "Git Blame Line" },

@@ -71,6 +71,7 @@ NOTIFICATION                             *snacks-notifier-styles-notification*
         winblend = 5,
         wrap = false,
       },
+      bo = { filetype = "markdown" },
     }
 <
 
