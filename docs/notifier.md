@@ -53,6 +53,7 @@ end
     winblend = 5,
     wrap = false,
   },
+  bo = { filetype = "markdown" },
 }
 ```
 
