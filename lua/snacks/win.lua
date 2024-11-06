@@ -18,7 +18,9 @@ local M = setmetatable({}, {
 ---@field mode? string|string[]
 
 ---@class snacks.win.Config: vim.api.keyset.win_config
----@field view? string merges with config from `Snacks.config.views[view]`
+---@field style? string merges with config from `Snacks.config.views[view]`
+---@field show? boolean Show the window immediately (default: true)
+---@field minimal? boolean
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number
 ---@field file? string
@@ -31,9 +33,10 @@ local M = setmetatable({}, {
 ---@field on_buf? fun(self: snacks.win)
 ---@field on_win? fun(self: snacks.win)
 local defaults = {
-  position = "float",
+  show = true,
   relative = "editor",
-  style = "minimal",
+  position = "float",
+  minimal = true,
   wo = {
     winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
   },
@@ -43,19 +46,39 @@ local defaults = {
   },
 }
 
----@type snacks.win.Config
-local defaults_float = {
+Snacks.config.style("float", {
+  position = "float",
   backdrop = 60,
   height = 0.9,
   width = 0.9,
   zindex = 50,
-}
+})
 
----@type snacks.win.Config
-local defaults_split = {
+Snacks.config.style("split", {
+  position = "bottom",
   height = 0.4,
   width = 0.4,
-}
+})
+
+Snacks.config.style("minimal", {
+  wo = {
+    cursorcolumn = false,
+    cursorline = false,
+    cursorlineopt = "both",
+    fillchars = "eob: ,lastline:…",
+    list = false,
+    listchars = "extends:…,tab:  ",
+    number = false,
+    relativenumber = false,
+    signcolumn = "no",
+    spell = false,
+    winbar = "",
+    statuscolumn = "",
+    winfixheight = true,
+    winfixwidth = true,
+    wrap = false,
+  },
+})
 
 local split_commands = {
   editor = {
@@ -69,27 +92,6 @@ local split_commands = {
     right = "vertical rightbelow",
     bottom = "belowright",
     left = "vertical leftabove",
-  },
-}
-
----@type snacks.win.Config
-local minimal = {
-  wo = {
-    cursorcolumn = false,
-    cursorline = false,
-    cursorlineopt = "both",
-    fillchars = "eob: ,lastline:…",
-    list = false,
-    listchars = "extends:…",
-    number = false,
-    relativenumber = false,
-    signcolumn = "no",
-    spell = false,
-    winbar = "",
-    statuscolumn = "",
-    winfixheight = true,
-    winfixwidth = true,
-    wrap = false,
   },
 }
 
@@ -120,40 +122,45 @@ vim.api.nvim_set_hl(0, "SnackFloatBackdrop", { bg = "#000000", default = true })
 
 local id = 0
 
----@param opts? snacks.win.Config
+---@param ... snacks.win.Config|string
 ---@return snacks.win.Config
-function M.resolve(opts)
-  opts = opts or {}
+function M.resolve(...)
   local done = {} ---@type string[]
-  local views = { opts } ---@type snacks.win.Config[]
-  local view = opts.view
-  while view and not vim.tbl_contains(done, view) do
-    table.insert(done, view)
-    if not Snacks.config.views[view] then
-      break
+  local merge = {} ---@type snacks.win.Config[]
+  local stack = { ... }
+  while #stack > 0 do
+    local next = table.remove(stack)
+    next = type(next) == "table" and next or Snacks.config.styles[next]
+    ---@cast next snacks.win.Config?
+    if next then
+      table.insert(merge, 1, next)
+      if next.style and not vim.tbl_contains(done, next.style) then
+        table.insert(done, next.style)
+        table.insert(stack, next.style)
+      end
     end
-    table.insert(views, 1, Snacks.config.views[view])
-    view = Snacks.config.views[view].view
   end
-  local ret = #views == 0 and {} or #views == 1 and views[1] or vim.tbl_deep_extend("force", {}, unpack(views))
-  ret.view = nil
+  local ret = #merge == 0 and {} or #merge == 1 and merge[1] or vim.tbl_deep_extend("force", {}, unpack(merge))
+  ret.style = nil
   return ret
 end
 
----@param opts? snacks.win.Config | { show?: boolean }
+---@param opts? snacks.win.Config
 ---@return snacks.win
 function M.new(opts)
   local self = setmetatable({}, { __index = M })
   id = id + 1
   self.id = id
-  opts = Snacks.config.get("win", defaults, M.resolve(opts))
-  opts =
-    vim.tbl_deep_extend("force", {}, vim.deepcopy(opts.position == "float" and defaults_float or defaults_split), opts)
-  ---@cast opts snacks.win.Config
-  if opts.style == "minimal" then
-    opts = vim.tbl_deep_extend("force", {}, vim.deepcopy(minimal), opts) --[[@as snacks.win.Config]]
-    opts.style = nil
+  opts = M.resolve(Snacks.config.get("win", defaults, opts))
+  if opts.minimal then
+    opts = M.resolve("minimal", opts)
   end
+  if opts.position == "float" then
+    opts = M.resolve("float", opts)
+  else
+    opts = M.resolve("split", opts)
+  end
+  ---@cast opts snacks.win.Config
   self.opts = opts
   if opts.show ~= false then
     self:show()

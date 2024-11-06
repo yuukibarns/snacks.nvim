@@ -4,7 +4,7 @@
 ---@field dirty boolean
 local M = {}
 
-Snacks.config.view("notification", {
+Snacks.config.style("notification", {
   border = "rounded",
   zindex = 100,
   wo = {
@@ -173,14 +173,16 @@ function M:start()
       if #self.queue == 0 then
         return
       end
-      local ok, err = pcall(function()
+      xpcall(function()
         self:update()
         self:layout()
-      end)
-      if not ok then
-        vim.api.nvim_err_writeln("Snacks notifier failed. Dropping queue. Error:\n " .. err)
+      end, function(err)
+        local trace = debug.traceback(err, 2)
+        vim.api.nvim_err_writeln(
+          ("Snacks notifier failed. Dropping queue. Error:\n%s\n\nTrace:\n%s"):format(error, trace)
+        )
         self.queue = {}
-      end
+      end)
     end)
   )
 end
@@ -280,7 +282,7 @@ function M:render(notif)
   local win = notif.win
     or Snacks.win({
       show = false,
-      view = "notification",
+      style = "notification",
       enter = false,
       backdrop = false,
       bo = { filetype = notif.ft or "markdown", modifiable = false },

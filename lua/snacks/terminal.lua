@@ -15,38 +15,42 @@ local M = setmetatable({}, {
 ---@field interactive? boolean
 ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Config) Use this to use a different terminal implementation
 local defaults = {
-  win = {
-    bo = {
-      filetype = "snacks_terminal",
-    },
-    wo = {},
-    keys = {
-      gf = function(self)
-        local f = vim.fn.findfile(vim.fn.expand("<cfile>"))
-        if f ~= "" then
-          vim.cmd("close")
-          vim.cmd("e " .. f)
+  win = { style = "terminal" },
+}
+
+Snacks.config.style("terminal", {
+  bo = {
+    filetype = "snacks_terminal",
+  },
+  wo = {},
+  keys = {
+    gf = function(self)
+      local f = vim.fn.findfile(vim.fn.expand("<cfile>"))
+      if f == "" then
+        Snacks.notify.warn("No file under cursor")
+      else
+        self:close()
+        vim.cmd("e " .. f)
+      end
+    end,
+    term_normal = {
+      "<esc>",
+      function(self)
+        self.esc_timer = self.esc_timer or (vim.uv or vim.loop).new_timer()
+        if self.esc_timer:is_active() then
+          self.esc_timer:stop()
+          vim.cmd("stopinsert")
+        else
+          self.esc_timer:start(200, 0, function() end)
+          return "<esc>"
         end
       end,
-      term_normal = {
-        "<esc>",
-        function(self)
-          self.esc_timer = self.esc_timer or (vim.uv or vim.loop).new_timer()
-          if self.esc_timer:is_active() then
-            self.esc_timer:stop()
-            vim.cmd("stopinsert")
-          else
-            self.esc_timer:start(200, 0, function() end)
-            return "<esc>"
-          end
-        end,
-        mode = "t",
-        expr = true,
-        desc = "Double escape to normal mode",
-      },
+      mode = "t",
+      expr = true,
+      desc = "Double escape to normal mode",
     },
   },
-}
+})
 
 ---@type table<string, snacks.win>
 local terminals = {}
@@ -56,8 +60,8 @@ local terminals = {}
 function M.open(cmd, opts)
   local id = vim.v.count1
   ---@type snacks.terminal.Config
-  opts = Snacks.config.get("terminal", defaults, { win = Snacks.win.resolve(opts and opts.win) }, opts)
-  opts.win.position = opts.win.position or (cmd and "float" or "bottom")
+  opts = Snacks.config.get("terminal", defaults, { win = { position = cmd and "float" or "bottom" } }, opts)
+  opts.win = Snacks.win.resolve("terminal", opts.win)
   opts.win.wo.winbar = opts.win.wo.winbar or (opts.win.position == "float" and "" or (id .. ": %{b:term_title}"))
 
   if opts.override then

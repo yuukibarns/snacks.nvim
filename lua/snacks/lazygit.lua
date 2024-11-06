@@ -38,9 +38,11 @@ local defaults = {
     unstagedChangesColor = { fg = "DiagnosticError" },
   },
   win = {
-    view = "lazygit",
+    style = "lazygit",
   },
 }
+
+Snacks.config.style("lazygit", {})
 
 -- re-create config file on startup
 local dirty = true

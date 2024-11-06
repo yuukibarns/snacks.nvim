@@ -1,6 +1,15 @@
 ---@class snacks.git
 local M = {}
 
+Snacks.config.style("blame_line", {
+  width = 0.6,
+  height = 0.6,
+  border = "rounded",
+  title = " Git Blame ",
+  title_pos = "center",
+  bo = { filetype = "git" },
+})
+
 --- Gets the git root for a buffer or path.
 --- Defaults to the current buffer.
 ---@param path? number|string buffer or path
@@ -15,20 +24,10 @@ end
 --- Show git log for the current line.
 ---@param opts? snacks.terminal.Config | {count?: number}
 function M.blame_line(opts)
-  Snacks.config.view("blame_line", {
-    win = {
-      width = 0.6,
-      height = 0.6,
-      border = "rounded",
-      title = " Git Blame ",
-      title_pos = "center",
-    },
-    bo = { filetype = "git" },
-  })
   opts = vim.tbl_deep_extend("force", {
     count = 5,
     interactive = false,
-    win = { view = "blame_line" },
+    win = { style = "blame_line" },
   }, opts or {})
   local cursor = vim.api.nvim_win_get_cursor(0)
   local line = cursor[1]

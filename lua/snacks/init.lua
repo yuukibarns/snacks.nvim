@@ -36,11 +36,11 @@ _G.Snacks = M
 ---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
 ---@field terminal? snacks.terminal.Config
 ---@field toggle? snacks.toggle.Config
----@field views? table<string, snacks.win.Config>
+---@field styles? table<string, snacks.win.Config>
 ---@field win? snacks.win.Config
 ---@field words? snacks.words.Config
 local config = {
-  views = {},
+  styles = {},
   bigfile = { enabled = true },
   notifier = { enabled = true },
   quickfile = { enabled = true },
@@ -67,11 +67,11 @@ function M.config.get(snack, defaults, ...)
   return vim.tbl_deep_extend("force", unpack(merge))
 end
 
---- Register a new window view config.
+--- Register a new window style config.
 ---@param name string
 ---@param defaults snacks.win.Config
-function M.config.view(name, defaults)
-  config.views[name] = vim.tbl_deep_extend("force", vim.deepcopy(defaults), config.views[name] or {})
+function M.config.style(name, defaults)
+  config.styles[name] = vim.tbl_deep_extend("force", vim.deepcopy(defaults), config.styles[name] or {})
 end
 
 ---@param opts snacks.Config?
