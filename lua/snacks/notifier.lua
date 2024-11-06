@@ -8,7 +8,7 @@ local M = setmetatable({}, {
 })
 
 --- Render styles:
---- * compact: simple border title with message
+--- * compact: use border for icon and title
 --- * minimal: no border, only icon and message
 --- * fancy: similar to the default nvim-notify style
 ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"|"minimal"

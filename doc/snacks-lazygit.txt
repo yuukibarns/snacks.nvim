@@ -91,6 +91,8 @@ SNACKS.LAZYGIT()                      *snacks-lazygit-module-snacks.lazygit()*
 
 SNACKS.LAZYGIT.LOG()              *snacks-lazygit-module-snacks.lazygit.log()*
 
+Opens lazygit with the log view
+
 >lua
     ---@param opts? snacks.lazygit.Config
     Snacks.lazygit.log(opts)
@@ -98,6 +100,8 @@ SNACKS.LAZYGIT.LOG()              *snacks-lazygit-module-snacks.lazygit.log()*
 
 
 SNACKS.LAZYGIT.LOG_FILE()    *snacks-lazygit-module-snacks.lazygit.log_file()*
+
+Opens lazygit with the log of the current file
 
 >lua
     ---@param opts? snacks.lazygit.Config
@@ -107,7 +111,8 @@ SNACKS.LAZYGIT.LOG_FILE()    *snacks-lazygit-module-snacks.lazygit.log_file()*
 
 SNACKS.LAZYGIT.OPEN()            *snacks-lazygit-module-snacks.lazygit.open()*
 
-Opens lazygit
+Opens lazygit, properly configured to use the current colorscheme and integrate
+with the current neovim instance
 
 >lua
     ---@param opts? snacks.lazygit.Config

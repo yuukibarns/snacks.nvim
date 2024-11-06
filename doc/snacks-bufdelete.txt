@@ -6,6 +6,11 @@ Table of Contents                         *snacks-bufdelete-table-of-contents*
 1. Module                                            |snacks-bufdelete-module|
   - Snacks.bufdelete()            |snacks-bufdelete-module-snacks.bufdelete()|
   - Snacks.bufdelete.delete()|snacks-bufdelete-module-snacks.bufdelete.delete()|
+Delete buffers without disrupting window layout.
+
+If the buffer you want to close has changes, a prompt will be shown to save or
+discard.
+
 
 ==============================================================================
 1. Module                                            *snacks-bufdelete-module*

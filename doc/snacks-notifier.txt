@@ -7,18 +7,12 @@ Table of Contents                          *snacks-notifier-table-of-contents*
 2. Styles                                             |snacks-notifier-styles|
   - notification                         |snacks-notifier-styles-notification|
 3. Types                                               |snacks-notifier-types|
+  - Notifications                        |snacks-notifier-types-notifications|
+  - Rendering                                |snacks-notifier-types-rendering|
 4. Module                                             |snacks-notifier-module|
-  - Snacks.notifier.new()       |snacks-notifier-module-snacks.notifier.new()|
-  - notifier:add()                     |snacks-notifier-module-notifier:add()|
-  - notifier:get_render()       |snacks-notifier-module-notifier:get_render()|
-  - notifier:hide()                   |snacks-notifier-module-notifier:hide()|
-  - notifier:init()                   |snacks-notifier-module-notifier:init()|
-  - notifier:layout()               |snacks-notifier-module-notifier:layout()|
-  - notifier:notify()               |snacks-notifier-module-notifier:notify()|
-  - notifier:render()               |snacks-notifier-module-notifier:render()|
-  - notifier:sort()                   |snacks-notifier-module-notifier:sort()|
-  - notifier:start()                 |snacks-notifier-module-notifier:start()|
-  - notifier:update()               |snacks-notifier-module-notifier:update()|
+  - Snacks.notifier()               |snacks-notifier-module-snacks.notifier()|
+  - Snacks.notifier.hide()     |snacks-notifier-module-snacks.notifier.hide()|
+  - Snacks.notifier.notify() |snacks-notifier-module-snacks.notifier.notify()|
 
 ==============================================================================
 1. Config                                             *snacks-notifier-config*
@@ -30,6 +24,8 @@ Table of Contents                          *snacks-notifier-table-of-contents*
       timeout = 3000, -- default timeout in ms
       width = { min = 40, max = 0.4 },
       height = { min = 1, max = 0.6 },
+      -- editor margin to keep free. tabline and statusline are taken into account automatically
+      margin = { top = 0, right = 1, bottom = 0 },
       padding = true, -- add 1 cell of left/right padding to the notification window
       sort = { "level", "added" }, -- sort by level and time
       icons = {
@@ -66,28 +62,17 @@ NOTIFICATION                             *snacks-notifier-styles-notification*
 ==============================================================================
 3. Types                                               *snacks-notifier-types*
 
->lua
-    ---@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
-<
+Render styles: compact: use border for icon and title minimal: no border, only
+icon and message fancy: similar to the default nvim-notify style
 
 >lua
-    ---@class snacks.notifier.ctx
-    ---@field opts snacks.win.Config
-    ---@field notifier snacks.notifier
-    ---@field hl table<snacks.notifier.hl, string>
-    ---@field ns number
+    ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"|"minimal"
 <
 
->lua
-    ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
-<
 
-Render styles: compact: simple border title with message fancy: similar to the
-default nvim-notify style
+NOTIFICATIONS                            *snacks-notifier-types-notifications*
 
->lua
-    ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
-<
+Notification options
 
 >lua
     ---@class snacks.notifier.Notif.opts
@@ -102,6 +87,8 @@ default nvim-notify style
     ---@field keep? fun(notif: snacks.notifier.Notif): boolean
     ---@field style? snacks.notifier.style
 <
+
+Notification object
 
 >lua
     ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
@@ -118,102 +105,57 @@ default nvim-notify style
 <
 
 
+RENDERING                                    *snacks-notifier-types-rendering*
+
+>lua
+    ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
+<
+
+>lua
+    ---@class snacks.notifier.hl
+    ---@field title string
+    ---@field icon string
+    ---@field border string
+    ---@field footer string
+    ---@field msg string
+<
+
+>lua
+    ---@class snacks.notifier.ctx
+    ---@field opts snacks.win.Config
+    ---@field notifier snacks.notifier
+    ---@field hl snacks.notifier.hl
+    ---@field ns number
+<
+
+
 ==============================================================================
 4. Module                                             *snacks-notifier-module*
 
+
+SNACKS.NOTIFIER()                   *snacks-notifier-module-snacks.notifier()*
+
 >lua
-    ---@class snacks.notifier
-    ---@field queue snacks.notifier.Notif[]
-    ---@field opts snacks.notifier.Config
-    ---@field dirty boolean
-    Snacks.notifier = {}
+    ---@type fun(msg: string, level?: snacks.notifier.level|number, opts?: snacks.notifier.Notif.opts): number|string
+    Snacks.notifier()
 <
 
 
-SNACKS.NOTIFIER.NEW()           *snacks-notifier-module-snacks.notifier.new()*
-
->lua
-    ---@param opts? snacks.notifier.Config
-    ---@return snacks.notifier
-    Snacks.notifier.new(opts)
-<
-
-
-NOTIFIER:ADD()                         *snacks-notifier-module-notifier:add()*
-
->lua
-    ---@param opts snacks.notifier.Notif.opts
-    notifier:add(opts)
-<
-
-
-NOTIFIER:GET_RENDER()           *snacks-notifier-module-notifier:get_render()*
-
->lua
-    ---@param style? snacks.notifier.style
-    ---@return snacks.notifier.render
-    notifier:get_render(style)
-<
-
-
-NOTIFIER:HIDE()                       *snacks-notifier-module-notifier:hide()*
+SNACKS.NOTIFIER.HIDE()         *snacks-notifier-module-snacks.notifier.hide()*
 
 >lua
     ---@param id? number|string
-    notifier:hide(id)
+    Snacks.notifier.hide(id)
 <
 
 
-NOTIFIER:INIT()                       *snacks-notifier-module-notifier:init()*
-
->lua
-    notifier:init()
-<
-
-
-NOTIFIER:LAYOUT()                   *snacks-notifier-module-notifier:layout()*
-
->lua
-    notifier:layout()
-<
-
-
-NOTIFIER:NOTIFY()                   *snacks-notifier-module-notifier:notify()*
+SNACKS.NOTIFIER.NOTIFY()     *snacks-notifier-module-snacks.notifier.notify()*
 
 >lua
     ---@param msg string
     ---@param level? snacks.notifier.level|number
     ---@param opts? snacks.notifier.Notif.opts
-    notifier:notify(msg, level, opts)
-<
-
-
-NOTIFIER:RENDER()                   *snacks-notifier-module-notifier:render()*
-
->lua
-    ---@param notif snacks.notifier.Notif
-    notifier:render(notif)
-<
-
-
-NOTIFIER:SORT()                       *snacks-notifier-module-notifier:sort()*
-
->lua
-    notifier:sort()
-<
-
-
-NOTIFIER:START()                     *snacks-notifier-module-notifier:start()*
-
->lua
-    notifier:start()
-<
-
-
-NOTIFIER:UPDATE()                   *snacks-notifier-module-notifier:update()*
-
->lua
-    notifier:update()
+    Snacks.notifier.notify(msg, level, opts)
 <
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>

@@ -11,6 +11,8 @@
   timeout = 3000, -- default timeout in ms
   width = { min = 40, max = 0.4 },
   height = { min = 1, max = 0.6 },
+  -- editor margin to keep free. tabline and statusline are taken into account automatically
+  margin = { top = 0, right = 1, bottom = 0 },
   padding = true, -- add 1 cell of left/right padding to the notification window
   sort = { "level", "added" }, -- sort by level and time
   icons = {
@@ -43,11 +45,12 @@
 ## 📚 Types
 
 Render styles:
-* compact: simple border title with message
+* compact: use border for icon and title
+* minimal: no border, only icon and message
 * fancy: similar to the default nvim-notify style
 
 ```lua
----@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"
+---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"|"minimal"
 ```
 
 ### Notifications
@@ -91,14 +94,19 @@ Notification object
 ```
 
 ```lua
----@alias snacks.notifier.hl "title"|"icon"|"border"|"footer"|"msg"
+---@class snacks.notifier.hl
+---@field title string
+---@field icon string
+---@field border string
+---@field footer string
+---@field msg string
 ```
 
 ```lua
 ---@class snacks.notifier.ctx
 ---@field opts snacks.win.Config
 ---@field notifier snacks.notifier
----@field hl table<snacks.notifier.hl, string>
+---@field hl snacks.notifier.hl
 ---@field ns number
 ```
 
