@@ -106,7 +106,8 @@ function M.setup(opts)
 
   if M.config.notifier.enabled then
     vim.notify = function(msg, level, o)
-      return Snacks.notifier:notify(msg, level, o)
+      vim.notify = Snacks.notifier.notify
+      return Snacks.notifier.notify(msg, level, o)
     end
   end
 end
