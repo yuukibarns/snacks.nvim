@@ -45,7 +45,7 @@ Snacks.win({
   position = "float",
   minimal = true,
   wo = {
-    winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
+    winhighlight = "Normal:SnacksNormal,NormalNC:SnacksWinBarNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
   },
   bo = {},
   keys = {
