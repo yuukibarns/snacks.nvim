@@ -2,6 +2,8 @@
 
 Toggle keymaps integrated with which-key icons / colors
 
+![image](https://github.com/user-attachments/assets/6d843acd-1ac1-44fd-b318-58b4c17de2d5)
+
 <!-- docgen -->
 
 ## ⚙️ Config
