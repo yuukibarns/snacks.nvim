@@ -65,7 +65,7 @@ M.styles = {
 ---@class snacks.notifier.Config
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 local defaults = {
-  timeout = 3000,
+  timeout = 3000, -- default timeout in ms
   width = { min = 40, max = 0.4 },
   height = { min = 1, max = 0.6 },
   padding = true, -- add 1 cell of left/right padding to the notification window

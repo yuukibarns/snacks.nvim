@@ -24,19 +24,23 @@ local M = setmetatable({}, {
 ---@field args? string[]
 ---@field theme? snacks.lazygit.Theme
 local defaults = {
+  -- automatically configure lazygit to use the current colorscheme
+  -- and integrate edit with the current neovim instance
   configure = true,
   theme_path = vim.fs.normalize(vim.fn.stdpath("cache") .. "/lazygit-theme.yml"),
+  -- Theme for lazygit
+  -- stylua: ignore
   theme = {
-    [241] = { fg = "Special" },
-    activeBorderColor = { fg = "MatchParen", bold = true },
-    cherryPickedCommitBgColor = { fg = "Identifier" },
-    cherryPickedCommitFgColor = { fg = "Function" },
-    defaultFgColor = { fg = "Normal" },
-    inactiveBorderColor = { fg = "FloatBorder" },
-    optionsTextColor = { fg = "Function" },
+    [241]                      = { fg = "Special" },
+    activeBorderColor          = { fg = "MatchParen", bold = true },
+    cherryPickedCommitBgColor  = { fg = "Identifier" },
+    cherryPickedCommitFgColor  = { fg = "Function" },
+    defaultFgColor             = { fg = "Normal" },
+    inactiveBorderColor        = { fg = "FloatBorder" },
+    optionsTextColor           = { fg = "Function" },
     searchingActiveBorderColor = { fg = "MatchParen", bold = true },
-    selectedLineBgColor = { bg = "Visual" }, -- set to `default` to have no background colour
-    unstagedChangesColor = { fg = "DiagnosticError" },
+    selectedLineBgColor        = { bg = "Visual" }, -- set to `default` to have no background colour
+    unstagedChangesColor       = { fg = "DiagnosticError" },
   },
   win = {
     style = "lazygit",

@@ -7,8 +7,8 @@ local M = {}
 
 ---@class snacks.words.Config
 local defaults = {
-  enabled = true,
-  debounce = 200,
+  enabled = true, -- enable/disable the plugin
+  debounce = 200, -- time in ms to wait before updating
 }
 
 local config = Snacks.config.get("words", defaults)

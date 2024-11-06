@@ -7,8 +7,8 @@
 ```lua
 ---@class snacks.words.Config
 {
-  enabled = true,
-  debounce = 200,
+  enabled = true, -- enable/disable the plugin
+  debounce = 200, -- time in ms to wait before updating
 }
 ```
 
