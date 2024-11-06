@@ -8,6 +8,8 @@ Based on the provided options, some defaults will be set:
 - if `cmd` is provided, the window will be opened in a floating window
 - for splits, a `winbar` will be added with the terminal title
 
+![image](https://github.com/user-attachments/assets/afcc9989-57d7-4518-a390-cc7d6f0cec13)
+
 <!-- docgen -->
 
 ## ⚙️ Config
