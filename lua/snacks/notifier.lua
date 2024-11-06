@@ -279,7 +279,7 @@ function M:render(notif)
       view = "notification",
       enter = false,
       backdrop = false,
-      bo = { filetype = notif.ft or "markdown" },
+      bo = { filetype = notif.ft or "markdown", modifiable = false },
       win = { noautocmd = true },
       wo = {
         winhighlight = table.concat({
