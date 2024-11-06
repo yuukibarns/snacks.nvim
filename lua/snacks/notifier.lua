@@ -149,6 +149,7 @@ function M.new(opts)
   return self
 end
 
+---@private
 function M:init()
   local links = {} ---@type table<string, string>
   for _, level in ipairs(M.level_names) do
@@ -165,6 +166,7 @@ function M:init()
   end
 end
 
+---@private
 function M:start()
   vim.uv.new_timer():start(
     100,
@@ -214,16 +216,7 @@ function M:add(opts)
   return notif.id
 end
 
----@param msg string
----@param level? snacks.notifier.level|number
----@param opts? snacks.notifier.Notif.opts
-function M:notify(msg, level, opts)
-  opts = opts or {}
-  opts.msg = msg
-  opts.level = level
-  return self:add(opts)
-end
-
+---@private
 function M:update()
   local now = vim.uv.now()
   --- Cleanup queue
@@ -277,6 +270,7 @@ function M:get_render(style)
   return type(style) == "function" and style or M.styles[style] or M.styles.compact
 end
 
+---@private
 ---@param notif snacks.notifier.Notif
 function M:render(notif)
   local win = notif.win
@@ -344,6 +338,7 @@ function M:render(notif)
   win.opts.height = height
 end
 
+---@private
 function M:sort()
   local idx = {} ---@type table<snacks.notifier.Notif, number>
   for i, notif in ipairs(self.queue) do
@@ -363,6 +358,7 @@ function M:sort()
   end)
 end
 
+---@private
 function M:layout()
   local free = {} ---@type boolean[]
   for i = 1, vim.o.lines do
@@ -415,5 +411,17 @@ function M:layout()
   vim.cmd.redraw()
 end
 
--- Single instance
-return M.new()
+-- Global instance
+local notifier = M.new()
+
+---@param msg string
+---@param level? snacks.notifier.level|number
+---@param opts? snacks.notifier.Notif.opts
+function M.notify(msg, level, opts)
+  opts = opts or {}
+  opts.msg = msg
+  opts.level = level
+  return notifier:add(opts)
+end
+
+return notifier

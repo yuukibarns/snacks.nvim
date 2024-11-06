@@ -112,6 +112,15 @@ Snacks.notifier = {}
 Snacks.notifier.new(opts)
 ```
 
+### `Snacks.notifier.notify()`
+
+```lua
+---@param msg string
+---@param level? snacks.notifier.level|number
+---@param opts? snacks.notifier.Notif.opts
+Snacks.notifier.notify(msg, level, opts)
+```
+
 ### `notifier:add()`
 
 ```lua
@@ -132,50 +141,4 @@ notifier:get_render(style)
 ```lua
 ---@param id? number|string
 notifier:hide(id)
-```
-
-### `notifier:init()`
-
-```lua
-notifier:init()
-```
-
-### `notifier:layout()`
-
-```lua
-notifier:layout()
-```
-
-### `notifier:notify()`
-
-```lua
----@param msg string
----@param level? snacks.notifier.level|number
----@param opts? snacks.notifier.Notif.opts
-notifier:notify(msg, level, opts)
-```
-
-### `notifier:render()`
-
-```lua
----@param notif snacks.notifier.Notif
-notifier:render(notif)
-```
-
-### `notifier:sort()`
-
-```lua
-notifier:sort()
-```
-
-### `notifier:start()`
-
-```lua
-notifier:start()
-```
-
-### `notifier:update()`
-
-```lua
-notifier:update()
 ```
