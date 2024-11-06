@@ -2,13 +2,25 @@
 
 ![image](https://github.com/user-attachments/assets/b89eb279-08fb-40b2-9330-9a77014b9389)
 
+## 🚀 Usage
+
+```lua
+-- to replace an existing notification just use the same id.
+-- you can also use the return value of the notify function as id.
+for i = 1, 10 do
+  vim.defer_fn(function()
+    vim.notify("Hello " .. i, "info", { id = "test" })
+  end, i * 500)
+end
+```
+
 <!-- docgen -->
 
 ## ⚙️ Config
 
 ```lua
 ---@class snacks.notifier.Config
----@field keep? fun(notif: snacks.notifier.Notif): boolean
+---@field keep? fun(notif: snacks.notifier.Notif): boolean # global keep function
 {
   timeout = 3000, -- default timeout in ms
   width = { min = 40, max = 0.4 },
@@ -85,6 +97,7 @@ Notification object
 ---@field dirty? boolean
 ---@field shown? number timestamp in ms
 ---@field added number timestamp in ms
+---@field added_hr number hrtime in ms
 ---@field layout? { width: number, height: number, top?: number }
 ```
 
