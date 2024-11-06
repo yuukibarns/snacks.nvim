@@ -48,14 +48,10 @@ vim.api.nvim_create_autocmd("User", {
 Snacks.rename.on_rename_file(from, to, rename)
 ```
 
-### `Snacks.rename.realpath()`
-
-```lua
----@param path string
-Snacks.rename.realpath(path)
-```
-
 ### `Snacks.rename.rename_file()`
+
+Prompt for the new filename,
+do the rename, and trigger LSP handlers
 
 ```lua
 Snacks.rename.rename_file()

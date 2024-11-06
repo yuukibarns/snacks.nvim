@@ -3,13 +3,57 @@
 ==============================================================================
 Table of Contents                            *snacks-rename-table-of-contents*
 
-1. Module                                               |snacks-rename-module|
+1. Usage                                                 |snacks-rename-usage|
+2. mini.files                                       |snacks-rename-mini.files|
+3. neo-tree.nvim                                 |snacks-rename-neo-tree.nvim|
+4. Module                                               |snacks-rename-module|
   - Snacks.rename.on_rename_file()|snacks-rename-module-snacks.rename.on_rename_file()|
-  - Snacks.rename.realpath()   |snacks-rename-module-snacks.rename.realpath()|
   - Snacks.rename.rename_file()|snacks-rename-module-snacks.rename.rename_file()|
+LSP-integrated file renaming with support for plugins like neo-tree.nvim
+<https://github.com/nvim-neo-tree/neo-tree.nvim> and mini.files
+<https://github.com/echasnovski/mini.files>.
+
 
 ==============================================================================
-1. Module                                               *snacks-rename-module*
+1. Usage                                                 *snacks-rename-usage*
+
+
+==============================================================================
+2. mini.files                                       *snacks-rename-mini.files*
+
+>lua
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "MiniFilesActionRename",
+      callback = function(event)
+        Snacks.rename.on_rename_file(event.data.from, event.data.to)
+      end,
+    })
+<
+
+
+==============================================================================
+3. neo-tree.nvim                                 *snacks-rename-neo-tree.nvim*
+
+>lua
+    {
+      "nvim-neo-tree/neo-tree.nvim",
+      opts = function(_, opts)
+        local function on_move(data)
+          Snacks.rename.on_rename_file(data.source, data.destination)
+        end
+        local events = require("neo-tree.events")
+        opts.event_handlers = opts.event_handlers or {}
+        vim.list_extend(opts.event_handlers, {
+          { event = events.FILE_MOVED, handler = on_move },
+          { event = events.FILE_RENAMED, handler = on_move },
+        })
+      end,
+    }
+<
+
+
+==============================================================================
+4. Module                                               *snacks-rename-module*
 
 
 SNACKS.RENAME.ON_RENAME_FILE()*snacks-rename-module-snacks.rename.on_rename_file()*
@@ -22,15 +66,9 @@ SNACKS.RENAME.ON_RENAME_FILE()*snacks-rename-module-snacks.rename.on_rename_file
 <
 
 
-SNACKS.RENAME.REALPATH()       *snacks-rename-module-snacks.rename.realpath()*
-
->lua
-    ---@param path string
-    Snacks.rename.realpath(path)
-<
-
-
 SNACKS.RENAME.RENAME_FILE() *snacks-rename-module-snacks.rename.rename_file()*
+
+Prompt for the new filename, do the rename, and trigger LSP handlers
 
 >lua
     Snacks.rename.rename_file()
