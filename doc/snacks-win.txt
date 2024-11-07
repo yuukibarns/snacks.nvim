@@ -19,9 +19,11 @@ Table of Contents                               *snacks-win-table-of-contents*
   - win:focus()                                |snacks-win-module-win:focus()|
   - win:hide()                                  |snacks-win-module-win:hide()|
   - win:is_floating()                    |snacks-win-module-win:is_floating()|
+  - win:lines()                                |snacks-win-module-win:lines()|
   - win:parent_size()                    |snacks-win-module-win:parent_size()|
   - win:show()                                  |snacks-win-module-win:show()|
   - win:size()                                  |snacks-win-module-win:size()|
+  - win:text()                                  |snacks-win-module-win:text()|
   - win:toggle()                              |snacks-win-module-win:toggle()|
   - win:update()                              |snacks-win-module-win:update()|
   - win:valid()                                |snacks-win-module-win:valid()|
@@ -119,6 +121,7 @@ MINIMAL                                            *snacks-win-styles-minimal*
         winbar = "",
         statuscolumn = "",
         wrap = false,
+        sidescrolloff = 0,
       },
     }
 <
@@ -221,6 +224,15 @@ WIN:IS_FLOATING()                        *snacks-win-module-win:is_floating()*
 <
 
 
+WIN:LINES()                                    *snacks-win-module-win:lines()*
+
+>lua
+    ---@param from? number
+    ---@param to? number
+    win:lines(from, to)
+<
+
+
 WIN:PARENT_SIZE()                        *snacks-win-module-win:parent_size()*
 
 >lua
@@ -240,6 +252,15 @@ WIN:SIZE()                                      *snacks-win-module-win:size()*
 >lua
     ---@return { height: number, width: number }
     win:size()
+<
+
+
+WIN:TEXT()                                      *snacks-win-module-win:text()*
+
+>lua
+    ---@param from? number
+    ---@param to? number
+    win:text(from, to)
 <
 
 

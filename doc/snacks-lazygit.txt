@@ -13,7 +13,7 @@ Table of Contents                           *snacks-lazygit-table-of-contents*
   - Snacks.lazygit.log_file()|snacks-lazygit-module-snacks.lazygit.log_file()|
   - Snacks.lazygit.open()        |snacks-lazygit-module-snacks.lazygit.open()|
 5. Links                                                |snacks-lazygit-links|
-Autmatically configures lazygit with a theme generated based on your Neovim
+Automatically configures lazygit with a theme generated based on your Neovim
 colorscheme and integrate edit with the current neovim instance.
 
 

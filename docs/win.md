@@ -87,6 +87,7 @@ Snacks.win({
     winbar = "",
     statuscolumn = "",
     wrap = false,
+    sidescrolloff = 0,
   },
 }
 ```
@@ -175,6 +176,14 @@ win:hide()
 win:is_floating()
 ```
 
+### `win:lines()`
+
+```lua
+---@param from? number
+---@param to? number
+win:lines(from, to)
+```
+
 ### `win:parent_size()`
 
 ```lua
@@ -192,6 +201,14 @@ win:show()
 ```lua
 ---@return { height: number, width: number }
 win:size()
+```
+
+### `win:text()`
+
+```lua
+---@param from? number
+---@param to? number
+win:text(from, to)
 ```
 
 ### `win:toggle()`
