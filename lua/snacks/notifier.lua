@@ -89,6 +89,7 @@ local defaults = {
   },
   ---@type snacks.notifier.style
   style = "compact",
+  top_down = true, -- place notifications from top to bottom
 }
 
 ---@class snacks.notifier.Class
@@ -403,33 +404,22 @@ function N:sort()
 end
 
 function N:layout()
-  local free = {} ---@type boolean[]
-  for i = 1, vim.o.lines do
-    free[i] = true
-  end
-  local margin = vim.deepcopy(self.opts.margin)
-  if vim.o.tabline ~= "" then
-    margin.top = margin.top + 1
-  end
-  if vim.o.laststatus ~= 0 then
-    margin.bottom = margin.bottom + 1
-  end
-  for i = 1, margin.top do
-    free[i] = false
-  end
-  for i = vim.o.lines - margin.bottom + 1, vim.o.lines do
-    free[i] = false
-  end
-  local function mark(row, height)
-    for i = row, row + height - 1 do
-      free[i] = false
+  local rows = {} ---@type boolean[]
+  local function mark(row, height, free)
+    for i = row, math.min(row + height - 1, vim.o.lines) do
+      rows[i] = free
     end
   end
+  mark(1, vim.o.lines, true)
+  mark(1, self.opts.margin.top + (vim.o.tabline == "" and 0 or 1), false)
+  mark(vim.o.lines - (self.opts.margin.bottom + (vim.o.laststatus == 0 and 0 or 1)) + 1, vim.o.lines, false)
+
   local function find(height, row)
-    for i = row or 1, vim.o.lines - height do
+    local from, to, down = row or 1, vim.o.lines - height, self.opts.top_down
+    for i = down and from or to, down and to or from, down and 1 or -1 do
       local ret = true
       for j = i, i + height - 1 do
-        if not free[j] then
+        if not rows[j] then
           ret = false
           break
         end
@@ -439,6 +429,7 @@ function N:layout()
       end
     end
   end
+
   local shown = 0
   local max_visible = vim.o.lines * (self.opts.height.min + 2)
   for _, notif in ipairs(self.queue) do
@@ -454,9 +445,9 @@ function N:layout()
     end
     if not skip and notif.layout.top then
       shown = shown + 1
-      mark(notif.layout.top, notif.layout.size.height)
+      mark(notif.layout.top, notif.layout.size.height, false)
       notif.win.opts.row = notif.layout.top - 1
-      notif.win.opts.col = vim.o.columns - notif.layout.size.width - margin.right
+      notif.win.opts.col = vim.o.columns - notif.layout.size.width - self.opts.margin.right
       notif.shown = notif.shown or vim.uv.now()
       notif.win:show()
       notif.win:update()

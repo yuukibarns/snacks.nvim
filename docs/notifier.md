@@ -115,6 +115,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
   },
   ---@type snacks.notifier.style
   style = "compact",
+  top_down = true, -- place notifications from top to bottom
 }
 ```
 
@@ -179,7 +180,7 @@ Notification object
 ---@field shown? number timestamp in ms
 ---@field added number timestamp in ms
 ---@field added_hr number hrtime in ms
----@field layout? { width: number, height: number, top?: number }
+---@field layout? { top?: number, size: { width: number, height: number }}
 ```
 
 ### Rendering
