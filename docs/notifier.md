@@ -162,6 +162,7 @@ Notification options
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style
 ---@field opts? fun(notif: snacks.notifier.Notif) -- dynamic opts
+---@field hl? snacks.notifier.hl -- highlight overrides
 ```
 
 Notification object
@@ -199,7 +200,7 @@ Notification object
 ```lua
 ---@class snacks.notifier.ctx
 ---@field opts snacks.win.Config
----@field notifier snacks.notifier
+---@field notifier snacks.notifier.Class
 ---@field hl snacks.notifier.hl
 ---@field ns number
 ```

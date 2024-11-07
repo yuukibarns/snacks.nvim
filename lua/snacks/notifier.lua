@@ -27,6 +27,7 @@ local M = setmetatable({}, {
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style
 ---@field opts? fun(notif: snacks.notifier.Notif) -- dynamic opts
+---@field hl? snacks.notifier.hl -- highlight overrides
 
 --- Notification object
 ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
@@ -54,7 +55,7 @@ local M = setmetatable({}, {
 
 ---@class snacks.notifier.ctx
 ---@field opts snacks.win.Config
----@field notifier snacks.notifier
+---@field notifier snacks.notifier.Class
 ---@field hl snacks.notifier.hl
 ---@field ns number
 
@@ -309,6 +310,16 @@ function N:render(notif)
   if type(notif.opts) == "function" then
     notif.opts(notif)
   end
+
+  ---@type snacks.notifier.hl
+  local hls = vim.tbl_extend("force", {
+    title = hl("Title", notif.level),
+    icon = hl("Icon", notif.level),
+    border = hl("Border", notif.level),
+    footer = hl("Footer", notif.level),
+    msg = hl("", notif.level),
+  }, notif.hl or {})
+
   local win = notif.win
     or Snacks.win({
       show = false,
@@ -319,11 +330,11 @@ function N:render(notif)
       noautocmd = true,
       wo = {
         winhighlight = table.concat({
-          "Normal:" .. hl("", notif.level),
-          "NormalNC:" .. hl("", notif.level),
-          "FloatBorder:" .. hl("Border", notif.level),
-          "FloatTitle:" .. hl("Title", notif.level),
-          "FloatFooter:" .. hl("Footer", notif.level),
+          "Normal:" .. hls.msg,
+          "NormalNC:" .. hls.msg,
+          "FloatBorder:" .. hls.border,
+          "FloatTitle:" .. hls.title,
+          "FloatFooter:" .. hls.footer,
         }, ","),
       },
       keys = {
@@ -338,21 +349,14 @@ function N:render(notif)
   vim.api.nvim_buf_clear_namespace(buf, N.ns, 0, -1)
   local render = self:get_render(notif.style)
 
-  local ctx = {
+  vim.bo[buf].modifiable = true
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+  render(buf, notif, {
     opts = win.opts,
     notifier = self,
     ns = N.ns,
-    hl = {
-      title = hl("Title", notif.level),
-      icon = hl("Icon", notif.level),
-      border = hl("Border", notif.level),
-      footer = hl("Footer", notif.level),
-      msg = hl("", notif.level),
-    },
-  }
-  vim.bo[buf].modifiable = true
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
-  render(buf, notif, ctx)
+    hl = hls,
+  })
   vim.bo[buf].modifiable = false
 
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
