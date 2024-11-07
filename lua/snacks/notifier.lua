@@ -26,6 +26,7 @@ local M = setmetatable({}, {
 ---@field ft? string
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style
+---@field opts? fun(notif: snacks.notifier.Notif) -- dynamic opts
 
 --- Notification object
 ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
@@ -140,6 +141,7 @@ N.styles = {
 }
 
 ---@alias snacks.notifier.level "trace"|"debug"|"info"|"warn"|"error"
+
 ---@type table<number, snacks.notifier.level>
 N.levels = {
   [vim.log.levels.TRACE] = "trace",
@@ -304,6 +306,9 @@ end
 
 ---@param notif snacks.notifier.Notif
 function N:render(notif)
+  if type(notif.opts) == "function" then
+    notif.opts(notif)
+  end
   local win = notif.win
     or Snacks.win({
       show = false,
@@ -346,6 +351,7 @@ function N:render(notif)
     },
   }
   vim.bo[buf].modifiable = true
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
   render(buf, notif, ctx)
   vim.bo[buf].modifiable = false
 
@@ -434,7 +440,7 @@ function N:layout()
   for _, notif in ipairs(self.queue) do
     local skip = shown >= max_visible
     if not skip then
-      if not notif.win or notif.dirty or not notif.win:buf_valid() then
+      if not notif.win or notif.dirty or not notif.win:buf_valid() or type(notif.opts) == "function" then
         notif.dirty = false
         self:render(notif)
         ---@diagnostic disable-next-line: assign-type-mismatch
