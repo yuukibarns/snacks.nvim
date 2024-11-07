@@ -540,27 +540,34 @@ function N:layout()
     end
   end
 
-  local shown = 0
-  local max_visible = vim.o.lines * (self.opts.height.min + 2)
+  local free = #vim.tbl_filter(function(v)
+    return v
+  end, rows)
   for _, notif in ipairs(assert(self.sorted)) do
-    local skip = shown >= max_visible
+    local skip = free < (self.opts.height.min + 2)
+    local changed = false
     if not skip then
       if not notif.win or notif.dirty or not notif.win:buf_valid() or type(notif.opts) == "function" then
         notif.dirty = false
         self:render(notif)
         ---@diagnostic disable-next-line: assign-type-mismatch
         notif.layout = vim.tbl_deep_extend("force", notif.layout or {}, { size = notif.win:size() })
+        changed = true
       end
+      local old_top = notif.layout.top
       notif.layout.top = find(notif.layout.size.height, notif.layout.top)
+      changed = changed or old_top ~= notif.layout.top
     end
     if not skip and notif.layout.top then
-      shown = shown + 1
+      free = free - notif.layout.size.height
       mark(notif.layout.top, notif.layout.size.height, false)
-      notif.win.opts.row = notif.layout.top - 1
-      notif.win.opts.col = vim.o.columns - notif.layout.size.width - self.opts.margin.right
-      notif.shown = notif.shown or ts()
-      notif.win:show()
-      notif.win:update()
+      if changed then
+        notif.win.opts.row = notif.layout.top - 1
+        notif.win.opts.col = vim.o.columns - notif.layout.size.width - self.opts.margin.right
+        notif.shown = notif.shown or ts()
+        notif.win:show()
+        notif.win:update()
+      end
     elseif notif.win then
       notif.shown = nil
       notif.win:hide()
