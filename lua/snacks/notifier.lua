@@ -41,7 +41,7 @@ local M = setmetatable({}, {
 ---@field shown? number timestamp in ms
 ---@field added number timestamp in ms
 ---@field added_hr number hrtime in ms
----@field layout? { width: number, height: number, top?: number }
+---@field layout? { top?: number, size: { width: number, height: number }}
 
 --- ### Rendering
 ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
@@ -448,15 +448,15 @@ function N:layout()
         notif.dirty = false
         self:render(notif)
         ---@diagnostic disable-next-line: assign-type-mismatch
-        notif.layout = notif.win:size()
+        notif.layout = vim.tbl_deep_extend("force", notif.layout or {}, { size = notif.win:size() })
       end
-      notif.layout.top = find(notif.layout.height, notif.layout.top)
+      notif.layout.top = find(notif.layout.size.height, notif.layout.top)
     end
     if not skip and notif.layout.top then
       shown = shown + 1
-      mark(notif.layout.top, notif.layout.height)
+      mark(notif.layout.top, notif.layout.size.height)
       notif.win.opts.row = notif.layout.top - 1
-      notif.win.opts.col = vim.o.columns - notif.layout.width - margin.right
+      notif.win.opts.col = vim.o.columns - notif.layout.size.width - margin.right
       notif.shown = notif.shown or vim.uv.now()
       notif.win:show()
       notif.win:update()
