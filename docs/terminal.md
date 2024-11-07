@@ -10,6 +10,34 @@ Based on the provided options, some defaults will be set:
 
 ![image](https://github.com/user-attachments/assets/afcc9989-57d7-4518-a390-cc7d6f0cec13)
 
+## 🚀 Usage
+
+### Edgy Integration
+
+```lua
+{
+  "folke/edgy.nvim",
+  ---@module 'edgy'
+  ---@param opts Edgy.Config
+  opts = function(_, opts)
+    for _, pos in ipairs({ "top", "bottom", "left", "right" }) do
+      opts[pos] = opts[pos] or {}
+      table.insert(opts[pos], {
+        ft = "snacks_terminal",
+        size = { height = 0.4 },
+        title = "%{b:snacks_terminal.id}: %{b:term_title}",
+        filter = function(_buf, win)
+          return vim.w[win].snacks_win
+            and vim.w[win].snacks_win.position == pos
+            and vim.w[win].snacks_win.relative == "editor"
+            and not vim.w[win].trouble_preview
+        end,
+      })
+    end
+  end,
+}
+```
+
 <!-- docgen -->
 
 ## ⚙️ Config
