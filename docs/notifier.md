@@ -18,10 +18,30 @@ end
 
 </details>
 
+<details><summary>Simple LSP Progress</summary>
+
+```lua
+vim.api.nvim_create_autocmd("LspProgress", {
+  ---@param ev {data: {client_id: integer, params: lsp.ProgressParams}}
+  callback = function(ev)
+    local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+    vim.notify(vim.lsp.status(), "info", {
+      id = "lsp_progress",
+      title = "LSP Progress",
+      opts = function(notif)
+        notif.icon = ev.data.params.value == "end" and " "
+          or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+      end,
+    })
+  end,
+})
+```
+
+</details>
+
 <details><summary>Advanced LSP Progress</summary>
 
 ![image](https://github.com/user-attachments/assets/a81b411c-150a-43ec-8def-87270c6f8dde)
-
 
 ```lua
 ---@type table<number, {token:lsp.ProgressToken, msg:string, done:boolean}[]>
@@ -118,9 +138,10 @@ vim.api.nvim_create_autocmd("LspProgress", {
 ## 📚 Types
 
 Render styles:
-* compact: use border for icon and title
-* minimal: no border, only icon and message
-* fancy: similar to the default nvim-notify style
+
+- compact: use border for icon and title
+- minimal: no border, only icon and message
+- fancy: similar to the default nvim-notify style
 
 ```lua
 ---@alias snacks.notifier.style snacks.notifier.render|"compact"|"fancy"|"minimal"
