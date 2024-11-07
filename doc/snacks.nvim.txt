@@ -85,7 +85,7 @@ LAZY.NVIM ~
   what it does.
 
   [!tip] If you don’t need these plugins, you can disable them, or skip `setup`
-  alltogether.
+  altogether.
 >lua
     {
       "folke/snacks.nvim",
