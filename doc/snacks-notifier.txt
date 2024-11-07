@@ -7,13 +7,16 @@ Table of Contents                          *snacks-notifier-table-of-contents*
 2. Config                                             |snacks-notifier-config|
 3. Styles                                             |snacks-notifier-styles|
   - notification                         |snacks-notifier-styles-notification|
+  - notification.history         |snacks-notifier-styles-notification.history|
 4. Types                                               |snacks-notifier-types|
   - Notifications                        |snacks-notifier-types-notifications|
   - Rendering                                |snacks-notifier-types-rendering|
 5. Module                                             |snacks-notifier-module|
   - Snacks.notifier()               |snacks-notifier-module-snacks.notifier()|
+  - Snacks.notifier.get_history()|snacks-notifier-module-snacks.notifier.get_history()|
   - Snacks.notifier.hide()     |snacks-notifier-module-snacks.notifier.hide()|
   - Snacks.notifier.notify() |snacks-notifier-module-snacks.notifier.notify()|
+  - Snacks.notifier.show_history()|snacks-notifier-module-snacks.notifier.show_history()|
 6. Links                                               |snacks-notifier-links|
 
 ==============================================================================
@@ -123,6 +126,7 @@ Advanced LSP Progress ~
       ---@type snacks.notifier.style
       style = "compact",
       top_down = true, -- place notifications from top to bottom
+      date_format = "%R", -- time format for notifications
     }
 <
 
@@ -143,6 +147,25 @@ NOTIFICATION                             *snacks-notifier-styles-notification*
         wrap = false,
       },
       bo = { filetype = "snacks_notif" },
+    }
+<
+
+
+NOTIFICATION.HISTORY             *snacks-notifier-styles-notification.history*
+
+>lua
+    {
+      border = "rounded",
+      zindex = 100,
+      width = 0.6,
+      height = 0.6,
+      minimal = false,
+      title = "Notification History",
+      title_pos = "center",
+      ft = "markdown",
+      bo = { filetype = "snacks_notif_history" },
+      wo = { winhighlight = "Normal:SnacksNotifierHistory" },
+      keys = { q = "close" },
     }
 <
 
@@ -181,16 +204,17 @@ Notification object
 
 >lua
     ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
-    ---@field msg string
     ---@field id number|string
+    ---@field msg string
     ---@field win? snacks.win
     ---@field icon string
     ---@field level snacks.notifier.level
     ---@field timeout number
     ---@field dirty? boolean
-    ---@field shown? number timestamp in ms
-    ---@field added number timestamp in ms
-    ---@field added_hr number hrtime in ms
+    ---@field added number timestamp with nano precision
+    ---@field updated number timestamp with nano precision
+    ---@field shown? number timestamp with nano precision
+    ---@field hidden? number timestamp with nano precision
     ---@field layout? { top?: number, size: { width: number, height: number }}
 <
 
@@ -235,6 +259,14 @@ SNACKS.NOTIFIER()                   *snacks-notifier-module-snacks.notifier()*
 <
 
 
+SNACKS.NOTIFIER.GET_HISTORY()*snacks-notifier-module-snacks.notifier.get_history()*
+
+>lua
+    ---@param opts? snacks.notifier.history
+    Snacks.notifier.get_history(opts)
+<
+
+
 SNACKS.NOTIFIER.HIDE()         *snacks-notifier-module-snacks.notifier.hide()*
 
 >lua
@@ -250,6 +282,14 @@ SNACKS.NOTIFIER.NOTIFY()     *snacks-notifier-module-snacks.notifier.notify()*
     ---@param level? snacks.notifier.level|number
     ---@param opts? snacks.notifier.Notif.opts
     Snacks.notifier.notify(msg, level, opts)
+<
+
+
+SNACKS.NOTIFIER.SHOW_HISTORY()*snacks-notifier-module-snacks.notifier.show_history()*
+
+>lua
+    ---@param opts? snacks.notifier.history
+    Snacks.notifier.show_history(opts)
 <
 
 ==============================================================================

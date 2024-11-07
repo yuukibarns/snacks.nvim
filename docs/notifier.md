@@ -116,6 +116,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
   ---@type snacks.notifier.style
   style = "compact",
   top_down = true, -- place notifications from top to bottom
+  date_format = "%R", -- time format for notifications
 }
 ```
 
@@ -133,6 +134,24 @@ vim.api.nvim_create_autocmd("LspProgress", {
     wrap = false,
   },
   bo = { filetype = "snacks_notif" },
+}
+```
+
+### `notification.history`
+
+```lua
+{
+  border = "rounded",
+  zindex = 100,
+  width = 0.6,
+  height = 0.6,
+  minimal = false,
+  title = "Notification History",
+  title_pos = "center",
+  ft = "markdown",
+  bo = { filetype = "snacks_notif_history" },
+  wo = { winhighlight = "Normal:SnacksNotifierHistory" },
+  keys = { q = "close" },
 }
 ```
 
@@ -170,16 +189,17 @@ Notification object
 
 ```lua
 ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
----@field msg string
 ---@field id number|string
+---@field msg string
 ---@field win? snacks.win
 ---@field icon string
 ---@field level snacks.notifier.level
 ---@field timeout number
 ---@field dirty? boolean
----@field shown? number timestamp in ms
----@field added number timestamp in ms
----@field added_hr number hrtime in ms
+---@field added number timestamp with nano precision
+---@field updated number timestamp with nano precision
+---@field shown? number timestamp with nano precision
+---@field hidden? number timestamp with nano precision
 ---@field layout? { top?: number, size: { width: number, height: number }}
 ```
 
@@ -219,6 +239,13 @@ Notification object
 Snacks.notifier()
 ```
 
+### `Snacks.notifier.get_history()`
+
+```lua
+---@param opts? snacks.notifier.history
+Snacks.notifier.get_history(opts)
+```
+
 ### `Snacks.notifier.hide()`
 
 ```lua
@@ -233,4 +260,11 @@ Snacks.notifier.hide(id)
 ---@param level? snacks.notifier.level|number
 ---@param opts? snacks.notifier.Notif.opts
 Snacks.notifier.notify(msg, level, opts)
+```
+
+### `Snacks.notifier.show_history()`
+
+```lua
+---@param opts? snacks.notifier.history
+Snacks.notifier.show_history(opts)
 ```
