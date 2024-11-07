@@ -454,6 +454,18 @@ function M:drop()
   end
 end
 
+---@param from? number
+---@param to? number
+function M:lines(from, to)
+  return self:buf_valid() and vim.api.nvim_buf_get_lines(self.buf, from or 0, to or -1, false) or {}
+end
+
+---@param from? number
+---@param to? number
+function M:text(from, to)
+  return table.concat(self:lines(from, to), "\n")
+end
+
 function M:parent_size()
   return {
     height = self.opts.relative == "win" and vim.api.nvim_win_get_height(self.opts.win) or vim.o.lines,
