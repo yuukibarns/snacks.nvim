@@ -60,6 +60,14 @@ local M = setmetatable({}, {
 ---@field hl snacks.notifier.hl
 ---@field ns number
 
+--- ### History
+---@class snacks.notifier.history
+---@field filter? snacks.notifier.level|fun(notif: snacks.notifier.Notif): boolean
+---@field sort? string[] # sort fields, default: {"added"}
+local history_opts = {
+  sort = { "added" },
+}
+
 Snacks.config.style("notification", {
   border = "rounded",
   zindex = 100,
@@ -69,6 +77,20 @@ Snacks.config.style("notification", {
     wrap = false,
   },
   bo = { filetype = "snacks_notif" },
+})
+
+Snacks.config.style("notification.history", {
+  border = "rounded",
+  zindex = 100,
+  width = 0.6,
+  height = 0.6,
+  minimal = false,
+  title = "Notification History",
+  title_pos = "center",
+  ft = "markdown",
+  bo = { filetype = "snacks_notif_history" },
+  wo = { winhighlight = "Normal:SnacksNotifierHistory" },
+  keys = { q = "close" },
 })
 
 ---@class snacks.notifier.Config
@@ -91,16 +113,29 @@ local defaults = {
   ---@type snacks.notifier.style
   style = "compact",
   top_down = true, -- place notifications from top to bottom
+  date_format = "%R", -- time format for notifications
 }
 
 ---@class snacks.notifier.Class
 ---@field queue table<string|number, snacks.notifier.Notif>
+---@field history table<string|number, snacks.notifier.Notif>
 ---@field sorted? snacks.notifier.Notif[]
 ---@field opts snacks.notifier.Config
 ---@field dirty boolean
 local N = {}
 
 N.ns = vim.api.nvim_create_namespace("snacks.notifier")
+
+---@param str string
+local function cap(str)
+  return str:sub(1, 1):upper() .. str:sub(2):lower()
+end
+
+---@param name string
+---@param level? snacks.notifier.level
+local function hl(name, level)
+  return "SnacksNotifier" .. name .. (level and cap(level) or "")
+end
 
 ---@type table<string, snacks.notifier.render>
 N.styles = {
@@ -122,6 +157,33 @@ N.styles = {
       virt_text_pos = "right_align",
     })
   end,
+  history = function(buf, notif, ctx)
+    local lines = vim.split(notif.msg, "\n", { plain = true })
+    local prefix = {
+      { os.date(ctx.notifier.opts.date_format, notif.added), hl("HistoryDateTime") },
+      { notif.icon, ctx.hl.icon },
+      { notif.level:upper(), ctx.hl.title },
+      { notif.title, hl("HistoryTitle") },
+    }
+    prefix = vim.tbl_filter(function(v)
+      return (v[1] or "") ~= ""
+    end, prefix)
+    local prefix_width = 0
+    for i = 1, #prefix do
+      prefix_width = prefix_width + vim.fn.strdisplaywidth(prefix[i * 2 - 1][1]) + 1
+      table.insert(prefix, i * 2, { " " })
+    end
+    local top = vim.api.nvim_buf_line_count(buf)
+    local empty = top == 1 and #vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] == 0
+    top = empty and 0 or top
+    lines[1] = string.rep(" ", prefix_width) .. (lines[1] or "")
+    vim.api.nvim_buf_set_lines(buf, top, -1, false, lines)
+    vim.api.nvim_buf_set_extmark(buf, ctx.ns, top, 0, {
+      virt_text = prefix,
+      virt_text_pos = "overlay",
+      priority = 10,
+    })
+  end,
   -- similar to the default nvim-notify style
   fancy = function(buf, notif, ctx)
     vim.api.nvim_buf_set_lines(buf, 0, 1, false, { "", "" })
@@ -132,7 +194,7 @@ N.styles = {
       priority = 10,
     })
     vim.api.nvim_buf_set_extmark(buf, ctx.ns, 0, 0, {
-      virt_text = { { " " }, { os.date("%X", notif.added), ctx.hl.title }, { " " } },
+      virt_text = { { " " }, { os.date(ctx.notifier.opts.date_format, notif.added), ctx.hl.title }, { " " } },
       virt_text_pos = "right_align",
       priority = 10,
     })
@@ -164,12 +226,6 @@ local function normlevel(level)
     or "info"
 end
 
----@param name string
----@param level? snacks.notifier.level
-local function hl(name, level)
-  return "SnacksNotifier" .. name .. (level and (level:sub(1, 1):upper() .. level:sub(2):lower()) or "")
-end
-
 local function ts()
   local ret = assert(vim.uv.clock_gettime("realtime"))
   return ret.sec + ret.nsec / 1e9
@@ -188,21 +244,26 @@ function N.new(opts)
   local self = setmetatable({}, { __index = N })
   self.opts = Snacks.config.get("notifier", defaults, opts)
   self.queue = {}
+  self.history = {}
   self:init()
   self:start()
   return self
 end
 
 function N:init()
-  local links = {} ---@type table<string, string>
+  local links = {
+    [hl("History")] = "Normal",
+    [hl("HistoryTitle")] = "Title",
+    [hl("HistoryDateTime")] = "Special",
+  }
   for _, level in ipairs(N.level_names) do
-    local cap = level:sub(1, 1):upper() .. level:sub(2):lower()
-    cap = (cap == "Trace" or cap == "Debug") and "Hint" or cap
+    local Level = cap(level)
+    local link = vim.tbl_contains({ "Trace", "Debug" }, Level) and "NonText" or nil
     links[hl("", level)] = "Normal"
-    links[hl("Icon", level)] = "DiagnosticSign" .. cap
-    links[hl("Border", level)] = "Diagnostic" .. cap
-    links[hl("Title", level)] = "Diagnostic" .. cap
-    links[hl("Footer", level)] = "Diagnostic" .. cap
+    links[hl("Icon", level)] = link or ("DiagnosticSign" .. Level)
+    links[hl("Border", level)] = link or ("Diagnostic" .. Level)
+    links[hl("Title", level)] = link or ("Diagnostic" .. Level)
+    links[hl("Footer", level)] = link or ("Diagnostic" .. Level)
   end
   for k, v in pairs(links) do
     vim.api.nvim_set_hl(0, k, { link = v, default = true })
@@ -235,8 +296,9 @@ end
 function N:add(opts)
   local now = ts()
   local notif = vim.deepcopy(opts) --[[@as snacks.notifier.Notif]]
-
   notif.msg = notif.msg or ""
+  -- FIXME: normalize title, icon, etc to remove newlines
+  notif.title = notif.title or ""
   notif.id = notif.id or next_id()
   notif.level = normlevel(notif.level)
   notif.icon = notif.icon or self.opts.icons[notif.level]
@@ -253,8 +315,8 @@ function N:add(opts)
     notif.dirty = true
   end
   self.sorted = nil
-
   self.queue[notif.id] = notif
+  self.history[notif.id] = notif
   return notif.id
 end
 
@@ -273,6 +335,38 @@ function N:update()
     end
   end
   self.sorted = self.sorted or self:sort()
+end
+
+---@param opts? snacks.notifier.history
+---@return snacks.notifier.Notif[]
+function N:get_history(opts)
+  ---@type snacks.notifier.history
+  opts = vim.tbl_deep_extend("force", {}, history_opts, opts or {})
+  local notifs = vim.tbl_values(self.history)
+  local filter = opts.filter
+  if type(filter) == "string" or type(filter) == "number" then
+    local level = normlevel(filter)
+    filter = function(n)
+      return n.level == level
+    end
+  end
+  notifs = filter and vim.tbl_filter(filter, notifs) or notifs
+  return self:sort(notifs, opts.sort)
+end
+
+---@param opts? snacks.notifier.history
+function N:show_history(opts)
+  local win = Snacks.win({ style = "notification.history", enter = true, show = false })
+  local buf = win:open_buf()
+  for _, notif in ipairs(self:get_history(opts)) do
+    N.styles.history(buf, notif, {
+      opts = win.opts,
+      notifier = self,
+      ns = N.ns,
+      hl = self:hl(notif),
+    })
+  end
+  return win:show()
 end
 
 ---@param id? number|string
@@ -313,19 +407,25 @@ function N:get_render(style)
 end
 
 ---@param notif snacks.notifier.Notif
-function N:render(notif)
-  if type(notif.opts) == "function" then
-    notif.opts(notif)
-  end
-
+function N:hl(notif)
   ---@type snacks.notifier.hl
-  local hls = vim.tbl_extend("force", {
+  return vim.tbl_extend("force", {
     title = hl("Title", notif.level),
     icon = hl("Icon", notif.level),
     border = hl("Border", notif.level),
     footer = hl("Footer", notif.level),
     msg = hl("", notif.level),
   }, notif.hl or {})
+end
+
+---@param notif snacks.notifier.Notif
+function N:render(notif)
+  if type(notif.opts) == "function" then
+    notif.opts(notif)
+  end
+
+  ---@type snacks.notifier.hl
+  local notif_hl = self:hl(notif)
 
   local win = notif.win
     or Snacks.win({
@@ -337,11 +437,11 @@ function N:render(notif)
       noautocmd = true,
       wo = {
         winhighlight = table.concat({
-          "Normal:" .. hls.msg,
-          "NormalNC:" .. hls.msg,
-          "FloatBorder:" .. hls.border,
-          "FloatTitle:" .. hls.title,
-          "FloatFooter:" .. hls.footer,
+          "Normal:" .. notif_hl.msg,
+          "NormalNC:" .. notif_hl.msg,
+          "FloatBorder:" .. notif_hl.border,
+          "FloatTitle:" .. notif_hl.title,
+          "FloatFooter:" .. notif_hl.footer,
         }, ","),
       },
       keys = {
@@ -362,7 +462,7 @@ function N:render(notif)
     opts = win.opts,
     notifier = self,
     ns = N.ns,
-    hl = hls,
+    hl = notif_hl,
   })
   vim.bo[buf].modifiable = false
 
@@ -389,11 +489,13 @@ function N:render(notif)
   win.opts.height = height
 end
 
-function N:sort()
-  ---@type snacks.notifier.Notif[]
-  local ret = vim.tbl_values(self.queue)
-  table.sort(ret, function(a, b)
-    for _, key in ipairs(self.opts.sort) do
+---@param fields? string[]
+---@param notifs? snacks.notifier.Notif[]
+function N:sort(notifs, fields)
+  fields = fields or self.opts.sort
+  notifs = notifs or vim.tbl_values(self.queue)
+  table.sort(notifs, function(a, b)
+    for _, key in ipairs(fields) do
       local function v(n)
         if key == "level" then
           return 10 - vim.log.levels[n[key]:upper()]
@@ -407,7 +509,7 @@ function N:sort()
     end
     return false
   end)
-  return ret
+  return notifs
 end
 
 function N:layout()
@@ -489,6 +591,16 @@ end
 ---@param id? number|string
 function M.hide(id)
   return notifier:hide(id)
+end
+
+---@param opts? snacks.notifier.history
+function M.get_history(opts)
+  return notifier:get_history(opts)
+end
+
+---@param opts? snacks.notifier.history
+function M.show_history(opts)
+  return notifier:show_history(opts)
 end
 
 return M
