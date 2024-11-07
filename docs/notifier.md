@@ -2,6 +2,10 @@
 
 ![image](https://github.com/user-attachments/assets/b89eb279-08fb-40b2-9330-9a77014b9389)
 
+## Notification History
+
+![image](https://github.com/user-attachments/assets/0dc449f4-b275-49e4-a25f-f58efcba3079)
+
 ## 💡 Examples
 
 <details><summary>Replace a notification</summary>
