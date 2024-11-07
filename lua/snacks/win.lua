@@ -123,6 +123,18 @@ vim.api.nvim_set_hl(0, "SnacksNormalNC", { link = "NormalFloat", default = true 
 vim.api.nvim_set_hl(0, "SnacksWinBar", { link = "Title", default = true })
 vim.api.nvim_set_hl(0, "SnacksWinBarNC", { link = "SnacksWinBar", default = true })
 
+M.transparent = false
+
+local function check_bg()
+  local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+  M.transparent = not (normal and normal.bg ~= nil)
+end
+check_bg()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("snacks_win_transparent", { clear = true }),
+  callback = check_bg,
+})
+
 local id = 0
 
 ---@private
@@ -335,6 +347,9 @@ function M:show()
   end
 
   self:open_win()
+  if M.transparent then
+    self.opts.wo.winblend = 0
+  end
   self:set_options("win")
   if self.opts.on_win then
     self.opts.on_win(self)
@@ -399,49 +414,42 @@ end
 ---@private
 function M:drop()
   -- don't show a backdrop for non-floating windows
-  if not self:is_floating() then
+  if
+    M.transparent
+    or not (self:is_floating() and self.opts.backdrop and self.opts.backdrop < 100 and vim.o.termguicolors)
+  then
     return
   end
-  local has_bg = false
-  if vim.fn.has("nvim-0.9.0") == 0 then
-    local normal = vim.api.nvim_get_hl_by_name("Normal", true)
-    has_bg = normal and normal.background ~= nil
-  else
-    local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
-    has_bg = normal and normal.bg ~= nil
-  end
 
-  if has_bg and self.opts.backdrop and self.opts.backdrop < 100 and vim.o.termguicolors then
-    self.backdrop = M.new({
-      enter = false,
-      backdrop = false,
-      relative = "editor",
-      height = 0,
-      width = 0,
-      style = "minimal",
-      border = "none",
-      focusable = false,
-      zindex = self.opts.zindex - 1,
-      wo = {
-        winhighlight = "Normal:SnacksBackdrop",
-        winblend = self.opts.backdrop,
-      },
-      bo = {
-        buftype = "nofile",
-        filetype = "snacks_win_backdrop",
-      },
-    })
-    vim.api.nvim_create_autocmd("WinClosed", {
-      group = self.augroup,
-      pattern = self.win .. "",
-      callback = function()
-        if self.backdrop then
-          self.backdrop:close()
-          self.backdrop = nil
-        end
-      end,
-    })
-  end
+  self.backdrop = M.new({
+    enter = false,
+    backdrop = false,
+    relative = "editor",
+    height = 0,
+    width = 0,
+    style = "minimal",
+    border = "none",
+    focusable = false,
+    zindex = self.opts.zindex - 1,
+    wo = {
+      winhighlight = "Normal:SnacksBackdrop",
+      winblend = self.opts.backdrop,
+    },
+    bo = {
+      buftype = "nofile",
+      filetype = "snacks_win_backdrop",
+    },
+  })
+  vim.api.nvim_create_autocmd("WinClosed", {
+    group = self.augroup,
+    pattern = self.win .. "",
+    callback = function()
+      if self.backdrop then
+        self.backdrop:close()
+        self.backdrop = nil
+      end
+    end,
+  })
 end
 
 ---@param from? number
