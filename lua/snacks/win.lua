@@ -474,6 +474,9 @@ function M:win_opts()
   opts.height = math.floor(opts.height < 1 and parent.height * opts.height or opts.height)
   opts.width = math.floor(opts.width < 1 and parent.width * opts.width or opts.width)
 
+  if opts.relative == "cursor" then
+    return opts
+  end
   opts.row = opts.row or math.floor((parent.height - opts.height) / 2)
   opts.col = opts.col or math.floor((parent.width - opts.width) / 2)
   return opts
