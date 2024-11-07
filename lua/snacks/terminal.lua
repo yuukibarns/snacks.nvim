@@ -63,8 +63,9 @@ local terminals = {}
 function M.open(cmd, opts)
   local id = vim.v.count1
   opts = Snacks.config.get("terminal", defaults --[[@as snacks.terminal.Opts]], opts)
-  opts.win = Snacks.win.resolve("terminal", opts.win)
-  opts.win.position = opts.win.position or (cmd and "float" or "bottom")
+  opts.win = Snacks.win.resolve("terminal", {
+    position = cmd and "float" or "bottom",
+  }, opts.win)
   opts.win.wo.winbar = opts.win.wo.winbar or (opts.win.position == "float" and "" or (id .. ": %{b:term_title}"))
 
   if opts.override then
