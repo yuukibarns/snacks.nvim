@@ -31,16 +31,17 @@ local M = setmetatable({}, {
 
 --- Notification object
 ---@class snacks.notifier.Notif: snacks.notifier.Notif.opts
----@field msg string
 ---@field id number|string
+---@field msg string
 ---@field win? snacks.win
 ---@field icon string
 ---@field level snacks.notifier.level
 ---@field timeout number
 ---@field dirty? boolean
----@field shown? number timestamp in ms
----@field added number timestamp in ms
----@field added_hr number hrtime in ms
+---@field added number timestamp with nano precision
+---@field updated number timestamp with nano precision
+---@field shown? number timestamp with nano precision
+---@field hidden? number timestamp with nano precision
 ---@field layout? { top?: number, size: { width: number, height: number }}
 
 --- ### Rendering
@@ -93,7 +94,8 @@ local defaults = {
 }
 
 ---@class snacks.notifier.Class
----@field queue snacks.notifier.Notif[]
+---@field queue table<string|number, snacks.notifier.Notif>
+---@field sorted? snacks.notifier.Notif[]
 ---@field opts snacks.notifier.Config
 ---@field dirty boolean
 local N = {}
@@ -168,6 +170,11 @@ local function hl(name, level)
   return "SnacksNotifier" .. name .. (level and (level:sub(1, 1):upper() .. level:sub(2):lower()) or "")
 end
 
+local function ts()
+  local ret = assert(vim.uv.clock_gettime("realtime"))
+  return ret.sec + ret.nsec / 1e9
+end
+
 local _id = 0
 
 local function next_id()
@@ -181,7 +188,6 @@ function N.new(opts)
   local self = setmetatable({}, { __index = N })
   self.opts = Snacks.config.get("notifier", defaults, opts)
   self.queue = {}
-  self.dirty = false
   self:init()
   self:start()
   return self
@@ -208,7 +214,7 @@ function N:start()
     100,
     100,
     vim.schedule_wrap(function()
-      if #self.queue == 0 then
+      if not next(self.queue) then
         return
       end
       xpcall(function()
@@ -227,66 +233,66 @@ end
 
 ---@param opts snacks.notifier.Notif.opts
 function N:add(opts)
-  local now = vim.uv.hrtime() / 1e6
+  local now = ts()
   local notif = vim.deepcopy(opts) --[[@as snacks.notifier.Notif]]
+
   notif.msg = notif.msg or ""
   notif.id = notif.id or next_id()
   notif.level = normlevel(notif.level)
   notif.icon = notif.icon or self.opts.icons[notif.level]
   notif.timeout = notif.timeout or self.opts.timeout
-  notif.added = os.time()
-  notif.added_hr = now
-  if opts.id then
-    for i, n in ipairs(self.queue) do
-      if n.id == notif.id then
-        notif.shown = n.shown and now or nil -- reset shown time
-        notif.win = n.win
-        notif.layout = n.layout
-        notif.dirty = true
-        self.queue[i] = notif
-        return notif.id
-      end
-    end
+  notif.added = now
+
+  if opts.id and self.queue[opts.id] then
+    local n = self.queue[opts.id] --[[@as snacks.notifier.Notif]]
+    notif.added = n.added
+    notif.updated = now
+    notif.shown = n.shown and now or nil -- reset shown time
+    notif.win = n.win
+    notif.layout = n.layout
+    notif.dirty = true
   end
-  table.insert(self.queue, notif)
-  self.dirty = true
+  self.sorted = nil
+
+  self.queue[notif.id] = notif
   return notif.id
 end
 
 function N:update()
-  local now = vim.uv.now()
+  local now = ts()
   --- Cleanup queue
-  ---@param notif snacks.notifier.Notif
-  self.queue = vim.tbl_filter(function(notif)
+  for id, notif in pairs(self.queue) do
     local timeout = notif.timeout or self.opts.timeout
     local keep = not notif.shown -- not shown yet
       or (notif.win and notif.win:win_valid() and vim.api.nvim_get_current_win() == notif.win.win) -- current window
       or (notif.keep and notif.keep(notif)) -- custom keep
       or (self.opts.keep and self.opts.keep(notif)) -- global keep
-      or (notif.shown + timeout > now) -- not timed out
-    if not keep and notif.win then
-      notif.win:close()
-      notif.win = nil
-      self.dirty = true
+      or (notif.shown + timeout / 1e3 > now) -- not timed out
+    if not keep then
+      self:hide(id)
     end
-    return keep
-  end, self.queue)
-  if self.dirty then
-    self:sort()
   end
-  self.dirty = false
+  self.sorted = self.sorted or self:sort()
 end
 
 ---@param id? number|string
 function N:hide(id)
-  ---@param notif snacks.notifier.Notif
-  self.queue = vim.tbl_filter(function(notif)
-    if notif.win and id == nil or notif.id == id then
-      notif.win:close()
-      return false
+  if not id then
+    for i in pairs(self.queue) do
+      self:hide(i)
     end
-    return true
-  end, self.queue)
+    return
+  end
+  local notif = self.queue[id]
+  if not notif then
+    return
+  end
+  self.queue[id], self.sorted = nil, nil
+  notif.hidden = ts()
+  if notif.win then
+    notif.win:hide()
+    notif.win = nil
+  end
 end
 
 ---@param value number
@@ -384,13 +390,13 @@ function N:render(notif)
 end
 
 function N:sort()
-  table.sort(self.queue, function(a, b)
+  ---@type snacks.notifier.Notif[]
+  local ret = vim.tbl_values(self.queue)
+  table.sort(ret, function(a, b)
     for _, key in ipairs(self.opts.sort) do
       local function v(n)
         if key == "level" then
           return 10 - vim.log.levels[n[key]:upper()]
-        elseif key == "added" then
-          return n.added_hr
         end
         return n[key]
       end
@@ -401,6 +407,7 @@ function N:sort()
     end
     return false
   end)
+  return ret
 end
 
 function N:layout()
@@ -432,7 +439,7 @@ function N:layout()
 
   local shown = 0
   local max_visible = vim.o.lines * (self.opts.height.min + 2)
-  for _, notif in ipairs(self.queue) do
+  for _, notif in ipairs(assert(self.sorted)) do
     local skip = shown >= max_visible
     if not skip then
       if not notif.win or notif.dirty or not notif.win:buf_valid() or type(notif.opts) == "function" then
@@ -448,7 +455,7 @@ function N:layout()
       mark(notif.layout.top, notif.layout.size.height, false)
       notif.win.opts.row = notif.layout.top - 1
       notif.win.opts.col = vim.o.columns - notif.layout.size.width - self.opts.margin.right
-      notif.shown = notif.shown or vim.uv.now()
+      notif.shown = notif.shown or ts()
       notif.win:show()
       notif.win:update()
     elseif notif.win then
