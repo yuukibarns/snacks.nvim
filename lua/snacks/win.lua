@@ -75,6 +75,7 @@ Snacks.config.style("minimal", {
     winbar = "",
     statuscolumn = "",
     wrap = false,
+    sidescrolloff = 0,
   },
 })
 
