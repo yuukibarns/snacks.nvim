@@ -20,6 +20,9 @@ end
 
 <details><summary>Advanced LSP Progress</summary>
 
+![image](https://github.com/user-attachments/assets/a81b411c-150a-43ec-8def-87270c6f8dde)
+
+
 ```lua
 ---@type table<number, {token:lsp.ProgressToken, msg:string, done:boolean}[]>
 local progress = vim.defaulttable()
