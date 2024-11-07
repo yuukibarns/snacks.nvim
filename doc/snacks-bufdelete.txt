@@ -1,4 +1,4 @@
-*snacks-bufdelete.txt*         For Neovim        Last change: 2024 November 06
+*snacks-bufdelete.txt*         For Neovim        Last change: 2024 November 07
 
 ==============================================================================
 Table of Contents                         *snacks-bufdelete-table-of-contents*

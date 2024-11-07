@@ -1,4 +1,4 @@
-*snacks-win.txt*            For Neovim           Last change: 2024 November 06
+*snacks-win.txt*            For Neovim           Last change: 2024 November 07
 
 ==============================================================================
 Table of Contents                               *snacks-win-table-of-contents*
@@ -16,8 +16,10 @@ Table of Contents                               *snacks-win-table-of-contents*
   - win:add_padding()                    |snacks-win-module-win:add_padding()|
   - win:buf_valid()                        |snacks-win-module-win:buf_valid()|
   - win:close()                                |snacks-win-module-win:close()|
+  - win:focus()                                |snacks-win-module-win:focus()|
   - win:hide()                                  |snacks-win-module-win:hide()|
   - win:is_floating()                    |snacks-win-module-win:is_floating()|
+  - win:parent_size()                    |snacks-win-module-win:parent_size()|
   - win:show()                                  |snacks-win-module-win:show()|
   - win:size()                                  |snacks-win-module-win:size()|
   - win:toggle()                              |snacks-win-module-win:toggle()|
@@ -62,6 +64,7 @@ Easily create and manage floating windows or splits
     ---@field backdrop? number|false Opacity of the backdrop (default: 60)
     ---@field wo? vim.wo window options
     ---@field bo? vim.bo buffer options
+    ---@field ft? string filetype to use for treesitter/syntax highlighting. Won't override existing filetype
     ---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys> Key mappings
     ---@field on_buf? fun(self: snacks.win) Callback after opening the buffer
     ---@field on_win? fun(self: snacks.win) Callback after opening the window
@@ -71,7 +74,7 @@ Easily create and manage floating windows or splits
       position = "float",
       minimal = true,
       wo = {
-        winhighlight = "Normal:NormalFloat,NormalNC:NormalFloat",
+        winhighlight = "Normal:SnacksNormal,NormalNC:SnacksNormalNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC",
       },
       bo = {},
       keys = {
@@ -115,8 +118,6 @@ MINIMAL                                            *snacks-win-styles-minimal*
         spell = false,
         winbar = "",
         statuscolumn = "",
-        winfixheight = true,
-        winfixwidth = true,
         wrap = false,
       },
     }
@@ -199,6 +200,13 @@ WIN:CLOSE()                                    *snacks-win-module-win:close()*
 <
 
 
+WIN:FOCUS()                                    *snacks-win-module-win:focus()*
+
+>lua
+    win:focus()
+<
+
+
 WIN:HIDE()                                      *snacks-win-module-win:hide()*
 
 >lua
@@ -210,6 +218,13 @@ WIN:IS_FLOATING()                        *snacks-win-module-win:is_floating()*
 
 >lua
     win:is_floating()
+<
+
+
+WIN:PARENT_SIZE()                        *snacks-win-module-win:parent_size()*
+
+>lua
+    win:parent_size()
 <
 
 
