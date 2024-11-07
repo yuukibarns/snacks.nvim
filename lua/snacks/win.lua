@@ -155,7 +155,7 @@ function M.new(opts)
   local self = setmetatable({}, { __index = M })
   id = id + 1
   self.id = id
-  opts = M.resolve(Snacks.config.get("win", defaults, opts))
+  opts = M.resolve(Snacks.config.get("win", defaults), opts)
   if opts.minimal then
     opts = M.resolve("minimal", opts)
   end
