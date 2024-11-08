@@ -344,10 +344,16 @@ function M:show()
     self:update()
     return self
   end
-  self.augroup = vim.api.nvim_create_augroup("snacks_win_" .. id, { clear = true })
+  self.augroup = vim.api.nvim_create_augroup("snacks_win_" .. self.id, { clear = true })
 
   self:open_buf()
+
+  -- OPTIM: prevent treesitter or syntax highlighting to attach on FileType if it's not already enabled
+  local optim_hl = not vim.b[self.buf].ts_highlight and vim.bo[self.buf].syntax == ""
+  vim.b[self.buf].ts_highlight = optim_hl or vim.b[self.buf].ts_highlight
   self:set_options("buf")
+  vim.b[self.buf].ts_highlight = not optim_hl and vim.b[self.buf].ts_highlight or nil
+
   if self.opts.on_buf then
     self.opts.on_buf(self)
   end
@@ -361,13 +367,11 @@ function M:show()
     self.opts.on_win(self)
   end
 
+  -- syntax highlighting
   local ft = self.opts.ft or vim.bo[self.buf].filetype
-  if ft then
-    local lang = ft and vim.treesitter.language.get_lang(ft)
-    if lang and not vim.b[self.buf].ts_highlight and not pcall(vim.treesitter.start, self.buf, lang) then
-      lang = nil
-    end
-    if ft and not lang then
+  if ft and not vim.b[self.buf].ts_highlight and vim.bo[self.buf].syntax == "" then
+    local lang = vim.treesitter.language.get_lang(ft)
+    if not (lang and pcall(vim.treesitter.start, self.buf, lang)) then
       vim.bo[self.buf].syntax = ft
     end
   end
@@ -376,16 +380,6 @@ function M:show()
     group = self.augroup,
     callback = function()
       self:update()
-    end,
-  })
-
-  vim.api.nvim_create_autocmd("BufEnter", {
-    group = self.augroup,
-    buffer = self.buf,
-    callback = function(ev)
-      if not vim.b[ev.buf].did_ftplugin then
-        vim.api.nvim_exec_autocmds("FileType", { buffer = ev.buf, modeline = false })
-      end
     end,
   })
 
@@ -523,8 +517,6 @@ end
 ---@private
 ---@param type "win" | "buf"
 function M:set_options(type)
-  local ei = vim.o.eventignore
-  vim.o.eventignore = "all"
   local opts = type == "win" and self.opts.wo or self.opts.bo
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(opts or {}) do
@@ -540,7 +532,6 @@ function M:set_options(type)
       )
     end
   end
-  vim.o.eventignore = ei
 end
 
 function M:buf_valid()
