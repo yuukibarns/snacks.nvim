@@ -326,10 +326,14 @@ function M:equalize()
 end
 
 function M:update()
-  if self:valid() and self:is_floating() then
-    local opts = self:win_opts()
-    opts.noautocmd = nil
-    vim.api.nvim_win_set_config(self.win, opts)
+  if self:valid() then
+    self:set_options("buf")
+    self:set_options("win")
+    if self:is_floating() then
+      local opts = self:win_opts()
+      opts.noautocmd = nil
+      vim.api.nvim_win_set_config(self.win, opts)
+    end
   end
 end
 
