@@ -9,7 +9,7 @@ local M = {}
 local defaults = {
   enabled = true, -- enable/disable the plugin
   debounce = 200, -- time in ms to wait before updating
-  notify_jump = true, -- show a notification when jumping
+  notify_jump = false, -- show a notification when jumping
   notify_end = true, -- show a notification when reaching the end
 }
 
