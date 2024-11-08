@@ -436,21 +436,19 @@ function N:render(notif)
       backdrop = false,
       ft = notif.ft,
       noautocmd = true,
-      wo = {
-        winhighlight = table.concat({
-          "Normal:" .. notif_hl.msg,
-          "NormalNC:" .. notif_hl.msg,
-          "FloatBorder:" .. notif_hl.border,
-          "FloatTitle:" .. notif_hl.title,
-          "FloatFooter:" .. notif_hl.footer,
-        }, ","),
-      },
       keys = {
         q = function()
           self:hide(notif.id)
         end,
       },
     })
+  win.opts.wo.winhighlight = table.concat({
+    "Normal:" .. notif_hl.msg,
+    "NormalNC:" .. notif_hl.msg,
+    "FloatBorder:" .. notif_hl.border,
+    "FloatTitle:" .. notif_hl.title,
+    "FloatFooter:" .. notif_hl.footer,
+  }, ",")
   notif.win = win
   ---@diagnostic disable-next-line: invisible
   local buf = win:open_buf()
@@ -578,7 +576,6 @@ function N:layout()
           notif.win.opts.col = vim.o.columns - notif.layout.width - self.opts.margin.right
           notif.shown = notif.shown or ts()
           notif.win:show()
-          notif.win:update()
         end
       end
     end
