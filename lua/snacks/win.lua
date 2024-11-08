@@ -373,6 +373,16 @@ function M:show()
     end,
   })
 
+  vim.api.nvim_create_autocmd("BufEnter", {
+    group = self.augroup,
+    buffer = self.buf,
+    callback = function(ev)
+      if not vim.b[ev.buf].did_ftplugin then
+        vim.api.nvim_exec_autocmds("FileType", { buffer = ev.buf, modeline = false })
+      end
+    end,
+  })
+
   for key, spec in pairs(self.opts.keys) do
     if spec then
       if type(spec) == "string" then
@@ -507,6 +517,8 @@ end
 ---@private
 ---@param type "win" | "buf"
 function M:set_options(type)
+  local ei = vim.o.eventignore
+  vim.o.eventignore = "all"
   local opts = type == "win" and self.opts.wo or self.opts.bo
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(opts or {}) do
@@ -522,6 +534,7 @@ function M:set_options(type)
       )
     end
   end
+  vim.o.eventignore = ei
 end
 
 function M:buf_valid()
