@@ -13,10 +13,17 @@ Auto-show LSP references and quickly navigate between them
   debounce = 200, -- time in ms to wait before updating
   notify_jump = false, -- show a notification when jumping
   notify_end = true, -- show a notification when reaching the end
+  modes = { "n", "i", "c" }, -- modes to show references
 }
 ```
 
 ## 📦 Module
+
+### `Snacks.words.clear()`
+
+```lua
+Snacks.words.clear()
+```
 
 ### `Snacks.words.is_enabled()`
 
