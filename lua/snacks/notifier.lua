@@ -122,7 +122,6 @@ local defaults = {
 ---@field history table<string|number, snacks.notifier.Notif>
 ---@field sorted? snacks.notifier.Notif[]
 ---@field opts snacks.notifier.Config
----@field dirty boolean
 local N = {}
 
 N.ns = vim.api.nvim_create_namespace("snacks.notifier")
@@ -269,6 +268,17 @@ function N:init()
   for k, v in pairs(links) do
     vim.api.nvim_set_hl(0, k, { link = v, default = true })
   end
+
+  -- resize handler
+  vim.api.nvim_create_autocmd("VimResized", {
+    group = vim.api.nvim_create_augroup("snacks_notifier", {}),
+    callback = function()
+      for _, notif in pairs(self.queue) do
+        notif.dirty = true
+      end
+      self.sorted = nil
+    end,
+  })
 end
 
 function N:start()
