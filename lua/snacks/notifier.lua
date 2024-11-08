@@ -42,7 +42,7 @@ local M = setmetatable({}, {
 ---@field updated number timestamp with nano precision
 ---@field shown? number timestamp with nano precision
 ---@field hidden? number timestamp with nano precision
----@field layout? { top?: number, size: { width: number, height: number }}
+---@field layout? { top?: number, width: number, height: number }
 
 --- ### Rendering
 ---@alias snacks.notifier.render fun(buf: number, notif: snacks.notifier.Notif, ctx: snacks.notifier.ctx)
@@ -513,23 +513,28 @@ function N:sort(notifs, fields)
   return notifs
 end
 
-function N:layout()
-  local rows = {} ---@type boolean[]
-  local function mark(row, height, free)
+function N:new_layout()
+  ---@class snacks.notifier.layout
+  local layout = {}
+  layout.free = 0
+  layout.rows = {} ---@type boolean[]
+  ---@param row number
+  ---@param height number
+  ---@param free boolean
+  function layout.mark(row, height, free)
     for i = row, math.min(row + height - 1, vim.o.lines) do
-      rows[i] = free
+      layout.free = layout.free + (free and 1 or -1)
+      layout.rows[i] = free
     end
   end
-  mark(1, vim.o.lines, true)
-  mark(1, self.opts.margin.top + (vim.o.tabline == "" and 0 or 1), false)
-  mark(vim.o.lines - (self.opts.margin.bottom + (vim.o.laststatus == 0 and 0 or 1)) + 1, vim.o.lines, false)
-
-  local function find(height, row)
+  ---@param height number
+  ---@param row? number wanted row
+  function layout.find(height, row)
     local from, to, down = row or 1, vim.o.lines - height, self.opts.top_down
     for i = down and from or to, down and to or from, down and 1 or -1 do
       local ret = true
       for j = i, i + height - 1 do
-        if not rows[j] then
+        if not layout.rows[j] then
           ret = false
           break
         end
@@ -539,41 +544,46 @@ function N:layout()
       end
     end
   end
+  layout.mark(1, vim.o.lines, true)
+  layout.mark(1, self.opts.margin.top + (vim.o.tabline == "" and 0 or 1), false)
+  layout.mark(vim.o.lines - (self.opts.margin.bottom + (vim.o.laststatus == 0 and 0 or 1)) + 1, vim.o.lines, false)
+  return layout
+end
 
-  local free = #vim.tbl_filter(function(v)
-    return v
-  end, rows)
+function N:layout()
+  local layout = self:new_layout()
+  local changes = 0
   for _, notif in ipairs(assert(self.sorted)) do
-    local skip = free < (self.opts.height.min + 2)
-    local changed = false
-    if not skip then
+    if layout.free < (self.opts.height.min + 2) then -- not enough space
+      if notif.win then
+        notif.shown = nil
+        notif.win:hide()
+      end
+    else
+      local prev_layout = notif.layout
+        and { top = notif.layout.top, height = notif.layout.height, width = notif.layout.width }
       if not notif.win or notif.dirty or not notif.win:buf_valid() or type(notif.opts) == "function" then
         notif.dirty = false
         self:render(notif)
-        ---@diagnostic disable-next-line: assign-type-mismatch
-        notif.layout = vim.tbl_deep_extend("force", notif.layout or {}, { size = notif.win:size() })
-        changed = true
+        notif.layout = notif.win:size()
+        notif.layout.top = prev_layout and prev_layout.top
+        prev_layout = nil -- always re-render since opts might've changed
       end
-      local old_top = notif.layout.top
-      notif.layout.top = find(notif.layout.size.height, notif.layout.top)
-      changed = changed or old_top ~= notif.layout.top
-    end
-    if not skip and notif.layout.top then
-      free = free - notif.layout.size.height
-      mark(notif.layout.top, notif.layout.size.height, false)
-      if changed then
-        notif.win.opts.row = notif.layout.top - 1
-        notif.win.opts.col = vim.o.columns - notif.layout.size.width - self.opts.margin.right
-        notif.shown = notif.shown or ts()
-        notif.win:show()
-        notif.win:update()
+      notif.layout.top = layout.find(notif.layout.height, notif.layout.top)
+      if notif.layout.top then
+        layout.mark(notif.layout.top, notif.layout.height, false)
+        if not vim.deep_equal(prev_layout, notif.layout) then
+          changes = changes + 1
+          notif.win.opts.row = notif.layout.top - 1
+          notif.win.opts.col = vim.o.columns - notif.layout.width - self.opts.margin.right
+          notif.shown = notif.shown or ts()
+          notif.win:show()
+          notif.win:update()
+        end
       end
-    elseif notif.win then
-      notif.shown = nil
-      notif.win:hide()
     end
   end
-  vim.cmd.redraw()
+  return changes > 0 and (vim.cmd.redraw() or true)
 end
 
 ---@param msg string

@@ -205,7 +205,7 @@ Notification object
 ---@field updated number timestamp with nano precision
 ---@field shown? number timestamp with nano precision
 ---@field hidden? number timestamp with nano precision
----@field layout? { top?: number, size: { width: number, height: number }}
+---@field layout? { top?: number, width: number, height: number }
 ```
 
 ### Rendering
