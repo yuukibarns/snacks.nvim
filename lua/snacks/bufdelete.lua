@@ -7,10 +7,28 @@ local M = setmetatable({}, {
   end,
 })
 
----@param buf number?
+--- Delete a buffer:
+--- - either the current buffer if `buf` is not provided
+--- - or the buffer `buf` if it is a number
+--- - or every buffer for which `buf` returns true if it is a function
+---@param buf? number | fun(buf: number): boolean
 function M.delete(buf)
+  if type(buf) == "function" then
+    for _, b in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.bo[b].buflisted and buf(b) then
+        M.delete(b)
+      end
+    end
+    return
+  end
+
   buf = buf or 0
   buf = buf == 0 and vim.api.nvim_get_current_buf() or buf
+
+  -- Ensure we always run in the target buffer
+  if buf ~= vim.api.nvim_get_current_buf() then
+    return vim.api.nvim_buf_call(buf, M.delete)
+  end
 
   if vim.bo.modified then
     local choice = vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname()), "&Yes\n&No\n&Cancel")
@@ -48,6 +66,20 @@ function M.delete(buf)
   if vim.api.nvim_buf_is_valid(buf) then
     pcall(vim.cmd, "bdelete! " .. buf)
   end
+end
+
+--- Delete all buffers
+function M.all()
+  return M.delete(function()
+    return true
+  end)
+end
+
+--- Delete all buffers except the current one
+function M.other()
+  return M.delete(function(b)
+    return b ~= vim.api.nvim_get_current_buf()
+  end)
 end
 
 return M
