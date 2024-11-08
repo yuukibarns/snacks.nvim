@@ -11,6 +11,7 @@ local defaults = {
   debounce = 200, -- time in ms to wait before updating
   notify_jump = false, -- show a notification when jumping
   notify_end = true, -- show a notification when reaching the end
+  modes = { "n", "i", "c" }, -- modes to show references
 }
 
 local config = Snacks.config.get("words", defaults)
@@ -21,14 +22,22 @@ local timer = (vim.uv or vim.loop).new_timer()
 function M.setup()
   local group = vim.api.nvim_create_augroup("snacks_words", { clear = true })
 
-  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "ModeChanged" }, {
     group = group,
     callback = function()
+      if not M.is_enabled() then
+        M.clear()
+        return
+      end
       if not ({ M.get() })[2] then
         M.update()
       end
     end,
   })
+end
+
+function M.clear()
+  vim.lsp.buf.clear_references()
 end
 
 ---@private
@@ -42,7 +51,7 @@ function M.update()
             return
           end
           vim.lsp.buf.document_highlight()
-          vim.lsp.buf.clear_references()
+          M.clear()
         end)
       end
     end)
@@ -51,7 +60,12 @@ end
 
 ---@param buf number?
 function M.is_enabled(buf)
+  local mode = vim.api.nvim_get_mode().mode:lower()
+  mode = mode:gsub("\22", "v"):gsub("\19", "s")
+  mode = mode:sub(1, 2) == "no" and "o" or mode
+  mode = mode:sub(1, 1):match("[ncitsvo]") or "n"
   return config.enabled
+    and vim.tbl_contains(config.modes, mode)
     and #vim.lsp.get_clients({
         method = vim.lsp.protocol.Methods.textDocument_documentHighlight,
         bufnr = buf or 0,
