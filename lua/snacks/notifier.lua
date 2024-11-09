@@ -307,8 +307,15 @@ function N:add(opts)
   local now = ts()
   local notif = vim.deepcopy(opts) --[[@as snacks.notifier.Notif]]
   notif.msg = notif.msg or ""
-  -- FIXME: normalize title, icon, etc to remove newlines
-  notif.title = notif.title or ""
+
+  -- NOTE: support nvim-notify style replace
+  ---@diagnostic disable-next-line: undefined-field
+  if not notif.id and notif.replace then
+    ---@diagnostic disable-next-line: undefined-field
+    notif.id = type(notif.replace) == "table" and notif.replace.id or notif.replace
+  end
+
+  notif.title = (notif.title or ""):gsub("\n", " ")
   notif.id = notif.id or next_id()
   notif.level = normlevel(notif.level)
   notif.icon = notif.icon or self.opts.icons[notif.level]
