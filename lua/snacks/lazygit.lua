@@ -6,6 +6,8 @@ local M = setmetatable({}, {
   end,
 })
 
+local uv = vim.uv or vim.loop
+
 ---@alias snacks.lazygit.Color {fg?:string, bg?:string, bold?:boolean}
 
 ---@class snacks.lazygit.Theme: table<number, snacks.lazygit.Color>
@@ -62,14 +64,14 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 ---@param opts snacks.lazygit.Config
 local function env(opts)
   if not config_dir then
-    local proc = vim.system({ "lazygit", "-cd" }, { text = true }):wait()
-    local lines = vim.split(proc.stdout, "\n", { plain = true })
+    local out = vim.fn.system({ "lazygit", "-cd" })
+    local lines = vim.split(out, "\n", { plain = true })
 
-    if proc.code == 0 then
+    if vim.v.shell_error == 0 and #lines > 1 then
       config_dir = vim.split(lines[1], "\n", { plain = true })[1]
       vim.env.LG_CONFIG_FILE = vim.fs.normalize(config_dir .. "/config.yml" .. "," .. opts.theme_path)
       local custom_config = vim.fs.normalize(config_dir .. "/custom.yml")
-      if vim.uv.fs_stat(custom_config) and vim.uv.fs_stat(custom_config).type == "file" then
+      if uv.fs_stat(custom_config) and uv.fs_stat(custom_config).type == "file" then
         vim.env.LG_CONFIG_FILE = vim.env.LG_CONFIG_FILE .. "," .. custom_config
       end
     else
@@ -78,7 +80,7 @@ local function env(opts)
         "Will not apply **lazygit** config.",
         "",
         "# Error:",
-        vim.trim(proc.stdout .. "\n" .. proc.stderr),
+        vim.trim(out),
       }
       Snacks.notify.error(msg, { title = "lazygit" })
     end

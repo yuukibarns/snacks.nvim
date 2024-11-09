@@ -6,6 +6,8 @@ local M = setmetatable({}, {
   end,
 })
 
+local uv = vim.uv or vim.loop
+
 --- Render styles:
 --- * compact: use border for icon and title
 --- * minimal: no border, only icon and message
@@ -226,8 +228,12 @@ local function normlevel(level)
 end
 
 local function ts()
-  local ret = assert(vim.uv.clock_gettime("realtime"))
-  return ret.sec + ret.nsec / 1e9
+  if uv.clock_gettime then
+    local ret = assert(uv.clock_gettime("realtime"))
+    return ret.sec + ret.nsec / 1e9
+  end
+  local sec, usec = uv.gettimeofday()
+  return sec + usec / 1e6
 end
 
 local _id = 0
@@ -281,7 +287,7 @@ function N:init()
 end
 
 function N:start()
-  vim.uv.new_timer():start(
+  uv.new_timer():start(
     100,
     100,
     vim.schedule_wrap(function()
@@ -293,6 +299,7 @@ function N:start()
         self:layout()
       end, function(err)
         local trace = debug.traceback(err, 2)
+        print(err)
         vim.api.nvim_err_writeln(
           ("Snacks notifier failed. Dropping queue. Error:\n%s\n\nTrace:\n%s"):format(error, trace)
         )
