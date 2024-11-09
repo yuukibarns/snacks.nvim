@@ -1,4 +1,3 @@
----@hide
 ---@class snacks.lazygit
 ---@overload fun(opts?: snacks.lazygit.Config): snacks.win
 local M = setmetatable({}, {

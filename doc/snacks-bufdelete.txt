@@ -1,9 +1,10 @@
-*snacks-bufdelete.txt*         For Neovim        Last change: 2024 November 08
+*snacks-bufdelete.txt*                                             snacks.nvim
 
 ==============================================================================
 Table of Contents                         *snacks-bufdelete-table-of-contents*
 
-1. Module                                            |snacks-bufdelete-module|
+1. Config                                            |snacks-bufdelete-config|
+2. Module                                            |snacks-bufdelete-module|
   - Snacks.bufdelete()            |snacks-bufdelete-module-snacks.bufdelete()|
   - Snacks.bufdelete.all()    |snacks-bufdelete-module-snacks.bufdelete.all()|
   - Snacks.bufdelete.delete()|snacks-bufdelete-module-snacks.bufdelete.delete()|
@@ -15,7 +16,20 @@ discard.
 
 
 ==============================================================================
-1. Module                                            *snacks-bufdelete-module*
+1. Config                                            *snacks-bufdelete-config*
+
+>lua
+    ---@class snacks.bufdelete.Opts
+    ---@field buf? number Buffer to delete. If not provided, the current buffer is deleted
+    ---@field force? boolean Delete the buffer even if it is modified
+    ---@field filter? fun(buf: number): boolean Filter buffers to delete
+    ---@field wipe? boolean Wipe the buffer instead of deleting it (see `:h :bwipeout`)
+    {}
+<
+
+
+==============================================================================
+2. Module                                            *snacks-bufdelete-module*
 
 
 SNACKS.BUFDELETE()                *snacks-bufdelete-module-snacks.bufdelete()*

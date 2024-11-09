@@ -1,4 +1,3 @@
----@hide
 ---@class snacks.notifier
 ---@overload fun(msg: string, level?: snacks.notifier.level|number, opts?: snacks.notifier.Notif.opts): number|string
 local M = setmetatable({}, {

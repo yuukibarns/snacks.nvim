@@ -1,4 +1,3 @@
----@hide
 ---@class snacks.words
 local M = {}
 
