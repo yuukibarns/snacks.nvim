@@ -116,6 +116,7 @@ local defaults = {
   style = "compact",
   top_down = true, -- place notifications from top to bottom
   date_format = "%R", -- time format for notifications
+  refresh = 50, -- refresh at most every 50ms
 }
 
 ---@class snacks.notifier.Class
@@ -288,8 +289,8 @@ end
 
 function N:start()
   uv.new_timer():start(
-    100,
-    100,
+    self.opts.refresh,
+    self.opts.refresh,
     vim.schedule_wrap(function()
       if not next(self.queue) then
         return
