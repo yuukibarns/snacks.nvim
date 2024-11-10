@@ -369,7 +369,7 @@ function M:show()
 
   -- syntax highlighting
   local ft = self.opts.ft or vim.bo[self.buf].filetype
-  if ft and not vim.b[self.buf].ts_highlight and vim.bo[self.buf].syntax == "" then
+  if ft and not ft:find("^snacks_") and not vim.b[self.buf].ts_highlight and vim.bo[self.buf].syntax == "" then
     local lang = vim.treesitter.language.get_lang(ft)
     if not (lang and pcall(vim.treesitter.start, self.buf, lang)) then
       vim.bo[self.buf].syntax = ft
