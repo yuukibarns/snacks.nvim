@@ -507,11 +507,34 @@ function M:size()
   local opts = self:win_opts()
   local height = opts.height
   local width = opts.width
-  if opts.border and opts.border ~= "none" then
+  if self:has_border() then
     height = height + 2
     width = width + 2
   end
   return { height = height, width = width }
+end
+
+function M:has_border()
+  return self.opts.border and self.opts.border ~= "" and self.opts.border ~= "none"
+end
+
+function M:border_text_width()
+  if not self:has_border() then
+    return 0
+  end
+  local ret = 0
+  for _, t in ipairs({ "title", "footer" }) do
+    local str = self.opts[t] or {}
+    str = type(str) == "string" and { str } or str
+    ---@cast str (string|string[])[]
+    ret = math.max(ret, #table.concat(
+      vim.tbl_map(function(s)
+        return type(s) == "string" and s or s[1]
+      end, str),
+      ""
+    ))
+  end
+  return ret
 end
 
 ---@private
