@@ -128,17 +128,6 @@ Open a new terminal window.
 Snacks.terminal.open(cmd, opts)
 ```
 
-### `Snacks.terminal.parse()`
-
-Parses a shell command into a table of arguments.
-- spaces inside quotes (only double quotes are supported) are preserved
-- backslash
-
-```lua
----@param cmd string
-Snacks.terminal.parse(cmd)
-```
-
 ### `Snacks.terminal.toggle()`
 
 Toggle a terminal window.
