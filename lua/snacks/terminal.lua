@@ -136,6 +136,7 @@ end
 --- Parses a shell command into a table of arguments.
 --- - spaces inside quotes (only double quotes are supported) are preserved
 --- - backslash
+---@private
 ---@param cmd string
 function M.parse(cmd)
   local args = {}
