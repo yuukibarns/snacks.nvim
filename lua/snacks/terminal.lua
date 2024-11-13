@@ -92,7 +92,7 @@ function M.open(cmd, opts)
       cwd = opts.cwd,
       env = opts.env,
     }
-    vim.fn.termopen(cmd or { vim.o.shell }, vim.tbl_isempty(term_opts) and vim.empty_dict() or term_opts)
+    vim.fn.termopen(cmd or M.parse(vim.o.shell), vim.tbl_isempty(term_opts) and vim.empty_dict() or term_opts)
   end)
 
   if opts.interactive ~= false then
@@ -131,6 +131,39 @@ function M.toggle(cmd, opts)
     terminals[id] = M.open(cmd, opts)
   end
   return terminals[id]
+end
+
+--- Parses a shell command into a table of arguments.
+--- - spaces inside quotes (only double quotes are supported) are preserved
+--- - backslash
+---@param cmd string
+function M.parse(cmd)
+  local args = {}
+  local in_quotes, escape_next, current = false, false, ""
+  local function add()
+    if #current > 0 then
+      table.insert(args, current)
+      current = ""
+    end
+  end
+
+  for i = 1, #cmd do
+    local char = cmd:sub(i, i)
+    if escape_next then
+      current = current .. ((char == '"' or char == "\\") and "" or "\\") .. char
+      escape_next = false
+    elseif char == "\\" and in_quotes then
+      escape_next = true
+    elseif char == '"' then
+      in_quotes = not in_quotes
+    elseif char:find("[ \t]") and not in_quotes then
+      add()
+    else
+      current = current .. char
+    end
+  end
+  add()
+  return args
 end
 
 return M
