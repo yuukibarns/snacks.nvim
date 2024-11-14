@@ -173,7 +173,7 @@ end
 --- Example:
 ---
 --- ```sh
---- ls -la | nvim - -c "lua Snacks.terminal.colorize()"
+--- ls -la --color=always | nvim - -c "lua Snacks.terminal.colorize()"
 --- ```
 function M.colorize()
   vim.wo.number = false
