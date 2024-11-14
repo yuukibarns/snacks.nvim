@@ -96,9 +96,7 @@ local function get_color(v)
   for _, c in ipairs({ "fg", "bg" }) do
     if v[c] then
       local name = v[c]
-      local hl = vim.api.nvim_get_hl and vim.api.nvim_get_hl(0, { name = name, link = false })
-        or vim.api.nvim_get_hl_by_name(name, true)
-
+      local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
       local hl_color ---@type number?
       if c == "fg" then
         hl_color = hl and hl.fg or hl.foreground
