@@ -172,7 +172,7 @@ end
 ---
 --- Example:
 ---
---- ```lua
+--- ```sh
 --- ls -la | nvim - -c "lua Snacks.terminal.colorize()"
 --- ```
 function M.colorize()

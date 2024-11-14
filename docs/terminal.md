@@ -125,7 +125,7 @@ Replaces ansii color codes with the actual colors.
 
 Example:
 
-```lua
+```sh
 ls -la | nvim - -c "lua Snacks.terminal.colorize()"
 ```
 
