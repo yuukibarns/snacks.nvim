@@ -23,7 +23,7 @@ local uv = vim.uv or vim.loop
 ---@field level? number|snacks.notifier.level
 ---@field title? string
 ---@field icon? string
----@field timeout? number
+---@field timeout? number timeout in ms. Set to 0 to keep until manually closed
 ---@field ft? string
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style
@@ -371,6 +371,7 @@ function N:update()
   for id, notif in pairs(self.queue) do
     local timeout = notif.timeout or self.opts.timeout
     local keep = not notif.shown -- not shown yet
+      or timeout == 0 -- no timeout
       or (notif.win and notif.win:win_valid() and vim.api.nvim_get_current_win() == notif.win.win) -- current window
       or (notif.keep and notif.keep(notif)) -- custom keep
       or (self.opts.keep and self.opts.keep(notif)) -- global keep
