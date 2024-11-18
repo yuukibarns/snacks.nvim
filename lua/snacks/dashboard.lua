@@ -885,30 +885,40 @@ function M.sections.terminal(opts)
     local buf = vim.api.nvim_create_buf(false, true)
     local chan = vim.api.nvim_open_term(buf, {})
 
-    local function render(data)
-      local lines = vim.split(data, "\n")
-      for l = 1, math.min(height, #lines) do
-        vim.api.nvim_chan_send(chan, (l > 1 and "\n" or "") .. lines[l])
-      end
+    local function send(data)
+      vim.api.nvim_chan_send(chan, data)
       -- HACK: this forces a refresh of the terminal buffer and prevents flickering
-      vim.bo[buf].scrollback = 1
+      vim.bo[buf].scrollback = 9999
+      vim.bo[buf].scrollback = 9998
     end
 
+    local jid, stopped ---@type number?, boolean?
     if stat and stat.type == "file" and stat.size > 0 and os.time() - stat.mtime.sec < ttl then
       local fin = assert(uv.fs_open(cache_file, "r", 438))
-      render(uv.fs_read(fin, stat.size, 0) or "")
+      send(uv.fs_read(fin, stat.size, 0) or "")
       uv.fs_close(fin)
     else
-      local output = {}
-      local jid = vim.fn.jobstart(cmd, {
+      local output, recording = {}, uv.new_timer()
+      -- record output for max 3 seconds. otherwise assume its streaming
+      recording:start(3000, 0, function()
+        output = {}
+      end)
+      jid = vim.fn.jobstart(cmd, {
         height = height,
         width = width,
         pty = true,
         on_stdout = function(_, data)
-          table.insert(output, table.concat(data, "\n"))
+          data = table.concat(data, "\n")
+          if recording:is_active() then
+            table.insert(output, data)
+          end
+          send(data)
         end,
         on_exit = function(_, code)
-          render(table.concat(output, ""))
+          if not recording:is_active() or stopped then
+            Snacks.notify("Not saving " .. cmd, { id = cmd })
+            return
+          end
           if code ~= 0 then
             Snacks.notify.error(
               ("Terminal **cmd** `%s` failed with code `%d`:\n- `vim.o.shell = %q`\n\nOutput:\n%s"):format(
@@ -918,8 +928,7 @@ function M.sections.terminal(opts)
                 vim.trim(table.concat(output, ""))
               )
             )
-          end
-          if code == 0 and ttl > 0 then
+          elseif ttl > 0 then -- save the output
             vim.fn.mkdir(cache_dir, "p")
             local fout = assert(uv.fs_open(cache_file, "w", 438))
             uv.fs_write(fout, table.concat(output, ""))
@@ -950,8 +959,10 @@ function M.sections.terminal(opts)
         local hl = opts.hl and hl_groups[opts.hl] or opts.hl or "SnacksDashboardTerminal"
         Snacks.util.wo(win, { winhighlight = "NormalFloat:" .. hl })
         local close = vim.schedule_wrap(function()
+          stopped = true
           pcall(vim.api.nvim_win_close, win, true)
           pcall(vim.api.nvim_buf_delete, buf, { force = true })
+          pcall(vim.fn.jobstop, jid)
           return true
         end)
         vim.api.nvim_create_autocmd("BufWipeout", { buffer = self.buf, callback = close })
