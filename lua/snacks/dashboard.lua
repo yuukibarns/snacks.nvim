@@ -900,7 +900,7 @@ function M.sections.terminal(opts)
       uv.fs_close(fin)
     else
       local output = {}
-      vim.fn.jobstart(cmd, {
+      local jid = vim.fn.jobstart(cmd, {
         height = height,
         width = width,
         pty = true,
@@ -909,6 +909,16 @@ function M.sections.terminal(opts)
         end,
         on_exit = function(_, code)
           render(table.concat(output, ""))
+          if code ~= 0 then
+            Snacks.notify.error(
+              ("Terminal **cmd** `%s` failed with code `%d`:\n- `vim.o.shell = %q`\n\nOutput:\n%s"):format(
+                cmd,
+                code,
+                vim.o.shell,
+                vim.trim(table.concat(output, ""))
+              )
+            )
+          end
           if code == 0 and ttl > 0 then
             vim.fn.mkdir(cache_dir, "p")
             local fout = assert(uv.fs_open(cache_file, "w", 438))
@@ -917,6 +927,9 @@ function M.sections.terminal(opts)
           end
         end,
       })
+      if jid <= 0 then
+        Snacks.notify.error(("Failed to start terminal **cmd** `%s`"):format(cmd))
+      end
     end
     return {
       render = function(_, pos)
