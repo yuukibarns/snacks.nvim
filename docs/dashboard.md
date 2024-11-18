@@ -344,6 +344,7 @@ The other options are used with `:lua Snacks.dashboard()`
     undofile = false,
   },
   wo = {
+    colorcolumn = "",
     cursorcolumn = false,
     cursorline = false,
     list = false,
