@@ -21,7 +21,7 @@ function M.inspect(...)
       and info.source ~= caller.source
       and info.what == "Lua"
       and info.source ~= "lua"
-      and info.source ~= "@" .. vim.env.MYVIMRC
+      and info.source ~= "@" .. (vim.env.MYVIMRC or "")
     then
       caller = info
       break
