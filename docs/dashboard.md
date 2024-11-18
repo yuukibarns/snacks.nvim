@@ -426,6 +426,12 @@ Only works with [lazy.nvim](https://github.com/folke/lazy.nvim)
 Snacks.dashboard.have_plugin(name)
 ```
 
+### `Snacks.dashboard.health()`
+
+```lua
+Snacks.dashboard.health()
+```
+
 ### `Snacks.dashboard.icon()`
 
 Get an icon
