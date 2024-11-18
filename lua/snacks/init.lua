@@ -2,6 +2,7 @@
 ---@field bigfile snacks.bigfile
 ---@field bufdelete snacks.bufdelete
 ---@field config snacks.config
+---@field dashboard snacks.dashboard
 ---@field debug snacks.debug
 ---@field git snacks.git
 ---@field gitbrowse snacks.gitbrowse
@@ -14,6 +15,7 @@
 ---@field statuscolumn snacks.statuscolumn
 ---@field terminal snacks.terminal
 ---@field toggle snacks.toggle
+---@field util snacks.util
 ---@field win snacks.win
 ---@field words snacks.words
 local M = {}
@@ -36,6 +38,7 @@ _G.Snacks = M
 ---@field quickfile? { enabled: boolean }
 ---@field statuscolumn? snacks.statuscolumn.Config  | { enabled: boolean }
 ---@field styles? table<string, snacks.win.Config>
+---@field dashboard? snacks.dashboard.Config  | { enabled: boolean }
 ---@field terminal? snacks.terminal.Config
 ---@field toggle? snacks.toggle.Config
 ---@field win? snacks.win.Config
@@ -43,6 +46,7 @@ _G.Snacks = M
 local config = {
   styles = {},
   bigfile = { enabled = false },
+  dashboard = { enabled = false },
   notifier = { enabled = false },
   quickfile = { enabled = false },
   statuscolumn = { enabled = false },
@@ -104,12 +108,14 @@ function M.setup(opts)
     BufReadPre = { "bigfile" },
     BufReadPost = { "quickfile" },
     LspAttach = { "words" },
+    UIEnter = { "dashboard" },
   }
 
   for event, snacks in pairs(events) do
     vim.api.nvim_create_autocmd(event, {
       group = group,
       once = true,
+      nested = true,
       callback = function()
         for _, snack in ipairs(snacks) do
           if M.config[snack].enabled then
