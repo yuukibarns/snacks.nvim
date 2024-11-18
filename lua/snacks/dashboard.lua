@@ -917,7 +917,6 @@ function M.sections.terminal(opts)
         end,
         on_exit = function(_, code)
           if not recording:is_active() or stopped then
-            Snacks.notify("Not saving " .. cmd, { id = cmd })
             return
           end
           if code ~= 0 then
