@@ -22,6 +22,7 @@ Table of Contents                         *snacks-dashboard-table-of-contents*
 7. Module                                            |snacks-dashboard-module|
   - Snacks.dashboard()            |snacks-dashboard-module-snacks.dashboard()|
   - Snacks.dashboard.have_plugin()|snacks-dashboard-module-snacks.dashboard.have_plugin()|
+  - Snacks.dashboard.health()|snacks-dashboard-module-snacks.dashboard.health()|
   - Snacks.dashboard.icon()  |snacks-dashboard-module-snacks.dashboard.icon()|
   - Snacks.dashboard.open()  |snacks-dashboard-module-snacks.dashboard.open()|
   - Snacks.dashboard.pick()  |snacks-dashboard-module-snacks.dashboard.pick()|
@@ -155,8 +156,10 @@ In the example below, both sections are equivalent.
         -- Defaults to a picker that supports `fzf-lua`, `telescope.nvim` and `mini.pick`
         ---@type fun(cmd:string, opts:table)|nil
         pick = nil,
-        -- Used by the `keys` section to show keymaps
-        ---@type snacks.dashboard.Item[]
+        -- Used by the `keys` section to show keymaps.
+        -- Set your curstom keymaps here.
+        -- When using a function, the `items` argument are the default keymaps.
+        ---@type snacks.dashboard.Item[]|fun(items:snacks.dashboard.Item[]):snacks.dashboard.Item[]?
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
@@ -474,6 +477,13 @@ Checks if the plugin is installed. Only works with lazy.nvim
 >lua
     ---@param name string
     Snacks.dashboard.have_plugin(name)
+<
+
+
+`Snacks.dashboard.health()`                        *Snacks.dashboard.health()*
+
+>lua
+    Snacks.dashboard.health()
 <
 
 
