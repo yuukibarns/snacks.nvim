@@ -32,6 +32,7 @@ The default preset comes with support for:
   - [persisted.nvim](https://github.com/olimorris/persisted.nvim)
   - [neovim-session-manager](https://github.com/Shatur/neovim-session-manager)
   - [posession.nvim](https://github.com/jedrzejboczar/possession.nvim)
+  - [mini.sessions](https://github.com/echasnovski/mini.sessions)
 
 ### Section actions
 
