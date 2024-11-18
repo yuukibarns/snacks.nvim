@@ -23,7 +23,7 @@ local uv = vim.uv or vim.loop
 ---@field level? number|snacks.notifier.level
 ---@field title? string
 ---@field icon? string
----@field timeout? number timeout in ms. Set to 0 to keep until manually closed
+---@field timeout? number|boolean timeout in ms. Set to 0|false to keep until manually closed
 ---@field ft? string
 ---@field keep? fun(notif: snacks.notifier.Notif): boolean
 ---@field style? snacks.notifier.style
@@ -345,6 +345,8 @@ function N:add(opts)
   notif.id = notif.id or next_id()
   notif.level = normlevel(notif.level)
   notif.icon = notif.icon or self.opts.icons[notif.level]
+  notif.timeout = notif.timeout == false and 0 or notif.timeout
+  notif.timeout = notif.timeout == true and self.opts.timeout or notif.timeout
   notif.timeout = notif.timeout or self.opts.timeout
   notif.added = now
 
