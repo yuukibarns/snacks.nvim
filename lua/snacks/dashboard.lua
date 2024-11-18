@@ -689,35 +689,6 @@ function D:update()
   self:trace() -- update
 end
 
---- Check if the dashboard should be opened
-function M.setup()
-  local buf = 1
-
-  -- don't open the dashboard if there are any arguments
-  if vim.fn.argc() > 0 then
-    return
-  end
-
-  -- there should be only one non-floating window and it should be the first buffer
-  local wins = vim.tbl_filter(function(win)
-    return vim.api.nvim_win_get_config(win).relative == ""
-  end, vim.api.nvim_list_wins())
-  if #wins ~= 1 or vim.api.nvim_win_get_buf(wins[1]) ~= buf then
-    return
-  end
-
-  -- don't open the dashboard if input is piped
-  if uv.guess_handle(3) == "pipe" then
-    return
-  end
-
-  -- don't open the dashboard if there is any text in the buffer
-  if vim.api.nvim_buf_line_count(buf) > 1 or #(vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or "") > 0 then
-    return
-  end
-  M.open({ buf = buf, win = wins[1] })
-end
-
 -- Get an icon
 ---@param name string
 ---@param cat? string
@@ -984,6 +955,71 @@ function M.sections.startup()
       { ms .. "ms", hl = "special" },
     },
   }
+end
+
+M.status = {
+  did_setup = false,
+  opened = false,
+  reason = nil, ---@type string?
+}
+
+--- Check if the dashboard should be opened
+function M.setup()
+  M.status.did_setup = true
+  local buf = 1
+
+  -- don't open the dashboard if there are any arguments
+  if vim.fn.argc() > 0 then
+    M.status.reason = "argc() > 0"
+    return
+  end
+
+  -- there should be only one non-floating window and it should be the first buffer
+  local wins = vim.tbl_filter(function(win)
+    return vim.api.nvim_win_get_config(win).relative == ""
+  end, vim.api.nvim_list_wins())
+  if #wins ~= 1 then
+    M.status.reason = "more than one non-floating window"
+    return
+  elseif vim.api.nvim_win_get_buf(wins[1]) ~= buf then
+    M.status.reason = "window does not contain the first buffer"
+    return
+  end
+
+  -- don't open the dashboard if input is piped
+  if uv.guess_handle(3) == "pipe" then
+    M.status.reason = "stdin is a pipe"
+    return
+  end
+
+  -- don't open the dashboard if there is any text in the buffer
+  if vim.api.nvim_buf_line_count(buf) > 1 or #(vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or "") > 0 then
+    M.status.reason = "buffer is not empty"
+    return
+  end
+  M.status.opened = true
+  M.open({ buf = buf, win = wins[1] })
+end
+
+function M.health()
+  if Snacks.config.dashboard.enabled then
+    if M.status.did_setup then
+      Snacks.health.ok("setup ran")
+      if M.status.opened then
+        Snacks.health.ok("dashboard opened")
+      else
+        Snacks.health.warn("dashboard did not open: `" .. M.status.reason .. "`")
+      end
+    else
+      Snacks.health.error("setup did not run")
+    end
+    local modnames = { "alpha", "dashboard", "mini.starter" }
+    for _, modname in ipairs(modnames) do
+      if package.loaded[modname] then
+        Snacks.health.error("`" .. modname .. "` conflicts with `Snacks.dashboard`")
+      end
+    end
+  end
 end
 
 return M

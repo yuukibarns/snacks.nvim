@@ -102,6 +102,10 @@ function M.setup(opts)
     return vim.notify("snacks.nvim requires Neovim >= 0.9.4", vim.log.levels.ERROR, { title = "snacks.nvim" })
   end
 
+  if vim.v.vim_did_enter == 1 and M.config.dashboard.enabled then
+    M.dashboard.setup()
+  end
+
   local group = vim.api.nvim_create_augroup("snacks", { clear = true })
 
   local events = {
