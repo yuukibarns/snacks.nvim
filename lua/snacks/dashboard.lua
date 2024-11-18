@@ -78,9 +78,11 @@ local defaults = {
     -- Defaults to a picker that supports `fzf-lua`, `telescope.nvim` and `mini.pick`
     ---@type fun(cmd:string, opts:table)|nil
     pick = nil,
-    -- Used by the `keys` section to show keymaps
+    -- Used by the `keys` section to show keymaps.
+    -- Set your curstom keymaps here.
+    -- When using a function, the `items` argument are the default keymaps.
     -- stylua: ignore
-    ---@type snacks.dashboard.Item[]
+    ---@type snacks.dashboard.Item[]|fun(items:snacks.dashboard.Item[]):snacks.dashboard.Item[]?
     keys = {
       { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
       { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
@@ -852,7 +854,14 @@ end
 ---@return snacks.dashboard.Gen
 function M.sections.keys()
   return function(self)
-    return vim.deepcopy(self.opts.preset.keys)
+    local keys = self.opts.preset.keys
+    if type(keys) == "function" then
+      local default_keys = vim.deepcopy(defaults.preset.keys --[[@as snacks.dashboard.Item[] ]])
+      keys = keys(default_keys) or default_keys
+    else
+      keys = vim.deepcopy(keys)
+    end
+    return vim.deepcopy(keys)
   end
 end
 
