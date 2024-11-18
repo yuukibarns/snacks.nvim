@@ -913,7 +913,7 @@ function M.sections.terminal(opts)
           if recording:is_active() then
             table.insert(output, data)
           end
-          send(data)
+          pcall(send, data)
         end,
         on_exit = function(_, code)
           if not recording:is_active() or stopped then
