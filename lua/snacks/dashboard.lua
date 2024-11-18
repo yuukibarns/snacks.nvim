@@ -986,9 +986,22 @@ function M.setup()
     return
   end
 
+  if vim.bo[buf].modified then
+    M.status.reason = "buffer is modified"
+    return
+  end
+
+  local uis = vim.api.nvim_list_uis()
+
+  -- check for headless
+  if #uis == 0 then
+    M.status.reason = "headless"
+    return
+  end
+
   -- don't open the dashboard if input is piped
-  if uv.guess_handle(3) == "pipe" then
-    M.status.reason = "stdin is a pipe"
+  if uis[1].stdin_tty == false then
+    M.status.reason = "stdin is not a tty"
     return
   end
 
