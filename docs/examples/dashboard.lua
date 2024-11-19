@@ -1,6 +1,10 @@
 local M = {}
 
-M.style = "advanced"
+---@param name string
+---@param opts? snacks.dashboard.Opts
+function M.get(name, opts)
+  return vim.tbl_deep_extend("force", {}, M.examples[name], opts or {})
+end
 
 ---@type table<string, snacks.dashboard.Section>
 M.examples = {}
