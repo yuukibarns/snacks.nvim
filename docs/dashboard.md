@@ -119,7 +119,7 @@ In the example below, both sections are equivalent.
     -- Used by the `keys` section to show keymaps.
     -- Set your curstom keymaps here.
     -- When using a function, the `items` argument are the default keymaps.
-    ---@type snacks.dashboard.Item[]|fun(items:snacks.dashboard.Item[]):snacks.dashboard.Item[]?
+    ---@type snacks.dashboard.Item[]
     keys = {
       { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
       { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
@@ -127,7 +127,7 @@ In the example below, both sections are equivalent.
       { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
       { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
       { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-      { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy },
+      { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
       { icon = " ", key = "q", desc = "Quit", action = ":qa" },
     },
     -- Used by the `header` section
@@ -141,7 +141,7 @@ In the example below, both sections are equivalent.
   },
   -- item field formatters
   formats = {
-    icon = function(item, sss)
+    icon = function(item)
       if item.file and item.icon == "file" or item.icon == "directory" then
         return M.icon(item.file, item.icon)
       end
@@ -354,6 +354,7 @@ The other options are used with `:lua Snacks.dashboard()`
     signcolumn = "no",
     spell = false,
     statuscolumn = "",
+    statusline = "",
     winbar = "",
     winhighlight = "Normal:SnacksDashboardNormal,NormalFloat:SnacksDashboardNormal",
     wrap = false,
