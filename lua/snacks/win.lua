@@ -384,6 +384,31 @@ function M:show()
       self:update()
     end,
   })
+  vim.api.nvim_create_autocmd("BufWinEnter", {
+    group = self.augroup,
+    callback = function()
+      if not self:win_valid() then
+        return true
+      end
+      local buf = vim.api.nvim_win_get_buf(self.win)
+      if buf == self.buf then
+        return
+      end
+      -- another buffer was opened in this window
+      -- find another window to swap with
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if win ~= self.win and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == "" then
+          vim.schedule(function()
+            vim.api.nvim_win_set_buf(self.win, self.buf)
+            vim.api.nvim_win_set_buf(win, buf)
+            vim.api.nvim_set_current_win(win)
+            vim.cmd.stopinsert()
+          end)
+          return
+        end
+      end
+    end,
+  })
 
   for key, spec in pairs(self.opts.keys) do
     if spec then
