@@ -339,7 +339,7 @@ function D:align(item, width, align)
 
   if type(item[1]) == "string" then ---@cast item snacks.dashboard.Text
     item[1] = (" "):rep(before) .. item[1] .. (" "):rep(after)
-    item.width = width
+    item.width = math.max(width, len)
   else ---@cast item snacks.dashboard.Line
     if before > 0 then
       table.insert(item, 1, { (" "):rep(before) })
@@ -347,7 +347,7 @@ function D:align(item, width, align)
     if after > 0 then
       table.insert(item, { (" "):rep(after) })
     end
-    item.width = width
+    item.width = math.max(width, len)
   end
 end
 
@@ -413,7 +413,7 @@ function D:format(item)
   local padding = self:padding(item)
   local ret = { width = self.opts.width } ---@type snacks.dashboard.Block
   for l = 1, math.max(#left, #center, #right, 1) + padding[1] do
-    ret[l] = { width = self.opts.width }
+    ret[l] = { width = 0 }
     left[l] = left[l] or { width = 0 }
     right[l] = right[l] or { width = 0 }
     center[l] = center[l] or { width = 0 }
@@ -426,6 +426,7 @@ function D:format(item)
     vim.list_extend(ret[l], left[l])
     vim.list_extend(ret[l], center[l])
     vim.list_extend(ret[l], right[l])
+    ret[l].width = left[l].width + center[l].width + right[l].width
   end
   for _ = 1, padding[2] do
     table.insert(ret, 1, { width = self.opts.width })
@@ -582,6 +583,8 @@ function D:render()
         row = row + 1
         if p > 1 and not self.lines[row] then -- add lines for empty panes
           self.lines[row] = (" "):rep(self.col + (self.opts.width + self.opts.pane_gap) * (p - 1))
+        elseif p == 1 and line.width > self.opts.width then
+          self.lines[row] = (" "):rep(self.col - math.floor((line.width - self.opts.width) / 2))
         else
           self.lines[row] = (self.lines[row] or "") .. indent
         end
