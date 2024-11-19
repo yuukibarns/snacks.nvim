@@ -12,6 +12,7 @@ Table of Contents                             *snacks-debug-table-of-contents*
   - Snacks.debug.profile()        |snacks-debug-module-snacks.debug.profile()|
   - Snacks.debug.stats()            |snacks-debug-module-snacks.debug.stats()|
   - Snacks.debug.trace()            |snacks-debug-module-snacks.debug.trace()|
+  - Snacks.debug.tracemod()      |snacks-debug-module-snacks.debug.tracemod()|
 3. Links                                                  |snacks-debug-links|
 Utility functions you can use in your code.
 
@@ -42,6 +43,7 @@ Whatthis does:
 
 >lua
     ---@alias snacks.debug.Trace {name: string, time: number, [number]:snacks.debug.Trace}
+    ---@alias snacks.debug.Stat {name:string, time:number, count?:number, depth?:number}
 <
 
 
@@ -108,7 +110,8 @@ Very simple function to profile a lua function. **flush**set to `true` to use
 `Snacks.debug.stats()`                                  *Snacks.debug.stats()*
 
 >lua
-    ---@param opts? {min?: number}
+    ---@param opts? {min?: number, show?:boolean}
+    ---@return {summary:table<string, snacks.debug.Stat>, trace:snacks.debug.Stat[], traces:snacks.debug.Trace[]}
     Snacks.debug.stats(opts)
 <
 
@@ -118,6 +121,16 @@ Very simple function to profile a lua function. **flush**set to `true` to use
 >lua
     ---@param name string?
     Snacks.debug.trace(name)
+<
+
+
+`Snacks.debug.tracemod()`                            *Snacks.debug.tracemod()*
+
+>lua
+    ---@param modname string
+    ---@param mod? table
+    ---@param suffix? string
+    Snacks.debug.tracemod(modname, mod, suffix)
 <
 
 ==============================================================================
