@@ -82,7 +82,7 @@ local defaults = {
     -- Set your curstom keymaps here.
     -- When using a function, the `items` argument are the default keymaps.
     -- stylua: ignore
-    ---@type snacks.dashboard.Item[]|fun(items:snacks.dashboard.Item[]):snacks.dashboard.Item[]?
+    ---@type snacks.dashboard.Item[]
     keys = {
       { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
       { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
@@ -90,7 +90,7 @@ local defaults = {
       { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
       { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
       { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-      { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy },
+      { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
       { icon = " ", key = "q", desc = "Quit", action = ":qa" },
     },
     -- Used by the `header` section
@@ -856,14 +856,7 @@ end
 ---@return snacks.dashboard.Gen
 function M.sections.keys()
   return function(self)
-    local keys = self.opts.preset.keys
-    if type(keys) == "function" then
-      local default_keys = vim.deepcopy(defaults.preset.keys --[[@as snacks.dashboard.Item[] ]])
-      keys = keys(default_keys) or default_keys
-    else
-      keys = vim.deepcopy(keys)
-    end
-    return vim.deepcopy(keys)
+    return vim.deepcopy(self.opts.preset.keys)
   end
 end
 
