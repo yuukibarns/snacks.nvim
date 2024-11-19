@@ -754,17 +754,17 @@ M.sections = {}
 ---@return snacks.dashboard.Item?
 function M.sections.session(item)
   local plugins = {
-    ["persistence.nvim"] = ":lua require('persistence').load()",
-    ["persisted.nvim"] = ":SessionLoad",
-    ["neovim-session-manager"] = ":SessionManager load_current_dir_session",
-    ["possession.nvim"] = ":PossessionLoadCwd",
-    ["mini.sessions"] = ":lua require('mini.sessions').read('local')",
-    ["mini.nvim"] = ":lua require('mini.sessions').read('local')",
+    { "persistence.nvim", ":lua require('persistence').load()" },
+    { "persisted.nvim", ":SessionLoad" },
+    { "neovim-session-manager", ":SessionManager load_current_dir_session" },
+    { "possession.nvim", ":PossessionLoadCwd" },
+    { "mini.sessions", ":lua require('mini.sessions').read('local')" },
+    { "mini.nvim", ":lua require('mini.sessions').read('local')" },
   }
-  for name, action in pairs(plugins) do
-    if M.have_plugin(name) then
+  for _, plugin in pairs(plugins) do
+    if M.have_plugin(plugin[1]) then
       return setmetatable({ -- add the action and disable the section
-        action = action,
+        action = plugin[2],
         section = false,
       }, { __index = item })
     end
