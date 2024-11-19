@@ -201,39 +201,20 @@ local D = {}
 function M.open(opts)
   local self = setmetatable({}, { __index = D })
   self.opts = Snacks.config.get("dashboard", defaults, opts) --[[@as snacks.dashboard.Opts]]
-  self:trace("buf/win")
   self.buf = self.opts.buf or vim.api.nvim_create_buf(false, true)
   self.win = self.opts.win or Snacks.win({ style = "dashboard", buf = self.buf, enter = true }).win --[[@as number]]
-  self:trace() -- buf/win
-  self:trace("dashboard")
-  self:trace("init")
   self:init()
-  self:trace() -- init
   self:update()
-  self:trace() -- dashboard
-  if self.opts.debug then
-    Snacks.debug.stats({ min = 0.2 })
-  end
   self:fire("Opened")
   return self
 end
 
 ---@param name? string
 function D:trace(name)
-  return self.opts.debug and Snacks.debug.trace(name)
+  return self.opts.debug and Snacks.debug.trace(name and ("dashboard:" .. name) or nil)
 end
 
 function D:init()
-  if self.opts.debug then -- track initial load of icon provider
-    local icon = M.icon
-    M.icon = function(...)
-      self:trace("icon-provider")
-      local ret = icon(...)
-      self:trace()
-      M.icon = icon
-      return ret
-    end
-  end
   vim.api.nvim_win_set_buf(self.win, self.buf)
   vim.o.ei = "all"
   Snacks.util.wo(self.win, Snacks.config.styles.dashboard.wo)
@@ -469,7 +450,7 @@ function D:resolve(item, results, parent)
       table.insert(results, { title = item.title, icon = item.icon, pane = item.pane })
     end
     if item.section then -- add section items
-      self:trace(item.section)
+      self:trace("resolve." .. item.section)
       local items = M.sections[item.section](item) ---@type snacks.dashboard.Section?
       self:resolve(items, results, item)
       self:trace()
@@ -505,9 +486,7 @@ function D:padding(item)
 end
 
 function D:fire(event)
-  self:trace(event)
   vim.api.nvim_exec_autocmds("User", { pattern = "SnacksDashboard" .. event, modeline = false })
-  self:trace()
 end
 
 function D:on(event, cb)
@@ -549,7 +528,6 @@ end
 
 -- Layout in panes
 function D:layout()
-  self:trace("layout")
   local max_panes =
     math.max(1, math.floor((self._size.width + self.opts.pane_gap) / (self.opts.width + self.opts.pane_gap)))
   self.panes = {} ---@type snacks.dashboard.Item[][]
@@ -562,17 +540,14 @@ function D:layout()
   for p = 1, math.max(unpack(vim.tbl_keys(self.panes))) or 1 do
     self.panes[p] = self.panes[p] or {}
   end
-  self:trace()
 end
 
 -- Format and render the dashboard
 function D:render()
-  self:trace("render")
   -- horizontal position
   self.col = self.opts.col
     or math.floor(self._size.width - (self.opts.width * #self.panes + self.opts.pane_gap * (#self.panes - 1))) / 2
 
-  self:trace("format")
   self.lines = {} ---@type string[]
   local extmarks = {} ---@type {row:number, col:number, opts:vim.api.keyset.set_extmark}[]
   for p, pane in ipairs(self.panes) do
@@ -605,7 +580,6 @@ function D:render()
       end
     end
   end
-  self:trace() -- format
 
   -- vertical position
   self.row = self.opts.row or math.max(math.floor((self._size.height - #self.lines) / 2), 0)
@@ -623,7 +597,11 @@ function D:render()
     end
   end
 
-  self:trace("lines/extmarks")
+  self:render_buf(extmarks)
+end
+
+---@param extmarks {row:number, col:number, opts:vim.api.keyset.set_extmark}[]
+function D:render_buf(extmarks)
   -- set lines
   vim.bo[self.buf].modifiable = true
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, self.lines)
@@ -634,12 +612,9 @@ function D:render()
   for _, extmark in ipairs(extmarks) do
     vim.api.nvim_buf_set_extmark(self.buf, M.ns, extmark.row + self.row, extmark.col, extmark.opts)
   end
-  self:trace() -- lines/extmarks
-  self:trace() -- render
 end
 
 function D:keys()
-  self:trace("keys")
   local autokeys = self.opts.autokeys:gsub("[hjklq]", "")
   for _, item in ipairs(self.items) do
     if item.key and not item.autokey then
@@ -656,18 +631,13 @@ function D:keys()
       end, { buffer = self.buf, nowait = not item.autokey, desc = "Dashboard action" })
     end
   end
-  self:trace()
 end
 
 function D:update()
-  self:trace("update")
-
   self:fire("UpdatePre")
   self._size = self:size()
 
-  self:trace("items")
   self.items = self:resolve(self.opts.sections)
-  self:trace() -- items
 
   self:layout()
   self:keys()
@@ -701,7 +671,6 @@ function D:update()
     end,
   })
   self:fire("UpdatePost")
-  self:trace() -- update
 end
 
 -- Get an icon
@@ -1050,6 +1019,11 @@ function M.setup()
   end
   M.status.opened = true
 
+  if Snacks.config.dashboard.debug then
+    Snacks.debug.tracemod("dashboard", M)
+    Snacks.debug.tracemod("dashboard", D, ":")
+  end
+
   local options = { showtabline = vim.o.showtabline, laststatus = vim.o.laststatus }
   vim.o.showtabline, vim.o.laststatus = 0, 0
   M.open({ buf = buf, win = wins[1] }):on("Closed", function()
@@ -1059,6 +1033,10 @@ function M.setup()
       end
     end
   end)
+
+  if Snacks.config.dashboard.debug then
+    Snacks.debug.stats({ min = 0.2 })
+  end
 end
 
 function M.health()
