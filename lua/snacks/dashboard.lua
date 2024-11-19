@@ -104,7 +104,7 @@ local defaults = {
   },
   -- item field formatters
   formats = {
-    icon = function(item, sss)
+    icon = function(item)
       if item.file and item.icon == "file" or item.icon == "directory" then
         return M.icon(item.file, item.icon)
       end
@@ -152,6 +152,7 @@ Snacks.config.style("dashboard", {
     signcolumn = "no",
     spell = false,
     statuscolumn = "",
+    statusline = "",
     winbar = "",
     winhighlight = "Normal:SnacksDashboardNormal,NormalFloat:SnacksDashboardNormal",
     wrap = false,
@@ -213,6 +214,7 @@ function M.open(opts)
   if self.opts.debug then
     Snacks.debug.stats({ min = 0.2 })
   end
+  self:fire("Opened")
   return self
 end
 
@@ -248,6 +250,12 @@ function D:init()
       if tonumber(ev.match) == self.win and not vim.deep_equal(self._size, self:size()) then
         self:update()
       end
+    end,
+  })
+  vim.api.nvim_create_autocmd("BufWipeout", {
+    buffer = self.buf,
+    callback = function()
+      self:fire("Closed")
     end,
   })
 end
@@ -959,8 +967,8 @@ function M.sections.terminal(opts)
           pcall(vim.fn.jobstop, jid)
           return true
         end)
-        vim.api.nvim_create_autocmd("BufWipeout", { buffer = self.buf, callback = close })
         self:on("UpdatePre", close)
+        self:on("Closed", close)
         self:trace()
       end,
       text = ("\n"):rep(height - 1),
@@ -996,8 +1004,8 @@ function M.setup()
   local buf = 1
 
   -- don't open the dashboard if there are any arguments
-  if vim.fn.argc() > 0 then
-    M.status.reason = "argc() > 0"
+  if vim.fn.argc(-1) > 0 then
+    M.status.reason = "argc(-1) > 0"
     return
   end
 
@@ -1038,7 +1046,16 @@ function M.setup()
     return
   end
   M.status.opened = true
-  M.open({ buf = buf, win = wins[1] })
+
+  local options = { showtabline = vim.o.showtabline, laststatus = vim.o.laststatus }
+  vim.o.showtabline, vim.o.laststatus = 0, 0
+  M.open({ buf = buf, win = wins[1] }):on("Closed", function()
+    for k, v in pairs(options) do
+      if vim.o[k] == 0 and v ~= 0 then
+        vim.o[k] = v
+      end
+    end
+  end)
 end
 
 function M.health()
