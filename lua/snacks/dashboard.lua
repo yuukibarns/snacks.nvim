@@ -1037,8 +1037,8 @@ function M.setup()
     return
   end
 
-  -- don't open the dashboard if input is piped
-  if uis[1].stdin_tty == false then
+  -- don't open the dashboard if in TUI and input is piped
+  if uis[1].stdout_tty and not uis[1].stdin_tty then
     M.status.reason = "stdin is not a tty"
     return
   end
