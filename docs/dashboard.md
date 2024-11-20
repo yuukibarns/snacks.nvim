@@ -334,8 +334,8 @@ The other options are used with `:lua Snacks.dashboard()`
 ```lua
 {
   zindex = 10,
-  height = 0.6,
-  width = 0.6,
+  height = 0,
+  width = 0,
   bo = {
     bufhidden = "wipe",
     buftype = "nofile",
