@@ -34,6 +34,7 @@ Table of Contents                         *snacks-dashboard-table-of-contents*
   - Snacks.dashboard.sections.startup()|snacks-dashboard-module-snacks.dashboard.sections.startup()|
   - Snacks.dashboard.sections.terminal()|snacks-dashboard-module-snacks.dashboard.sections.terminal()|
   - Snacks.dashboard.setup()|snacks-dashboard-module-snacks.dashboard.setup()|
+  - Snacks.dashboard.update()|snacks-dashboard-module-snacks.dashboard.update()|
 8. Links                                              |snacks-dashboard-links|
 
 ==============================================================================
@@ -599,6 +600,15 @@ Check if the dashboard should be opened
 
 >lua
     Snacks.dashboard.setup()
+<
+
+
+`Snacks.dashboard.update()`                        *Snacks.dashboard.update()*
+
+Update the dashboard
+
+>lua
+    Snacks.dashboard.update()
 <
 
 ==============================================================================

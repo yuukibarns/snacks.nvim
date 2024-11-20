@@ -194,6 +194,7 @@ Snacks.util.set_hl(links, { prefix = "SnacksDashboard", default = true })
 ---@field col? number
 ---@field panes? snacks.dashboard.Item[][]
 ---@field lines? string[]
+---@field augroup integer
 local D = {}
 
 ---@param opts? snacks.dashboard.Opts
@@ -203,9 +204,10 @@ function M.open(opts)
   self.opts = Snacks.config.get("dashboard", defaults, opts) --[[@as snacks.dashboard.Opts]]
   self.buf = self.opts.buf or vim.api.nvim_create_buf(false, true)
   self.win = self.opts.win or Snacks.win({ style = "dashboard", buf = self.buf, enter = true }).win --[[@as number]]
+  self.augroup = vim.api.nvim_create_augroup("snacks_dashboard", { clear = true })
   self:init()
   self:update()
-  self:fire("Opened")
+  self.fire("Opened")
   return self
 end
 
@@ -225,6 +227,7 @@ function D:init()
   end
   vim.keymap.set("n", "q", "<cmd>bd<cr>", { silent = true, buffer = self.buf })
   vim.api.nvim_create_autocmd("WinResized", {
+    group = self.augroup,
     buffer = self.buf,
     callback = function(ev)
       -- only re-render if the same window and size has changed
@@ -236,9 +239,13 @@ function D:init()
   vim.api.nvim_create_autocmd("BufWipeout", {
     buffer = self.buf,
     callback = function()
-      self:fire("Closed")
+      self.fire("Closed")
+      vim.api.nvim_del_augroup_by_id(self.augroup)
     end,
   })
+  self.on("Update", function()
+    self:update()
+  end, self.augroup)
 end
 
 ---@return {width:number, height:number}
@@ -485,12 +492,15 @@ function D:padding(item)
   return item.padding and (type(item.padding) == "table" and item.padding or { item.padding, 0 }) or { 0, 0 }
 end
 
-function D:fire(event)
+function D.fire(event)
   vim.api.nvim_exec_autocmds("User", { pattern = "SnacksDashboard" .. event, modeline = false })
 end
 
-function D:on(event, cb)
-  vim.api.nvim_create_autocmd("User", { pattern = "SnacksDashboard" .. event, callback = cb })
+---@param event string|string[]
+---@param cb fun()
+---@param group? string|integer
+function D.on(event, cb, group)
+  vim.api.nvim_create_autocmd("User", { pattern = "SnacksDashboard" .. event, callback = cb, group = group })
 end
 
 ---@param pos {[1]:number, [2]:number}
@@ -634,7 +644,7 @@ function D:keys()
 end
 
 function D:update()
-  self:fire("UpdatePre")
+  self.fire("UpdatePre")
   self._size = self:size()
 
   self.items = self:resolve(self.opts.sections)
@@ -670,7 +680,7 @@ function D:update()
       vim.api.nvim_win_set_cursor(self.win, last)
     end,
   })
-  self:fire("UpdatePost")
+  self.fire("UpdatePost")
 end
 
 -- Get an icon
@@ -939,8 +949,8 @@ function M.sections.terminal(opts)
           pcall(vim.fn.jobstop, jid)
           return true
         end)
-        self:on("UpdatePre", close)
-        self:on("Closed", close)
+        self.on("UpdatePre", close)
+        self.on("Closed", close)
         self:trace()
       end,
       text = ("\n"):rep(height - 1),
@@ -1026,7 +1036,7 @@ function M.setup()
 
   local options = { showtabline = vim.o.showtabline, laststatus = vim.o.laststatus }
   vim.o.showtabline, vim.o.laststatus = 0, 0
-  M.open({ buf = buf, win = wins[1] }):on("Closed", function()
+  M.open({ buf = buf, win = wins[1] }).on("Closed", function()
     for k, v in pairs(options) do
       if vim.o[k] == 0 and v ~= 0 then
         vim.o[k] = v
@@ -1037,6 +1047,11 @@ function M.setup()
   if Snacks.config.dashboard.debug then
     Snacks.debug.stats({ min = 0.2 })
   end
+end
+
+-- Update the dashboard
+function M.update()
+  D.fire("Update")
 end
 
 function M.health()

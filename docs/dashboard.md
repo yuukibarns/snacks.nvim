@@ -536,3 +536,11 @@ Check if the dashboard should be opened
 ```lua
 Snacks.dashboard.setup()
 ```
+
+### `Snacks.dashboard.update()`
+
+Update the dashboard
+
+```lua
+Snacks.dashboard.update()
+```
