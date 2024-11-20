@@ -632,6 +632,9 @@ function N:layout()
           notif.shown = notif.shown or ts()
           notif.win:show()
         end
+      elseif notif.win then
+        notif.shown = nil
+        notif.win:hide()
       end
     end
   end
