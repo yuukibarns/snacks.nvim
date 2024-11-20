@@ -190,7 +190,7 @@ A more advanced example using multiple panes
       icon = " ",
       title = "Git Status",
       section = "terminal",
-      enabled = vim.fn.isdirectory(".git") == 1,
+      enabled = Snacks.git.get_root() ~= nil,
       cmd = "hub status --short --branch --renames",
       height = 5,
       padding = 1,
