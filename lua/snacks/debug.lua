@@ -51,7 +51,7 @@ end
 -- * **flush**: set to `true` to use `jit.flush` in every iteration.
 -- * **count**: defaults to 100
 ---@param fn fun()
----@param opts? {count?: number, flush?: boolean}
+---@param opts? {count?: number, flush?: boolean, title?: string}
 function M.profile(fn, opts)
   opts = vim.tbl_extend("force", { count = 100, flush = true }, opts or {})
   local start = uv.hrtime()
@@ -61,7 +61,7 @@ function M.profile(fn, opts)
     end
     fn()
   end
-  Snacks.notify(((uv.hrtime() - start) / 1e6 / opts.count) .. "ms")
+  Snacks.notify(((uv.hrtime() - start) / 1e6 / opts.count) .. "ms", { title = opts.title or "Profile" })
 end
 
 -- Log a message to the file `./debug.log`.
