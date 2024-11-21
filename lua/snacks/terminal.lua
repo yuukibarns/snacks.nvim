@@ -26,6 +26,7 @@ Snacks.config.style("terminal", {
   },
   wo = {},
   keys = {
+    q = "hide",
     gf = function(self)
       local f = vim.fn.findfile(vim.fn.expand("<cfile>"), "**")
       if f == "" then
