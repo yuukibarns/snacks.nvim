@@ -51,14 +51,14 @@ Table of Contents                         *snacks-dashboard-table-of-contents*
     - **session**session support
     - **startup**startup time (lazy.nvim)
     - **terminal**colored terminal output
-- super fast `terminal` sections with autmomatic caching
+- super fast `terminal` sections with automatic caching
 
 
 ==============================================================================
 2. Usage                                              *snacks-dashboard-usage*
 
-The dashboards comes with a set of default sections, that can be customized
-with `opts.preset` or fully replaced with `opts.sections`.
+The dashboard comes with a set of default sections, that can be customized with
+`opts.preset` or fully replaced with `opts.sections`.
 
 The default preset comes with support for:
 
