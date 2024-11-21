@@ -62,6 +62,7 @@ Based on the provided options, some defaults will be set:
   },
   wo = {},
   keys = {
+    q = "hide",
     gf = function(self)
       local f = vim.fn.findfile(vim.fn.expand("<cfile>"), "**")
       if f == "" then
