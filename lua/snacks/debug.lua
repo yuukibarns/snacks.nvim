@@ -19,7 +19,7 @@ function M.inspect(...)
     if
       info
       and info.source ~= caller.source
-      and info.what == "Lua"
+      and info.what ~= "C"
       and info.source ~= "lua"
       and info.source ~= "@" .. (vim.env.MYVIMRC or "")
     then
