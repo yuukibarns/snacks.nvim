@@ -26,6 +26,14 @@ function M.set_hl(groups, opts)
   end
 end
 
+---@param group string
+---@param prop? string
+function M.color(group, prop)
+  prop = prop or "fg"
+  local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+  return hl[prop] and string.format("#%06x", hl[prop])
+end
+
 ---@param win number
 ---@param wo vim.wo
 function M.wo(win, wo)
