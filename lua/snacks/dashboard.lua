@@ -7,7 +7,7 @@ local M = setmetatable({}, {
 })
 
 local uv = vim.uv or vim.loop
-math.randomseed()
+math.randomseed(os.time())
 
 ---@class snacks.dashboard.Item
 ---@field indent? number
