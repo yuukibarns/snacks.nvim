@@ -7,7 +7,7 @@ local M = setmetatable({}, {
 })
 
 local uv = vim.uv or vim.loop
-math.randomseed(os.time())
+math.randomseed()
 
 ---@class snacks.dashboard.Item
 ---@field indent? number
@@ -628,7 +628,7 @@ function D:keys()
   local autokeys = self.opts.autokeys:gsub("[hjklq]", "")
   for _, item in ipairs(self.items) do
     if item.key and not item.autokey then
-      autokeys = autokeys:gsub(item.key, "", 1)
+      autokeys = autokeys:gsub(vim.pesc(item.key), "", 1)
     end
   end
   for _, item in ipairs(self.items) do
@@ -1074,5 +1074,7 @@ function M.health()
     end
   end
 end
+
+M.Dashboard = D
 
 return M
