@@ -313,18 +313,31 @@ function N:start()
         return
       end
       xpcall(function()
-        self:update()
-        self:layout()
+        self:process()
       end, function(err)
         local trace = debug.traceback(err, 2)
-        print(err)
         vim.api.nvim_err_writeln(
-          ("Snacks notifier failed. Dropping queue. Error:\n%s\n\nTrace:\n%s"):format(error, trace)
+          ("Snacks notifier failed. Dropping queue. Error:\n%s\n\nTrace:\n%s"):format(err, trace)
         )
         self.queue = {}
       end)
     end)
   )
+end
+
+function N:process()
+  self:update()
+  self:layout()
+end
+
+function N:is_blocking()
+  local mode = vim.api.nvim_get_mode()
+  for _, m in ipairs({ "ic", "ix", "c", "no", "r%?", "rm" }) do
+    if mode.mode:find(m) == 1 then
+      return true
+    end
+  end
+  return mode.blocking
 end
 
 local health_msg = false
@@ -369,6 +382,11 @@ function N:add(opts)
     self.queue[notif.id] = notif
   end
   self.history[notif.id] = notif
+  if self:is_blocking() then
+    pcall(function()
+      self:process()
+    end)
+  end
   return notif.id
 end
 
