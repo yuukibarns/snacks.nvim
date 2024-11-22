@@ -294,7 +294,7 @@ function D:format_field(item, field, width)
   elseif type(format) == "function" then
     return format(item, { width = width })
   else
-    local text = format and setmetatable({ format[1] }, { __index = format }) or { "%s" }
+    local text = format and vim.deepcopy(format) or { "%s" }
     text.hl = text.hl or field
     text[1] = text[1] == "%s" and item[field] or text[1]:format(item[field])
     return text
@@ -318,6 +318,7 @@ function D:align(item, width, align)
   end
 
   if not width or width <= 0 or width == len then
+    item.width = math.max(width or 0, len)
     return
   end
 
