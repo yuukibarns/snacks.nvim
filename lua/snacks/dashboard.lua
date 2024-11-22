@@ -741,8 +741,8 @@ function M.sections.session(item)
     { "persisted.nvim", ":lua require('persisted').load()" },
     { "neovim-session-manager", ":SessionManager load_current_dir_session" },
     { "possession.nvim", ":PossessionLoadCwd" },
-    { "mini.sessions", ":lua require('mini.sessions').read('local')" },
-    { "mini.nvim", ":lua require('mini.sessions').read('local')" },
+    { "mini.sessions", ":lua require('mini.sessions').read()" },
+    { "mini.nvim", ":lua require('mini.sessions').read()" },
   }
   for _, plugin in pairs(plugins) do
     if M.have_plugin(plugin[1]) then
