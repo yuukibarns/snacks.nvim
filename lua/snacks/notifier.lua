@@ -65,6 +65,7 @@ local uv = vim.uv or vim.loop
 ---@class snacks.notifier.history
 ---@field filter? snacks.notifier.level|fun(notif: snacks.notifier.Notif): boolean
 ---@field sort? string[] # sort fields, default: {"added"}
+---@field reverse? boolean
 local history_opts = {
   sort = { "added" },
 }
@@ -422,7 +423,15 @@ function N:get_history(opts)
     end
   end
   notifs = filter and vim.tbl_filter(filter, notifs) or notifs
-  return self:sort(notifs, opts.sort)
+  local ret = self:sort(notifs, opts.sort)
+  if opts.reverse then
+    local rev = {}
+    for i = #ret, 1, -1 do
+      table.insert(rev, ret[i])
+    end
+    ret = rev
+  end
+  return ret
 end
 
 ---@param opts? snacks.notifier.history
@@ -567,8 +576,8 @@ function N:render(notif)
   win.opts.height = height
 end
 
----@param fields? string[]
 ---@param notifs? snacks.notifier.Notif[]
+---@param fields? string[]
 function N:sort(notifs, fields)
   fields = fields or self.opts.sort
   notifs = notifs or vim.tbl_values(self.queue)
