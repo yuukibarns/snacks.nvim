@@ -66,6 +66,8 @@ local uv = vim.uv or vim.loop
 ---@field filter? snacks.notifier.level|fun(notif: snacks.notifier.Notif): boolean
 ---@field sort? string[] # sort fields, default: {"added"}
 ---@field reverse? boolean
+
+---@type snacks.notifier.history
 local history_opts = {
   sort = { "added" },
 }
