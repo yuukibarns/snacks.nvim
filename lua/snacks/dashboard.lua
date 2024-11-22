@@ -203,7 +203,9 @@ function M.open(opts)
   local self = setmetatable({}, { __index = D })
   self.opts = Snacks.config.get("dashboard", defaults, opts) --[[@as snacks.dashboard.Opts]]
   self.buf = self.opts.buf or vim.api.nvim_create_buf(false, true)
+  self.buf = self.buf == 0 and vim.api.nvim_get_current_buf() or self.buf
   self.win = self.opts.win or Snacks.win({ style = "dashboard", buf = self.buf, enter = true }).win --[[@as number]]
+  self.win = self.win == 0 and vim.api.nvim_get_current_win() or self.win
   self.augroup = vim.api.nvim_create_augroup("snacks_dashboard", { clear = true })
   self:init()
   self:update()
