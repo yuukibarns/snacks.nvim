@@ -191,6 +191,11 @@ function M.get()
     components[1] = M.icon(left) -- left
     components[3] = is_file and M.icon(right) or "" -- right
   end
+  local get = M.get
+  function M.get()
+    local ok, ret = pcall(get)
+    return not ok and "" or ret
+  end
 
   -- Numbers in Neovim are weird
   -- They show when either number or relativenumber is true
