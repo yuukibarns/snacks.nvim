@@ -318,10 +318,15 @@ function N:start()
       xpcall(function()
         self:process()
       end, function(err)
-        local trace = debug.traceback(err, 2)
-        vim.api.nvim_err_writeln(
-          ("Snacks notifier failed. Dropping queue. Error:\n%s\n\nTrace:\n%s"):format(err, trace)
-        )
+        if err:find("E565") then
+          return
+        end
+        local trace = debug.traceback(2)
+        vim.schedule(function()
+          vim.api.nvim_err_writeln(
+            ("Snacks notifier failed. Dropping queue. Error:\n%s\n\nTrace:\n%s"):format(err, trace)
+          )
+        end)
         self.queue = {}
       end)
     end)
@@ -652,8 +657,9 @@ function N:layout()
       local prev_layout = notif.layout
         and { top = notif.layout.top, height = notif.layout.height, width = notif.layout.width }
       if not notif.win or notif.dirty or not notif.win:buf_valid() or type(notif.opts) == "function" then
-        notif.dirty = false
+        notif.dirty = true
         self:render(notif)
+        notif.dirty = false
         notif.layout = notif.win:size()
         notif.layout.top = prev_layout and prev_layout.top
         prev_layout = nil -- always re-render since opts might've changed
