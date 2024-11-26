@@ -887,8 +887,8 @@ function M.sections.terminal(opts)
       uv.fs_close(fin)
     else
       local output, recording = {}, uv.new_timer()
-      -- record output for max 3 seconds. otherwise assume its streaming
-      recording:start(3000, 0, function()
+      -- record output for max 5 seconds. otherwise assume its streaming
+      recording:start(5000, 0, function()
         output = {}
       end)
       jid = vim.fn.jobstart(cmd, {
