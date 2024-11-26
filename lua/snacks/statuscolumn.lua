@@ -152,7 +152,7 @@ function M.icon(sign, len)
 end
 
 ---@return string
-function M.get()
+function M._get()
   M.setup()
   local win = vim.g.statusline_winid
   local buf = vim.api.nvim_win_get_buf(win)
@@ -216,9 +216,8 @@ function M.get()
   return table.concat(components, "")
 end
 
-local get = M.get
 function M.get()
-  local ok, ret = pcall(get)
+  local ok, ret = pcall(M._get)
   return not ok and "" or ret
 end
 
