@@ -11,6 +11,7 @@
 ---@field notify snacks.notify
 ---@field quickfile snacks.quickfile
 ---@field health snacks.health
+---@field profiler snacks.profiler
 ---@field rename snacks.rename
 ---@field statuscolumn snacks.statuscolumn
 ---@field terminal snacks.terminal
@@ -96,7 +97,7 @@ function M.config.get(snack, defaults, ...)
       table.insert(merge, vim.deepcopy(v))
     end
   end
-  local ret = #todo == 1 and todo[1] or vim.tbl_deep_extend("force", unpack(merge)) --[[@as snacks.Config.base]]
+  local ret = #merge == 1 and merge[1] or vim.tbl_deep_extend("force", unpack(merge)) --[[@as snacks.Config.base]]
   if type(ret.config) == "function" then
     ret.config(ret, defaults)
   end
