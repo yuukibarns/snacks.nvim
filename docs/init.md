@@ -53,6 +53,7 @@
 ---@field notify snacks.notify
 ---@field quickfile snacks.quickfile
 ---@field health snacks.health
+---@field profiler snacks.profiler
 ---@field rename snacks.rename
 ---@field statuscolumn snacks.statuscolumn
 ---@field terminal snacks.terminal
