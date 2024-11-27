@@ -29,6 +29,14 @@
 }
 ```
 
+## 📚 Types
+
+```lua
+---@class snacks.Config.base
+---@field example? string
+---@field config? fun(opts: table, defaults: table)
+```
+
 ## 📦 Module
 
 ```lua

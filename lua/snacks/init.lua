@@ -30,6 +30,10 @@ setmetatable(M, {
 
 _G.Snacks = M
 
+---@class snacks.Config.base
+---@field example? string
+---@field config? fun(opts: table, defaults: table)
+
 ---@class snacks.Config
 ---@field bigfile? snacks.bigfile.Config | { enabled: boolean }
 ---@field gitbrowse? snacks.gitbrowse.Config
@@ -83,7 +87,7 @@ end
 function M.config.get(snack, defaults, ...)
   local merge, todo = {}, { defaults, config[snack], ... }
   for i = 1, select("#", ...) + 2 do
-    local v = todo[i]
+    local v = todo[i] --[[@as snacks.Config.base]]
     if type(v) == "table" then
       if v.example then
         table.insert(merge, vim.deepcopy(M.config.example(snack, v.example)))
@@ -92,7 +96,11 @@ function M.config.get(snack, defaults, ...)
       table.insert(merge, vim.deepcopy(v))
     end
   end
-  return #todo == 1 and todo[1] or vim.tbl_deep_extend("force", unpack(merge))
+  local ret = #todo == 1 and todo[1] or vim.tbl_deep_extend("force", unpack(merge)) --[[@as snacks.Config.base]]
+  if type(ret.config) == "function" then
+    ret.config(ret, defaults)
+  end
+  return ret
 end
 
 --- Register a new window style config.

@@ -4,7 +4,8 @@
 Table of Contents                              *snacks-init-table-of-contents*
 
 1. Config                                                 |snacks-init-config|
-2. Module                                                 |snacks-init-module|
+2. Types                                                   |snacks-init-types|
+3. Module                                                 |snacks-init-module|
   - Snacks.config.example()       |snacks-init-module-snacks.config.example()|
   - Snacks.config.get()               |snacks-init-module-snacks.config.get()|
   - Snacks.config.style()           |snacks-init-module-snacks.config.style()|
@@ -40,7 +41,17 @@ Table of Contents                              *snacks-init-table-of-contents*
 
 
 ==============================================================================
-2. Module                                                 *snacks-init-module*
+2. Types                                                   *snacks-init-types*
+
+>lua
+    ---@class snacks.Config.base
+    ---@field example? string
+    ---@field config? fun(opts: table, defaults: table)
+<
+
+
+==============================================================================
+3. Module                                                 *snacks-init-module*
 
 >lua
     ---@class Snacks
