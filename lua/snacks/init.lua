@@ -60,20 +60,39 @@ M.config = setmetatable({}, {
   end,
 })
 
+--- Get an example config from the docs/examples directory.
+---@param snack string
+---@param name string
+---@param opts? table
+function M.config.example(snack, name, opts)
+  local path = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h:h") .. "/docs/examples/" .. snack .. ".lua"
+  local ok, ret = pcall(function()
+    return loadfile(path)().examples[name] or error(("`%s` not found"):format(name))
+  end)
+  if not ok then
+    M.notify.error(("Failed to load `%s.%s`:\n%s"):format(snack, name, ret))
+  end
+  return ok and vim.tbl_deep_extend("force", {}, vim.deepcopy(ret), opts or {}) or {}
+end
+
 ---@generic T: table
 ---@param snack string
 ---@param defaults T
 ---@param ... T[]
 ---@return T
 function M.config.get(snack, defaults, ...)
-  local merge = { vim.deepcopy(defaults), vim.deepcopy(config[snack] or {}) }
-  for i = 1, select("#", ...) do
-    local v = select(i, ...)
-    if v then
+  local merge, todo = {}, { defaults, config[snack], ... }
+  for i = 1, select("#", ...) + 2 do
+    local v = todo[i]
+    if type(v) == "table" then
+      if v.example then
+        table.insert(merge, vim.deepcopy(M.config.example(snack, v.example)))
+        v.example = nil
+      end
       table.insert(merge, vim.deepcopy(v))
     end
   end
-  return vim.tbl_deep_extend("force", unpack(merge))
+  return #todo == 1 and todo[1] or vim.tbl_deep_extend("force", unpack(merge))
 end
 
 --- Register a new window style config.

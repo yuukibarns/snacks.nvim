@@ -5,6 +5,7 @@ Table of Contents                              *snacks-init-table-of-contents*
 
 1. Config                                                 |snacks-init-config|
 2. Module                                                 |snacks-init-module|
+  - Snacks.config.example()       |snacks-init-module-snacks.config.example()|
   - Snacks.config.get()               |snacks-init-module-snacks.config.get()|
   - Snacks.config.style()           |snacks-init-module-snacks.config.style()|
   - Snacks.setup()                         |snacks-init-module-snacks.setup()|
@@ -63,6 +64,18 @@ Table of Contents                              *snacks-init-table-of-contents*
     ---@field win snacks.win
     ---@field words snacks.words
     Snacks = {}
+<
+
+
+`Snacks.config.example()`                            *Snacks.config.example()*
+
+Get an example config from the docs/examples directory.
+
+>lua
+    ---@param snack string
+    ---@param name string
+    ---@param opts? table
+    Snacks.config.example(snack, name, opts)
 <
 
 

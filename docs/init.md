@@ -55,6 +55,17 @@
 Snacks = {}
 ```
 
+### `Snacks.config.example()`
+
+Get an example config from the docs/examples directory.
+
+```lua
+---@param snack string
+---@param name string
+---@param opts? table
+Snacks.config.example(snack, name, opts)
+```
+
 ### `Snacks.config.get()`
 
 ```lua
