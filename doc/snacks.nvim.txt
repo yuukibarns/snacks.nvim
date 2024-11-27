@@ -144,6 +144,28 @@ Default Options ~
     }
 <
 
+Some plugins have examples in their documentation. You can include them in your
+config like this:
+
+>lua
+    {
+      dashboard = { example = "github" }
+    }
+<
+
+If you want to customize options for a plugin after they have been resolved,
+you can use the `config` function:
+
+>lua
+    {
+      gitbrowse = {
+        config = function(opts, defaults)
+          table.insert(opts.remote_patterns, { "my", "custom pattern" })
+        end
+      },
+    }
+<
+
 
 USAGE                                          *snacks.nvim-snacks.nvim-usage*
 
