@@ -190,7 +190,9 @@ A more advanced example using multiple panes
       icon = " ",
       title = "Git Status",
       section = "terminal",
-      enabled = Snacks.git.get_root() ~= nil,
+      enabled = function()
+        return Snacks.git.get_root() ~= nil
+      end,
       cmd = "hub status --short --branch --renames",
       height = 5,
       padding = 1,
