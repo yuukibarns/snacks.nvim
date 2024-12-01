@@ -20,6 +20,12 @@ Open the repo of the active file in the browser (e.g., GitHub)
   end,
   ---@type "repo" | "branch" | "file" | "commit"
   what = "file", -- what to open. not all remotes support all types
+  ---@type string?
+  branch = nil,
+  ---@type string?
+  line_start = nil,
+  ---@type string?
+  line_end = nil,
   -- patterns to transform remotes to an actual URL
   remote_patterns = {
     { "^(https?://.*)%.git$"              , "%1" },
