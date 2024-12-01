@@ -451,6 +451,9 @@ function D:resolve(item, results, parent)
   if not item then
     return results
   end
+  if type(item) == "table" and vim.tbl_isempty(item) then
+    return results
+  end
   if type(item) == "table" and parent then -- inherit parent properties
     for _, prop in ipairs({ "indent", "align", "pane" }) do
       item[prop] = item[prop] or parent[prop]
@@ -465,9 +468,6 @@ function D:resolve(item, results, parent)
       return results
     end
     local first_child = #results + 1
-    if item.title then -- always add the title
-      table.insert(results, { title = item.title, icon = item.icon, pane = item.pane })
-    end
     if item.section then -- add section items
       self:trace("resolve." .. item.section)
       local items = M.sections[item.section](item) ---@type snacks.dashboard.Section?
@@ -479,6 +479,12 @@ function D:resolve(item, results, parent)
         self:resolve(child, results, item)
       end
     end
+
+    -- add the title if there are child items
+    if #results >= first_child and item.title then
+      table.insert(results, first_child, { title = item.title, icon = item.icon, pane = item.pane })
+    end
+
     if item.gap then -- add padding between child items
       for i = first_child, #results - 1 do
         results[i].padding = item.gap
