@@ -50,6 +50,8 @@ FEATURES                                    *snacks.nvim-snacks.nvim-features*
   rename                LSP-integratedfile renaming with support for    
                         plugins like neo-tree.nvim and mini.files.      
 
+  scratch               Scratch buffers                                 
+
   statuscolumn          Pretty statuscolumn                             
 
   terminal              Createand toggle floating/split terminals       
@@ -277,6 +279,11 @@ Click to see all highlight groups ~
 
   SnacksWinBarNC              SnacksWinBar            Title for non-current
                                                       windows
+
+  SnacksScratchKey            DiagnosticVirtualText   Keymap help in the footer
+
+  SnacksScratchDesc           DiagnosticInfo          Keymap help desc in the
+                                                      footer
 
   SnacksNotifierInfo          none                    Notification window for
                                                       Info
