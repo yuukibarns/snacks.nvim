@@ -769,9 +769,11 @@ function M.sections.recent_files(opts)
     local limit = opts.limit or 5
     local root = opts.cwd and vim.fs.normalize(opts.cwd == true and vim.fn.getcwd() or opts.cwd) or ""
     local ret = {} ---@type snacks.dashboard.Section
+    local done = {} ---@type table<string, boolean>
     for _, file in ipairs(vim.v.oldfiles) do
       file = vim.fs.normalize(file, { _fast = true, expand_env = false })
-      if file:sub(1, #root) == root and uv.fs_stat(file) then
+      if not done[file] and file:sub(1, #root) == root and uv.fs_stat(file) then
+        done[file] = true
         ret[#ret + 1] = {
           file = file,
           icon = "file",
