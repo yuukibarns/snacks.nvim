@@ -63,7 +63,7 @@ function M.icon(name, cat)
   }
   for _, fn in ipairs(try) do
     local ret = { pcall(fn) }
-    if ret[1] then
+    if ret[1] and ret[2] then
       return ret[2], ret[3]
     end
   end
