@@ -133,6 +133,22 @@ All other fields equal to `true` will match if the trace has a value for that fi
 
 <!-- docgen -->
 
+## 📦 Setup
+
+```lua
+-- lazy.nvim
+{
+  "folke/snacks.nvim",
+  opts = {
+    profiler = {
+      -- your profiler configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  }
+}
+```
+
 ## ⚙️ Config
 
 ```lua

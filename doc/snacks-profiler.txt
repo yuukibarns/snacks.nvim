@@ -10,13 +10,14 @@ Table of Contents                          *snacks-profiler-table-of-contents*
   - Recommended Setup                |snacks-profiler-usage-recommended-setup|
   - Profiling Neovim Startup  |snacks-profiler-usage-profiling-neovim-startup|
   - Filtering                                |snacks-profiler-usage-filtering|
-4. Config                                             |snacks-profiler-config|
-5. Types                                               |snacks-profiler-types|
+4. Setup                                               |snacks-profiler-setup|
+5. Config                                             |snacks-profiler-config|
+6. Types                                               |snacks-profiler-types|
   - Traces                                      |snacks-profiler-types-traces|
   - Pick: grouping, filtering and sorting|snacks-profiler-types-pick:-grouping,-filtering-and-sorting|
   - UI                                              |snacks-profiler-types-ui|
   - Other                                        |snacks-profiler-types-other|
-6. Module                                             |snacks-profiler-module|
+7. Module                                             |snacks-profiler-module|
   - Snacks.profiler.find()     |snacks-profiler-module-snacks.profiler.find()|
   - Snacks.profiler.highlight()|snacks-profiler-module-snacks.profiler.highlight()|
   - Snacks.profiler.pick()     |snacks-profiler-module-snacks.profiler.pick()|
@@ -27,7 +28,7 @@ Table of Contents                          *snacks-profiler-table-of-contents*
   - Snacks.profiler.status() |snacks-profiler-module-snacks.profiler.status()|
   - Snacks.profiler.stop()     |snacks-profiler-module-snacks.profiler.stop()|
   - Snacks.profiler.toggle() |snacks-profiler-module-snacks.profiler.toggle()|
-7. Links                                               |snacks-profiler-links|
+8. Links                                               |snacks-profiler-links|
 A low overhead Lua profiler for Neovim.
 
 
@@ -168,7 +169,25 @@ field.
 
 
 ==============================================================================
-4. Config                                             *snacks-profiler-config*
+4. Setup                                               *snacks-profiler-setup*
+
+>lua
+    -- lazy.nvim
+    {
+      "folke/snacks.nvim",
+      opts = {
+        profiler = {
+          -- your profiler configuration comes here
+          -- or leave it empty to use the default settings
+          -- refer to the configuration section below
+        }
+      }
+    }
+<
+
+
+==============================================================================
+5. Config                                             *snacks-profiler-config*
 
 >lua
     ---@class snacks.profiler.Config
@@ -260,7 +279,7 @@ field.
 
 
 ==============================================================================
-5. Types                                               *snacks-profiler-types*
+6. Types                                               *snacks-profiler-types*
 
 
 TRACES                                          *snacks-profiler-types-traces*
@@ -377,7 +396,7 @@ OTHER                                            *snacks-profiler-types-other*
 
 
 ==============================================================================
-6. Module                                             *snacks-profiler-module*
+7. Module                                             *snacks-profiler-module*
 
 >lua
     ---@class snacks.profiler
@@ -486,7 +505,7 @@ Toggle the profiler
 <
 
 ==============================================================================
-7. Links                                               *snacks-profiler-links*
+8. Links                                               *snacks-profiler-links*
 
 1. *image*: https://github.com/user-attachments/assets/cebb1308-077b-4f20-bee3-28644fb121b8
 2. *image*: https://github.com/user-attachments/assets/4ee557c4-a290-4a52-b5c9-64e325bf1094
