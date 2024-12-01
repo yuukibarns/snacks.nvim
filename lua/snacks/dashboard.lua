@@ -735,6 +735,45 @@ function M.have_plugin(name)
   return package.loaded.lazy and require("lazy.core.config").spec.plugins[name] ~= nil
 end
 
+---@param opts? {filter?: table<string, boolean>}
+---@return fun():string?
+function M.oldfiles(opts)
+  opts = vim.tbl_deep_extend("force", {
+    filter = {
+      [vim.fn.stdpath("data")] = false,
+      [vim.fn.stdpath("cache")] = false,
+      [vim.fn.stdpath("state")] = false,
+    },
+  }, opts or {})
+  ---@cast opts {filter:table<string, boolean>}
+
+  local filter = {} ---@type {path:string, want:boolean}[]
+  for path, want in pairs(opts.filter or {}) do
+    table.insert(filter, { path = vim.fs.normalize(path), want = want })
+  end
+  local done = {} ---@type table<string, boolean>
+  local i = 1
+  return function()
+    while vim.v.oldfiles[i] do
+      local file = vim.fs.normalize(vim.v.oldfiles[i], { _fast = true, expand_env = false })
+      local want = not done[file]
+      if want then
+        done[file] = true
+        for _, f in ipairs(filter) do
+          if (file:sub(1, #f.path) == f.path) ~= f.want then
+            want = false
+            break
+          end
+        end
+      end
+      i = i + 1
+      if want and uv.fs_stat(file) then
+        return file
+      end
+    end
+  end
+end
+
 M.sections = {}
 
 -- Adds a section to restore the session if any of the supported plugins are installed.
@@ -769,20 +808,15 @@ function M.sections.recent_files(opts)
     local limit = opts.limit or 5
     local root = opts.cwd and vim.fs.normalize(opts.cwd == true and vim.fn.getcwd() or opts.cwd) or ""
     local ret = {} ---@type snacks.dashboard.Section
-    local done = {} ---@type table<string, boolean>
-    for _, file in ipairs(vim.v.oldfiles) do
-      file = vim.fs.normalize(file, { _fast = true, expand_env = false })
-      if not done[file] and file:sub(1, #root) == root and uv.fs_stat(file) then
-        done[file] = true
-        ret[#ret + 1] = {
-          file = file,
-          icon = "file",
-          action = ":e " .. file,
-          autokey = true,
-        }
-        if #ret >= limit then
-          break
-        end
+    for file in M.oldfiles({ filter = { [root] = true } }) do
+      ret[#ret + 1] = {
+        file = file,
+        icon = "file",
+        action = ":e " .. file,
+        autokey = true,
+      }
+      if #ret >= limit then
+        break
       end
     end
     return ret
@@ -803,9 +837,8 @@ function M.sections.projects(opts)
   dirs = vim.list_slice(dirs, 1, limit)
 
   if not opts.dirs then
-    for _, file in ipairs(vim.v.oldfiles) do
-      file = vim.fs.normalize(file, { _fast = true, expand_env = false })
-      local dir = uv.fs_stat(file) and Snacks.git.get_root(file)
+    for file in M.oldfiles() do
+      local dir = Snacks.git.get_root(file)
       if dir and not vim.tbl_contains(dirs, dir) then
         table.insert(dirs, dir)
         if #dirs >= limit then
