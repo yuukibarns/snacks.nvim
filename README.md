@@ -17,6 +17,7 @@ A collection of small QoL plugins for Neovim.
 | [notifier](https://github.com/folke/snacks.nvim/blob/main/docs/notifier.md)         | Better and prettier `vim.notify`                                                                                                                                                        |  ‼️   |
 | [quickfile](https://github.com/folke/snacks.nvim/blob/main/docs/quickfile.md)       | When doing `nvim somefile.txt`, it will render the file as quickly as possible, before loading your plugins.                                                                            |  ‼️   |
 | [rename](https://github.com/folke/snacks.nvim/blob/main/docs/rename.md)             | LSP-integrated file renaming with support for plugins like [neo-tree.nvim](https://github.com/nvim-neo-tree/neo-tree.nvim) and [mini.files](https://github.com/echasnovski/mini.files). |       |
+| [scratch](https://github.com/folke/snacks.nvim/blob/main/docs/scratch.md)           | Scratch buffers                                                                                                                                                                         |       |
 | [statuscolumn](https://github.com/folke/snacks.nvim/blob/main/docs/statuscolumn.md) | Pretty statuscolumn                                                                                                                                                                     |  ‼️   |
 | [terminal](https://github.com/folke/snacks.nvim/blob/main/docs/terminal.md)         | Create and toggle floating/split terminals                                                                                                                                              |       |
 | [toggle](https://github.com/folke/snacks.nvim/blob/main/docs/toggle.md)             | Toggle keymaps integrated with which-key icons / colors                                                                                                                                 |       |
@@ -235,6 +236,8 @@ See the example below for how to configure `snacks.nvim`.
 | **SnacksBackdrop**            | _none_                  | Backdrop                       |
 | **SnacksNormalNC**            | _NormalFloat_           | Normal for non-current windows |
 | **SnacksWinBarNC**            | _SnacksWinBar_          | Title for non-current windows  |
+| **SnacksScratchKey**          | _DiagnosticVirtualText_ | Keymap help in the footer      |
+| **SnacksScratchDesc**         | _DiagnosticInfo_        | Keymap help desc in the footer |
 | **SnacksNotifierInfo**        | _none_                  | Notification window for Info   |
 | **SnacksNotifierWarn**        | _none_                  | Notification window for Warn   |
 | **SnacksNotifierDebug**       | _none_                  | Notification window for Debug  |
