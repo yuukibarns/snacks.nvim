@@ -46,7 +46,6 @@ local defaults = {
     lua = {
       keys = {
         ["source"] = {
-          "<c-s>",
           function()
             if vim.fn.mode():match("[vV]") then
               vim.fn.feedkeys(":", "nx")
@@ -55,6 +54,7 @@ local defaults = {
             else
               vim.cmd([[source]])
             end
+          "<cr>",
           end,
           desc = "Source buffer",
           mode = { "n", "x" },
