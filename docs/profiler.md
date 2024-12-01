@@ -6,6 +6,8 @@ A low overhead Lua profiler for Neovim.
 
 ![image](https://github.com/user-attachments/assets/4ee557c4-a290-4a52-b5c9-64e325bf1094)
 
+![image](https://github.com/user-attachments/assets/ec03e440-6719-4463-a649-a8626dcfe2ec)
+
 ## ✨ Features
 
 - low overhead **instrumentation**
