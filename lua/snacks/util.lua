@@ -69,4 +69,21 @@ function M.icon(name, cat)
   end
   return " "
 end
+
+-- Encodes a string to be used as a file name.
+---@param str string
+function M.file_encode(str)
+  return str:gsub("([^%w%-_%.\t ])", function(c)
+    return string.format("_%%%02X", string.byte(c))
+  end)
+end
+
+-- Decodes a file name to a string.
+---@param str string
+function M.file_decode(str)
+  return str:gsub("_%%(%x%x)", function(hex)
+    return string.char(tonumber(hex, 16))
+  end)
+end
+
 return M
