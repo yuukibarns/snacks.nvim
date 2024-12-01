@@ -52,4 +52,21 @@ function M.bo(buf, bo)
   end
 end
 
+---@param name string
+---@param cat? string
+---@return string, string?
+function M.icon(name, cat)
+  -- stylua: ignore
+  local try = {
+    function() return require("mini.icons").get(cat or "file", name) end,
+    function() return require("nvim-web-devicons").get_icon(name) end,
+  }
+  for _, fn in ipairs(try) do
+    local ret = { pcall(fn) }
+    if ret[1] then
+      return ret[2], ret[3]
+    end
+  end
+  return " "
+end
 return M
