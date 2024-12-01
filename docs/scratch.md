@@ -1,7 +1,8 @@
 # 🍿 scratch
 
-![image](https://gist.github.com/user-attachments/assets/0bed05c5-371c-43fe-a525-793012e5cbd9)
-![image](https://gist.github.com/user-attachments/assets/a202ec17-5826-407a-aa28-18b87004d04a)
+![image](https://github.com/user-attachments/assets/52ac7c1a-908f-4d1d-97a2-ad4642f8dc36)
+
+![image](https://github.com/user-attachments/assets/d3e766e9-e64a-4c22-85b4-3d965f645b59)
 
 ## 🚀 Usage
 
