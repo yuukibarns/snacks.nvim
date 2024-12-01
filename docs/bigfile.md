@@ -22,6 +22,8 @@ The default implementation enables `syntax` for the buffer and disables
   -- Enable or disable features when big file detected
   ---@param ctx {buf: number, ft:string}
   setup = function(ctx)
+    vim.cmd([[NoMatchParen]])
+    Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
     vim.b.minianimate_disable = true
     vim.schedule(function()
       vim.bo[ctx.buf].syntax = ctx.ft

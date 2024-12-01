@@ -512,6 +512,14 @@ Get an icon
 Snacks.dashboard.icon(name, cat)
 ```
 
+### `Snacks.dashboard.oldfiles()`
+
+```lua
+---@param opts? {filter?: table<string, boolean>}
+---@return fun():string?
+Snacks.dashboard.oldfiles(opts)
+```
+
 ### `Snacks.dashboard.open()`
 
 ```lua
