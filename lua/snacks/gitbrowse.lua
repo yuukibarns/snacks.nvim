@@ -21,6 +21,12 @@ local defaults = {
   end,
   ---@type "repo" | "branch" | "file" | "commit"
   what = "file", -- what to open. not all remotes support all types
+  ---@type string?
+  branch = nil,
+  ---@type string?
+  line_start = nil,
+  ---@type string?
+  line_end = nil,
   -- patterns to transform remotes to an actual URL
   -- stylua: ignore
   remote_patterns = {
@@ -116,23 +122,27 @@ function M._open(opts)
   local word = vim.fn.expand("<cword>")
   local is_commit = is_valid_commit_hash(word, cwd)
   local fields = {
-    branch = system({ "git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD" }, "Failed to get current branch")[1],
+    branch = opts.branch
+      or system({ "git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD" }, "Failed to get current branch")[1],
     file = file and system({ "git", "-C", cwd, "ls-files", "--full-name", file }, "Failed to get git file path")[1],
     line = nil,
     commit = is_commit and word,
   }
 
   -- Get visual selection range if in visual mode
-  if vim.fn.mode() == "v" or vim.fn.mode() == "V" then
-    local start_line = vim.fn.line("v")
-    local end_line = vim.fn.line(".")
-    -- Ensure start_line is always the smaller number
-    if start_line > end_line then
-      start_line, end_line = end_line, start_line
+  if vim.fn.mode():find("[vV]") then
+    vim.fn.feedkeys(":", "nx")
+    local line_start = vim.api.nvim_buf_get_mark(0, "<")[1]
+    local line_end = vim.api.nvim_buf_get_mark(0, ">")[1]
+    vim.fn.feedkeys("gv", "nx")
+    -- Ensure line_start is always the smaller number
+    if line_start > line_end then
+      line_start, line_end = line_end, line_start
     end
-    fields.line = file and start_line .. "-L" .. end_line
+    fields.line = file and line_start .. "-L" .. line_end
   else
-    fields.line = file and vim.fn.line(".")
+    fields.line = file
+      and (opts.line_start and opts.line_end and opts.line_start .. "-L" .. opts.line_end or vim.fn.line("."))
   end
 
   opts.what = is_commit and "commit" or opts.what == "commit" and not fields.commit and "file" or opts.what
