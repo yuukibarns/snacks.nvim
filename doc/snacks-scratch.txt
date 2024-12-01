@@ -20,6 +20,10 @@ directory, Git branch and `vim.v.count1`.
 
 It supports templates, custom keymaps, and auto-saves when you hide the buffer.
 
+In lua buffers, pressing `<cr>` will execute the buffer / selection with
+`Snacks.debug.run()` that will show print output inline and show errors as
+diagnostics.
+
 
 ==============================================================================
 1. Usage                                                *snacks-scratch-usage*
