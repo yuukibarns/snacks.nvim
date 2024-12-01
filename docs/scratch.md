@@ -1,5 +1,14 @@
 # 🍿 scratch
 
+Quickly open scratch buffers based on the current working directory,
+git branch and `vim.v.count1`, with templates and custom keymaps.
+
+Quickly open scratch buffers for testing code, creating notes or
+just messing around. Scratch buffers are organized by using context
+like your working directory, Git branch and `vim.v.count1`.
+
+It supports templates, custom keymaps, and auto-saves when you hide the buffer.
+
 ![image](https://github.com/user-attachments/assets/52ac7c1a-908f-4d1d-97a2-ad4642f8dc36)
 
 ![image](https://github.com/user-attachments/assets/d3e766e9-e64a-4c22-85b4-3d965f645b59)
