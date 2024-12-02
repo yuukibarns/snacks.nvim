@@ -68,7 +68,7 @@ M.examples.advanced = {
 }
 
 -- Advanced example using the GitHub CLI.
--- ![image](https://github.com/user-attachments/assets/965e1d9e-6833-409c-900a-a12e98d764d9)
+-- ![image](https://github.com/user-attachments/assets/747d7386-ef05-487f-9550-3e5ef94869fc)
 M.examples.github = {
   sections = {
     { section = "header" },
