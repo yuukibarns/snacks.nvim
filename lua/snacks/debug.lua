@@ -49,8 +49,13 @@ function M.run(opts)
 
   -- Get the lines to run
   local lines ---@type string[]
-  if vim.fn.mode():find("[vV]") then
-    vim.fn.feedkeys(":", "nx")
+  local mode = vim.fn.mode()
+  if mode:find("[vV]") then
+    if mode == "v" then
+      vim.cmd("normal! v")
+    elseif mode == "V" then
+      vim.cmd("normal! V")
+    end
     local from = vim.api.nvim_buf_get_mark(buf, "<")
     local to = vim.api.nvim_buf_get_mark(buf, ">")
     lines = vim.api.nvim_buf_get_text(buf, from[1] - 1, from[2], to[1] - 1, to[2] + 1, {})
