@@ -24,6 +24,7 @@ Open the repo of the active file in the browser (e.g., GitHub)
 
 ```lua
 ---@class snacks.gitbrowse.Config
+---@field url_patterns? table<string, table<string, string|fun(fields:snacks.gitbrowse.Fields):string>>
 {
   -- Handler to open the url in a browser
   ---@param url string
@@ -36,12 +37,9 @@ Open the repo of the active file in the browser (e.g., GitHub)
   end,
   ---@type "repo" | "branch" | "file" | "commit"
   what = "file", -- what to open. not all remotes support all types
-  ---@type string?
-  branch = nil,
-  ---@type string?
-  line_start = nil,
-  ---@type string?
-  line_end = nil,
+  branch = nil, ---@type string?
+  line_start = nil, ---@type number?
+  line_end = nil, ---@type number?
   -- patterns to transform remotes to an actual URL
   remote_patterns = {
     { "^(https?://.*)%.git$"              , "%1" },
@@ -77,6 +75,18 @@ Open the repo of the active file in the browser (e.g., GitHub)
 }
 ```
 
+## 📚 Types
+
+```lua
+---@class snacks.gitbrowse.Fields
+---@field branch? string
+---@field file? string
+---@field line_start? number
+---@field line_end? number
+---@field commit? string
+---@field line_count? number
+```
+
 ## 📦 Module
 
 ### `Snacks.gitbrowse()`
@@ -90,8 +100,9 @@ Snacks.gitbrowse()
 
 ```lua
 ---@param repo string
+---@param fields snacks.gitbrowse.Fields
 ---@param opts? snacks.gitbrowse.Config
-Snacks.gitbrowse.get_url(repo, opts)
+Snacks.gitbrowse.get_url(repo, fields, opts)
 ```
 
 ### `Snacks.gitbrowse.open()`
