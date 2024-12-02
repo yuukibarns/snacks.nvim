@@ -11,6 +11,7 @@ local uv = vim.uv or vim.loop
 ---@class snacks.gitbrowse.Config
 ---@field url_patterns? table<string, table<string, string|fun(fields:snacks.gitbrowse.Fields):string>>
 local defaults = {
+  notify = true, -- show notification on open
   -- Handler to open the url in a browser
   ---@param url string
   open = function(url)
@@ -106,7 +107,7 @@ local function system(cmd, err)
   local proc = vim.fn.system(cmd)
   if vim.v.shell_error ~= 0 then
     Snacks.notify.error({ err, proc }, { title = "Git Browse" })
-    error(err)
+    error("__ignore__")
   end
   return vim.split(vim.trim(proc), "\n")
 end
@@ -124,7 +125,10 @@ end
 
 ---@param opts? snacks.gitbrowse.Config
 function M.open(opts)
-  pcall(M._open, opts) -- errors are handled with notifications
+  local ok, err = pcall(M._open, opts) -- errors are handled with notifications
+  if not ok and err ~= "__ignore__" then
+    error(err)
+  end
 end
 
 ---@param opts? snacks.gitbrowse.Config
@@ -184,7 +188,9 @@ function M._open(opts)
 
   local function open(remote)
     if remote then
-      Snacks.notify(("Opening [%s](%s)"):format(remote.name, remote.url), { title = "Git Browse" })
+      if opts.notify then
+        Snacks.notify(("Opening [%s](%s)"):format(remote.name, remote.url), { title = "Git Browse" })
+      end
       opts.open(remote.url)
     end
   end
