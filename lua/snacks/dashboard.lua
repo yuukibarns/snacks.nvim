@@ -482,7 +482,18 @@ function D:resolve(item, results, parent)
 
     -- add the title if there are child items
     if #results >= first_child and item.title then
-      table.insert(results, first_child, { title = item.title, icon = item.icon, pane = item.pane })
+      table.insert(results, first_child, {
+        title = item.title,
+        icon = item.icon,
+        pane = item.pane,
+        action = item.action,
+        key = item.key,
+        label = item.label,
+      })
+      item.action = nil
+      item.label = nil
+      item.key = nil
+      first_child = first_child + 1
     end
 
     if item.gap then -- add padding between child items
@@ -992,8 +1003,9 @@ function M.sections.terminal(opts)
       end
     end
     return {
-      action = opts.action,
-      key = opts.key,
+      action = not opts.title and opts.action or nil,
+      key = not opts.title and opts.key or nil,
+      label = not opts.title and opts.label or nil,
       render = function(_, pos)
         self:trace("terminal.render")
         local win = vim.api.nvim_open_win(buf, false, {
