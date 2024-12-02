@@ -35,8 +35,10 @@ local M = setmetatable({}, {
 ---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys> Key mappings
 ---@field on_buf? fun(self: snacks.win) Callback after opening the buffer
 ---@field on_win? fun(self: snacks.win) Callback after opening the window
+---@field fixbuf? boolean don't allow other buffers to be opened in this window
 local defaults = {
   show = true,
+  fixbuf = true,
   relative = "editor",
   position = "float",
   minimal = true,
@@ -419,7 +421,6 @@ function M:show()
   -- and it's the current window
   vim.api.nvim_create_autocmd("WinClosed", {
     group = self.augroup,
-    buffer = self.buf,
     callback = function(ev)
       if ev.buf == self.buf and vim.api.nvim_get_current_win() == self.win then
         pcall(vim.cmd.wincmd, "p")
@@ -439,13 +440,24 @@ function M:show()
   vim.api.nvim_create_autocmd("BufWinEnter", {
     group = self.augroup,
     callback = function()
+      -- window closes, so delete the autocmd
       if not self:win_valid() then
         return true
       end
+
       local buf = vim.api.nvim_win_get_buf(self.win)
+
+      -- same buffer
       if buf == self.buf then
         return
       end
+
+      -- don't swap if fixbuf is disabled
+      if self.opts.fixbuf == false then
+        self.buf = buf
+        return
+      end
+
       -- another buffer was opened in this window
       -- find another window to swap with
       for _, win in ipairs(vim.api.nvim_list_wins()) do
