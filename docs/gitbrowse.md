@@ -26,6 +26,7 @@ Open the repo of the active file in the browser (e.g., GitHub)
 ---@class snacks.gitbrowse.Config
 ---@field url_patterns? table<string, table<string, string|fun(fields:snacks.gitbrowse.Fields):string>>
 {
+  notify = true, -- show notification on open
   -- Handler to open the url in a browser
   ---@param url string
   open = function(url)
