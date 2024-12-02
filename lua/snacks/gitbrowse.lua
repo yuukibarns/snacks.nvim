@@ -188,7 +188,7 @@ function M._open(opts)
 
   local function open(remote)
     if remote then
-      if opts.notify then
+      if opts.notify ~= false then
         Snacks.notify(("Opening [%s](%s)"):format(remote.name, remote.url), { title = "Git Browse" })
       end
       opts.open(remote.url)
