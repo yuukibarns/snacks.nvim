@@ -449,6 +449,7 @@ The other options are used with `:lua Snacks.dashboard()`
   bo = {
     bufhidden = "wipe",
     buftype = "nofile",
+    buflisted = false,
     filetype = "snacks_dashboard",
     swapfile = false,
     undofile = false,
