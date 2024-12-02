@@ -455,6 +455,8 @@ function M:show()
       -- don't swap if fixbuf is disabled
       if self.opts.fixbuf == false then
         self.buf = buf
+        -- update window options
+        Snacks.util.wo(self.win, self.opts.wo)
         return
       end
 
