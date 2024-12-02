@@ -60,6 +60,8 @@ local defaults = {
 }
 
 Snacks.util.set_hl({
+  Title = "FloatTitle",
+  Footer = "FloatFooter",
   Key = "DiagnosticVirtualTextInfo",
   Desc = "DiagnosticInfo",
 }, { prefix = "SnacksScratch" })
@@ -184,6 +186,9 @@ function M.open(opts)
     { opts.name .. (vim.v.count1 > 1 and " " .. vim.v.count1 or "") },
     { " " },
   }
+  for _, t in ipairs(opts.win.title) do
+    t[2] = t[2] or "SnacksScratchTitle"
+  end
 
   local is_new = not uv.fs_stat(file)
   local buf = vim.fn.bufadd(file)
@@ -230,6 +235,9 @@ function M.open(opts)
     table.insert(ret.opts.footer, { " " .. (key.desc or keymap) .. " ", "SnacksScratchDesc" })
   end
   table.insert(ret.opts.footer, { " " })
+  for _, t in ipairs(ret.opts.footer) do
+    t[2] = t[2] or "SnacksScratchFooter"
+  end
   if opts.autowrite then
     vim.api.nvim_create_autocmd("BufHidden", {
       group = vim.api.nvim_create_augroup("snacks_scratch_autowrite_" .. buf, { clear = true }),
