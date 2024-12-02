@@ -9,6 +9,7 @@ local M = setmetatable({}, {
 local uv = vim.uv or vim.loop
 
 ---@class snacks.gitbrowse.Config
+---@field url_patterns? table<string, table<string, string|fun(fields:snacks.gitbrowse.Fields):string>>
 local defaults = {
   -- Handler to open the url in a browser
   ---@param url string
@@ -21,12 +22,9 @@ local defaults = {
   end,
   ---@type "repo" | "branch" | "file" | "commit"
   what = "file", -- what to open. not all remotes support all types
-  ---@type string?
-  branch = nil,
-  ---@type string?
-  line_start = nil,
-  ---@type string?
-  line_end = nil,
+  branch = nil, ---@type string?
+  line_start = nil, ---@type number?
+  line_end = nil, ---@type number?
   -- patterns to transform remotes to an actual URL
   -- stylua: ignore
   remote_patterns = {
@@ -62,6 +60,14 @@ local defaults = {
   },
 }
 
+---@class snacks.gitbrowse.Fields
+---@field branch? string
+---@field file? string
+---@field line_start? number
+---@field line_end? number
+---@field commit? string
+---@field line_count? number
+
 ---@private
 ---@param remote string
 ---@param opts? snacks.gitbrowse.Config
@@ -75,12 +81,21 @@ function M.get_repo(remote, opts)
 end
 
 ---@param repo string
+---@param fields snacks.gitbrowse.Fields
 ---@param opts? snacks.gitbrowse.Config
-function M.get_url(repo, opts)
+function M.get_url(repo, fields, opts)
   opts = Snacks.config.get("gitbrowse", defaults, opts)
   for remote, patterns in pairs(opts.url_patterns) do
     if repo:find(remote) then
-      return patterns[opts.what] and (repo .. patterns[opts.what]) or repo
+      local pattern = patterns[opts.what]
+      dd(pattern)
+      if type(pattern) == "string" then
+        return repo .. pattern:gsub("(%b{})", function(key)
+          return fields[key:sub(2, -2)] or key
+        end)
+      elseif type(pattern) == "function" then
+        return repo .. pattern(fields)
+      end
     end
   end
   return repo
@@ -121,13 +136,14 @@ function M._open(opts)
   local cwd = file and vim.fn.fnamemodify(file, ":h") or vim.fn.getcwd()
   local word = vim.fn.expand("<cword>")
   local is_commit = is_valid_commit_hash(word, cwd)
+  ---@type snacks.gitbrowse.Fields
   local fields = {
     branch = opts.branch
       or system({ "git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD" }, "Failed to get current branch")[1],
     file = file and system({ "git", "-C", cwd, "ls-files", "--full-name", file }, "Failed to get git file path")[1],
     line_start = opts.line_start,
     line_end = opts.line_end,
-    commit = is_commit and word,
+    commit = is_commit and word or nil,
   }
 
   -- Get visual selection range if in visual mode
@@ -161,9 +177,7 @@ function M._open(opts)
       if repo then
         table.insert(remotes, {
           name = name,
-          url = M.get_url(repo, opts):gsub("(%b{})", function(key)
-            return fields[key:sub(2, -2)] or key
-          end),
+          url = M.get_url(repo, fields, opts),
         })
       end
     end
