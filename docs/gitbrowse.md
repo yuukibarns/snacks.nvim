@@ -60,17 +60,17 @@ Open the repo of the active file in the browser (e.g., GitHub)
   url_patterns = {
     ["github%.com"] = {
       branch = "/tree/{branch}",
-      file = "/blob/{branch}/{file}#L{line}",
+      file = "/blob/{branch}/{file}#L{line_start}-L{line_end}",
       commit = "/commit/{commit}",
     },
     ["gitlab%.com"] = {
       branch = "/-/tree/{branch}",
-      file = "/-/blob/{branch}/{file}#L{line}",
+      file = "/-/blob/{branch}/{file}#L{line_start}-L{line_end}",
       commit = "/-/commit/{commit}",
     },
     ["bitbucket%.org"] = {
       branch = "/src/{branch}",
-      file = "/src/{branch}/{file}#lines-{line}",
+      file = "/src/{branch}/{file}#lines-{line_start}-L{line_end}",
       commit = "/commits/{commit}",
     },
   },
