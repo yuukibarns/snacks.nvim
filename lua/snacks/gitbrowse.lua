@@ -146,6 +146,7 @@ function M._open(opts)
     fields.line_start = fields.line_start or vim.fn.line(".")
     fields.line_end = fields.line_end or fields.line_start
   end
+  fields.line_count = fields.line_end - fields.line_start + 1
 
   opts.what = is_commit and "commit" or opts.what == "commit" and not fields.commit and "file" or opts.what
   opts.what = not is_commit and opts.what == "file" and not fields.file and "branch" or opts.what
