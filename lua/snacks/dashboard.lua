@@ -924,7 +924,11 @@ function M.sections.terminal(opts)
   return function(self)
     local cmd = opts.cmd or 'echo "No `cmd` provided"'
     local ttl = opts.ttl or 3600
-    local width, height = opts.width or self.opts.width, opts.height or 10
+    local height = opts.height or 10
+    local width = opts.width
+    if not width then
+      width = self.opts.width - (opts.indent or 0)
+    end
 
     local cache_parts = {
       table.concat(type(cmd) == "table" and cmd or { cmd }, " "),
