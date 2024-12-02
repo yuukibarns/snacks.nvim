@@ -22,9 +22,15 @@ local M = setmetatable({}, {
 ---@field win? snacks.win.Config scratch window
 ---@field template? string template for new buffers
 ---@field file? string scratch file path. You probably don't need to set this.
+---@field ft? string|fun():string the filetype of the scratch buffer
 local defaults = {
   name = "Scratch",
-  ft = "lua", -- the filetype of the scratch buffer
+  ft = function()
+    if vim.bo.buftype == "" and vim.bo.filetype ~= "" then
+      return vim.bo.filetype
+    end
+    return "markdown"
+  end,
   ---@type string|string[]?
   icon = nil, -- `icon|{icon, icon_hl}`. defaults to the filetype icon
   root = vim.fn.stdpath("data") .. "/scratch",
@@ -147,9 +153,16 @@ end
 ---@param opts? snacks.scratch.Config
 function M.open(opts)
   opts = Snacks.config.get("scratch", defaults, opts)
-  opts.win = Snacks.win.resolve("scratch", opts.win_by_ft[opts.ft], opts.win, { show = false })
+  local ft = "markdown"
+  if type(opts.ft) == "function" then
+    ft = opts.ft()
+  elseif type(opts.ft) == "string" then
+    ft = opts.ft --[[@as string]]
+  end
+
+  opts.win = Snacks.win.resolve("scratch", opts.win_by_ft[ft], opts.win, { show = false })
   opts.win.bo = opts.win.bo or {}
-  opts.win.bo.filetype = opts.ft
+  opts.win.bo.filetype = ft
 
   local file = opts.file
   if not file then
@@ -170,14 +183,14 @@ function M.open(opts)
     }
 
     vim.fn.mkdir(opts.root, "p")
-    local fname = Snacks.util.file_encode(table.concat(filekey, "|") .. "." .. opts.ft)
+    local fname = Snacks.util.file_encode(table.concat(filekey, "|") .. "." .. ft)
     file = vim.fs.normalize(opts.root .. "/" .. fname)
   end
 
   local icon, icon_hl = unpack(type(opts.icon) == "table" and opts.icon or { opts.icon, nil })
   ---@cast icon string
   if not icon then
-    icon, icon_hl = Snacks.util.icon(opts.ft, "filetype")
+    icon, icon_hl = Snacks.util.icon(ft, "filetype")
   end
   opts.win.title = {
     { " " },
