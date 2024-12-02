@@ -695,7 +695,9 @@ function D:update()
         end
       end
       if item then
-        last = { item._.row, (self.lines[item._.row]:find("[%w%d%p]", item._.col + 1) or item._.col + 1) - 1 }
+        local col = self.lines[item._.row]:find("[%w%d%p]", item._.col + 1)
+        col = col or (item._.col + 1 + (item.indent and (item.indent + 1) or 0))
+        last = { item._.row, (col or item._.col + 1) - 1 }
       end
       vim.api.nvim_win_set_cursor(self.win, last)
     end,
@@ -991,6 +993,7 @@ function M.sections.terminal(opts)
     end
     return {
       action = opts.action,
+      key = opts.key,
       render = function(_, pos)
         self:trace("terminal.render")
         local win = vim.api.nvim_open_win(buf, false, {
@@ -1019,7 +1022,7 @@ function M.sections.terminal(opts)
         self.on("Closed", close, self.augroup)
         self:trace()
       end,
-      text = ("terminal\n"):rep(height - 1),
+      text = ("\n"):rep(height - 1),
     }
   end
 end
