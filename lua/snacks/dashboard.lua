@@ -990,6 +990,7 @@ function M.sections.terminal(opts)
       end
     end
     return {
+      action = opts.action,
       render = function(_, pos)
         self:trace("terminal.render")
         local win = vim.api.nvim_open_win(buf, false, {
@@ -1018,7 +1019,7 @@ function M.sections.terminal(opts)
         self.on("Closed", close, self.augroup)
         self:trace()
       end,
-      text = ("\n"):rep(height - 1),
+      text = ("terminal\n"):rep(height - 1),
     }
   end
 end
