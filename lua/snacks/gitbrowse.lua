@@ -88,7 +88,6 @@ function M.get_url(repo, fields, opts)
   for remote, patterns in pairs(opts.url_patterns) do
     if repo:find(remote) then
       local pattern = patterns[opts.what]
-      dd(pattern)
       if type(pattern) == "string" then
         return repo .. pattern:gsub("(%b{})", function(key)
           return fields[key:sub(2, -2)] or key
