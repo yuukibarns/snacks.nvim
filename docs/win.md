@@ -44,8 +44,8 @@ Snacks.win({
 ---@class snacks.win.Config: vim.api.keyset.win_config
 ---@field style? string merges with config from `Snacks.config.styles[style]`
 ---@field show? boolean Show the window immediately (default: true)
----@field height? number Height of the window. Use <1 for relative height. 0 means full height. (default: 0.9)
----@field width? number Width of the window. Use <1 for relative width. 0 means full width. (default: 0.9)
+---@field height? number|fun():number Height of the window. Use <1 for relative height. 0 means full height. (default: 0.9)
+---@field width? number|fun():number Width of the window. Use <1 for relative width. 0 means full width. (default: 0.9)
 ---@field minimal? boolean Disable a bunch of options to make the window minimal (default: true)
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field buf? number If set, use this buffer instead of creating a new one
@@ -58,8 +58,10 @@ Snacks.win({
 ---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys> Key mappings
 ---@field on_buf? fun(self: snacks.win) Callback after opening the buffer
 ---@field on_win? fun(self: snacks.win) Callback after opening the window
+---@field fixbuf? boolean don't allow other buffers to be opened in this window
 {
   show = true,
+  fixbuf = true,
   relative = "editor",
   position = "float",
   minimal = true,
