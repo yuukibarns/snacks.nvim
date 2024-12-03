@@ -242,6 +242,9 @@ function M.open(opts)
   opts.win.buf = buf
   local ret = Snacks.win(opts.win)
   ret.opts.footer = {}
+  table.sort(ret.keys, function(a, b)
+    return a[1] < b[1]
+  end)
   for _, key in ipairs(ret.keys) do
     local keymap = vim.fn.keytrans(vim.keycode(key[1]))
     table.insert(ret.opts.footer, { " " })
