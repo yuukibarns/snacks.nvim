@@ -499,9 +499,14 @@ function M:show()
 end
 
 function M:add_padding()
-  self.opts.wo.statuscolumn = " "
+  local listchars = vim.split(self.opts.wo.listchars or "", ",")
+  listchars = vim.tbl_filter(function(s)
+    return not s:find("eol:")
+  end, listchars)
+  table.insert(listchars, "eol: ")
+  self.opts.wo.listchars = table.concat(listchars, ",")
   self.opts.wo.list = true
-  self.opts.wo.listchars = ("eol: ," .. (self.opts.wo.listchars or "")):gsub(",$", "")
+  self.opts.wo.statuscolumn = " "
 end
 
 function M:is_floating()
