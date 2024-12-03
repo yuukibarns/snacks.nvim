@@ -232,6 +232,7 @@ function M.open(opts)
     local function reset()
       vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(opts.template, "\n"))
     end
+    opts.win.keys = opts.win.keys or {}
     opts.win.keys.reset = { "R", reset, desc = "Reset buffer" }
     if is_new then
       reset()
