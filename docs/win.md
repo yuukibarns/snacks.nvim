@@ -51,7 +51,7 @@ Snacks.win({
 ---@field buf? number If set, use this buffer instead of creating a new one
 ---@field file? string If set, use this file instead of creating a new buffer
 ---@field enter? boolean Enter the window after opening (default: false)
----@field backdrop? number|false Opacity of the backdrop (default: 60)
+---@field backdrop? number|false|snacks.win.Backdrop Opacity of the backdrop (default: 60)
 ---@field wo? vim.wo window options
 ---@field bo? vim.bo buffer options
 ---@field ft? string filetype to use for treesitter/syntax highlighting. Won't override existing filetype
@@ -129,6 +129,13 @@ Snacks.win({
 ---@field [1]? string
 ---@field [2]? string|fun(self: snacks.win): any
 ---@field mode? string|string[]
+```
+
+```lua
+---@class snacks.win.Backdrop
+---@field bg? string
+---@field blend? number
+---@field transparent? boolean defaults to true
 ```
 
 ## 📦 Module
