@@ -130,18 +130,6 @@ Snacks.util.set_hl({
   WinBarNC = "SnacksWinBar",
 }, { prefix = "Snacks", default = true })
 
-M.transparent = false
-
-local function check_bg()
-  local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
-  M.transparent = not (normal and normal.bg ~= nil)
-end
-check_bg()
-vim.api.nvim_create_autocmd("ColorScheme", {
-  group = vim.api.nvim_create_augroup("snacks_win_transparent", { clear = true }),
-  callback = check_bg,
-})
-
 local id = 0
 
 ---@private

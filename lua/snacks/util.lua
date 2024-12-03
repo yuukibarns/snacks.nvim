@@ -110,4 +110,18 @@ function M.blend(fg, bg, alpha)
   return string.format("#%02x%02x%02x", blend(1), blend(2), blend(3))
 end
 
+local transparent ---@type boolean?
+function M.is_transparent()
+  if transparent == nil then
+    transparent = M.color("Normal", "bg") == nil
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      group = vim.api.nvim_create_augroup("snacks_util_transparent", { clear = true }),
+      callback = function()
+        transparent = nil
+      end,
+    })
+  end
+  return transparent
+end
+
 return M
