@@ -229,7 +229,7 @@ end
 function M.get()
   local win = vim.g.statusline_winid
   local buf = vim.api.nvim_win_get_buf(win)
-  local key = ("%d:%d:%d"):format(win, buf, vim.v.lnum)
+  local key = ("%d:%d:%d:%d:%d"):format(win, buf, vim.v.lnum, vim.v.virtnum, vim.v.relnum)
   if cache[key] then
     return cache[key]
   end
