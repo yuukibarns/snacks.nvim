@@ -93,16 +93,10 @@ Similar plugins:
 
 ### `Snacks.indent.animate()`
 
-Animate scope changes
+Toggle scope animations
 
 ```lua
 Snacks.indent.animate()
-```
-
-### `Snacks.indent.debug()`
-
-```lua
-Snacks.indent.debug()
 ```
 
 ### `Snacks.indent.disable()`

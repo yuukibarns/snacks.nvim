@@ -8,7 +8,6 @@ Table of Contents                            *snacks-indent-table-of-contents*
 3. Types                                                 |snacks-indent-types|
 4. Module                                               |snacks-indent-module|
   - Snacks.indent.animate()     |snacks-indent-module-snacks.indent.animate()|
-  - Snacks.indent.debug()         |snacks-indent-module-snacks.indent.debug()|
   - Snacks.indent.disable()     |snacks-indent-module-snacks.indent.disable()|
   - Snacks.indent.enable()       |snacks-indent-module-snacks.indent.enable()|
 Visualize indent guides and scopes based on treesitter or indent.
@@ -111,17 +110,10 @@ Similar plugins:
 
 `Snacks.indent.animate()`                            *Snacks.indent.animate()*
 
-Animate scope changes
+Toggle scope animations
 
 >lua
     Snacks.indent.animate()
-<
-
-
-`Snacks.indent.debug()`                                *Snacks.indent.debug()*
-
->lua
-    Snacks.indent.debug()
 <
 
 
