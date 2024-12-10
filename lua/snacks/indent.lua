@@ -261,9 +261,8 @@ function M.render_scope(scope, ctx)
   local col = indent - ctx.leftcol
 
   if config.scope.underline and scope.from >= ctx.top and scope.from <= ctx.bottom then
-    vim.api.nvim_buf_set_extmark(scope.buf, ns, scope.from - 1, 0, {
+    vim.api.nvim_buf_set_extmark(scope.buf, ns, scope.from - 1, math.max(col, 0), {
       end_col = #vim.api.nvim_buf_get_lines(scope.buf, scope.from - 1, scope.from, false)[1],
-      virt_text_win_col = col,
       hl_group = get_underline_hl(hl),
       hl_mode = "combine",
       priority = config.priority + 1,
