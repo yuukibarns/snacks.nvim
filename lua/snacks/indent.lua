@@ -49,6 +49,23 @@ local defaults = {
     only_current = false, -- only show scope in the current window
     hl = "SnacksIndentScope", ---@type string|string[] hl group for scopes
   },
+  chunk = {
+    -- when enabled, scopes will be rendered as chunks, except for the
+    -- top-level scope which will be rendered as a scope.
+    enabled = false,
+    -- only show chunk scopes in the current window
+    only_current = false,
+    hl = "SnacksIndentChunk", ---@type string|string[] hl group for chunk scopes
+    char = {
+      corner_top = "┌",
+      corner_bottom = "└",
+      -- corner_top = "╭",
+      -- corner_bottom = "╰",
+      horizontal = "─",
+      vertical = "│",
+      arrow = ">",
+    },
+  },
   blank = {
     char = " ",
     -- char = "·",
@@ -83,6 +100,7 @@ Snacks.util.set_hl({
   [""] = "NonText",
   Blank = "SnacksIndent",
   Scope = "Special",
+  Chunk = "SnacksIndentScope",
   ["1"] = "DiagnosticInfo",
   ["2"] = "DiagnosticHint",
   ["3"] = "DiagnosticWarn",
@@ -192,6 +210,7 @@ function M.on_win(win, buf, top, bottom)
 
   local show_indent = not config.indent.only_current or ctx.is_current
   local show_scope = config.scope.enabled and (not config.scope.only_current or ctx.is_current)
+  local show_chunk = config.chunk.enabled and (not config.chunk.only_current or ctx.is_current)
 
   -- Calculate and render indents
   local indents = cache_indents[buf].indents
@@ -220,9 +239,12 @@ function M.on_win(win, buf, top, bottom)
   end)
 
   -- Render scope
-  if scope then
-    if show_scope then
-      M.render(scope, ctx)
+  if scope and scope:size() > 1 then
+    show_chunk = show_chunk and (scope.indent or 0) >= ctx.shiftwidth
+    if show_chunk then
+      M.render_chunk(scope, ctx)
+    elseif show_scope then
+      M.render_scope(scope, ctx)
     end
   end
 end
@@ -265,6 +287,46 @@ function M.render_scope(scope, ctx)
         strict = false,
         ephemeral = true,
       })
+    end
+  end
+end
+
+--- Render the scope overlappping the given range
+---@param scope snacks.indent.Scope
+---@param ctx snacks.indent.ctx
+---@private
+function M.render_chunk(scope, ctx)
+  local indent = (scope.indent or 2)
+  local col = indent - ctx.leftcol - ctx.shiftwidth
+  if col < 0 then -- scope is hidden
+    return
+  end
+  local to = M.animating and scope.step or scope.to
+  local hl = get_hl(scope.indent + 1, config.chunk.hl)
+  local char = config.chunk.char
+
+  ---@param l number
+  ---@param line string
+  local function add(l, line)
+    vim.api.nvim_buf_set_extmark(scope.buf, ns, l - 1, 0, {
+      virt_text = { { line, hl } },
+      virt_text_pos = "overlay",
+      virt_text_win_col = col,
+      hl_mode = "combine",
+      priority = config.priority + 2,
+      strict = false,
+      ephemeral = true,
+    })
+  end
+
+  for l = math.max(scope.from, ctx.top), math.min(to, ctx.bottom) do
+    local i = ctx.indents[l] - ctx.leftcol
+    if l == scope.from then -- top line
+      add(l, char.corner_top .. (char.horizontal):rep(i - col - 1))
+    elseif l == scope.to then -- bottom line
+      add(l, char.corner_bottom .. (char.horizontal):rep(i - col - 2) .. char.arrow)
+    elseif i and i > col then -- middle line
+      add(l, char.vertical)
     end
   end
 end
