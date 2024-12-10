@@ -32,6 +32,7 @@ local defaults = {
   },
   ---@class snacks.indent.Scope.Config: snacks.scope.Config
   scope = {
+    enabled = true,
     -- animate scopes. Enabled by default for Neovim >= 0.10
     -- Works on older versions but has to trigger redraws during animation.
     ---@type snacks.animate.Config|{enabled?: boolean}
@@ -179,7 +180,7 @@ function M.on_win(win, buf, top, bottom)
   }
 
   local show_indent = not config.indent.only_current or ctx.is_current
-  local show_scope = not config.scope.only_current or ctx.is_current
+  local show_scope = config.scope.enabled and (not config.scope.only_current or ctx.is_current)
 
   -- Calculate and render indents
   local indents = cache_indents[buf].indents
@@ -208,8 +209,10 @@ function M.on_win(win, buf, top, bottom)
   end)
 
   -- Render scope
-  if show_scope and scope then
-    M.render(scope, ctx)
+  if scope then
+    if show_scope then
+      M.render(scope, ctx)
+    end
   end
 end
 
