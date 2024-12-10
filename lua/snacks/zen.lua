@@ -132,6 +132,7 @@ function M.zen(opts)
 
   -- create window
   local win = Snacks.win(win_opts)
+  vim.cmd([[norm! zz]])
   zen_win = win
 
   if show_indicator then
