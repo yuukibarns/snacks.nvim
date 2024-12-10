@@ -71,6 +71,7 @@ local ns = vim.api.nvim_create_namespace("snacks_indent")
 local cache_indents = {} ---@type table<number, {changedtick:number, indents:number[]}>
 local cache_extmarks = {} ---@type table<string, vim.api.keyset.set_extmark|false>
 local debug_timer = assert((vim.uv or vim.loop).new_timer())
+local cache_underline = {} ---@type table<string, boolean>
 local scopes ---@type snacks.scope.Listener?
 local stats = {
   indents = 0,
@@ -82,7 +83,6 @@ Snacks.util.set_hl({
   [""] = "NonText",
   Blank = "SnacksIndent",
   Scope = "Special",
-  ScopeUnderLine = { underline = true, sp = Snacks.util.color("Special", "fg") },
   ["1"] = "DiagnosticInfo",
   ["2"] = "DiagnosticHint",
   ["3"] = "DiagnosticWarn",
@@ -97,6 +97,17 @@ Snacks.util.set_hl({
 ---@param hl string|string[]
 local function get_hl(level, hl)
   return type(hl) == "string" and hl or hl[(level - 1) % #hl + 1]
+end
+
+---@param hl string
+local function get_underline_hl(hl)
+  local ret = "SnacksIndentUnderline_" .. hl
+  if not cache_underline[hl] then
+    local fg = Snacks.util.color(hl, "fg")
+    vim.api.nvim_set_hl(0, ret, { sp = fg, underline = true })
+    cache_underline[hl] = true
+  end
+  return ret
 end
 
 --- Get the virtual text for the indent guide with
@@ -226,10 +237,11 @@ function M.render(scope, ctx)
   if col < 0 then -- scope is hidden
     return
   end
+  local hl = get_hl(scope.indent + 1, config.scope.hl)
   if config.scope.underline and scope.from >= ctx.top and scope.from <= ctx.bottom and scope:size() > 1 then
     vim.api.nvim_buf_set_extmark(scope.buf, ns, scope.from - 1, col, {
       end_col = #vim.api.nvim_buf_get_lines(scope.buf, scope.from - 1, scope.from, false)[1],
-      hl_group = "SnacksIndentScopeUnderLine",
+      hl_group = get_underline_hl(hl),
       hl_mode = "combine",
       priority = config.priority + 1,
       strict = false,
@@ -241,7 +253,7 @@ function M.render(scope, ctx)
     local i = ctx.indents[l]
     if i and i > indent then
       vim.api.nvim_buf_set_extmark(scope.buf, ns, l - 1, 0, {
-        virt_text = { { config.scope.char, get_hl(scope.indent + 1, config.scope.hl) } },
+        virt_text = { { config.scope.char, hl } },
         virt_text_pos = "overlay",
         virt_text_win_col = col,
         hl_mode = "combine",
@@ -340,6 +352,13 @@ function M.enable()
   end
 
   local group = vim.api.nvim_create_augroup("snacks_indent", { clear = true })
+
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    group = group,
+    callback = function()
+      cache_underline = {}
+    end,
+  })
 
   -- cleanup cache
   vim.api.nvim_create_autocmd({ "WinClosed", "BufDelete", "BufWipeout" }, {
