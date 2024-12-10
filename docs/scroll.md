@@ -56,6 +56,7 @@ Similar plugins:
 ---@field view snacks.scroll.View
 ---@field current snacks.scroll.View
 ---@field target snacks.scroll.View
+---@field cursor number[]
 ---@field scrolloff number
 ---@field mousescroll number
 ---@field height number
