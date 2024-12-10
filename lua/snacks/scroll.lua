@@ -135,11 +135,6 @@ local function update(state, changes)
     return
   end
 
-  -- only animate the current window when scrollbind is enabled
-  if vim.wo[state.win].scrollbind and vim.api.nvim_get_current_win() ~= state.win then
-    return
-  end
-
   if changes then
     state.current = vim.tbl_extend("force", state.current, changes)
   end
@@ -177,6 +172,11 @@ end
 function M.check(win)
   local state = get_state(win)
   if not state then
+    return
+  end
+
+  -- only animate the current window when scrollbind is enabled
+  if vim.wo[state.win].scrollbind and vim.api.nvim_get_current_win() ~= state.win then
     return
   end
 
