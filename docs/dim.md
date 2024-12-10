@@ -86,16 +86,3 @@ Snacks.dim.disable()
 ---@param opts? snacks.dim.Config
 Snacks.dim.enable(opts)
 ```
-
-### `Snacks.dim.on_win()`
-
-Called during every redraw cycle, so it should be fast.
-Everything that can be cached should be cached.
-
-```lua
----@param win number
----@param buf number
----@param top number -- 1-indexed
----@param bottom number -- 1-indexed
-Snacks.dim.on_win(win, buf, top, bottom)
-```

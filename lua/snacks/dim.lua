@@ -50,6 +50,7 @@ Snacks.util.set_hl({
 ---@param buf number
 ---@param top number -- 1-indexed
 ---@param bottom number -- 1-indexed
+---@private
 function M.on_win(win, buf, top, bottom)
   local scope = scopes and scopes:get(win)
   if not scope then

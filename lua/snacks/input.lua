@@ -151,6 +151,7 @@ end
 
 ---@param findstart number
 ---@param base string
+---@private
 function M.complete(findstart, base)
   local completion = ctx.opts.completion
   if findstart == 1 then
@@ -171,6 +172,7 @@ function M.disable()
   vim.ui.input = ui_input
 end
 
+---@private
 function M.health()
   if Snacks.config.get("input", defaults).enabled then
     if vim.ui.input == M.input then
@@ -179,12 +181,6 @@ function M.health()
       Snacks.health.error("`vim.ui.input` is not set to `Snacks.input`")
     end
   end
-end
-
-function M.test()
-  M.input({ prompt = "Yes?", default = "/", completion = "file" }, function(value)
-    dd(value)
-  end)
 end
 
 return M

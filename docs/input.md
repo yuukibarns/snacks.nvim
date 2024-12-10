@@ -82,14 +82,6 @@
 Snacks.input()
 ```
 
-### `Snacks.input.complete()`
-
-```lua
----@param findstart number
----@param base string
-Snacks.input.complete(findstart, base)
-```
-
 ### `Snacks.input.disable()`
 
 ```lua
@@ -102,22 +94,10 @@ Snacks.input.disable()
 Snacks.input.enable()
 ```
 
-### `Snacks.input.health()`
-
-```lua
-Snacks.input.health()
-```
-
 ### `Snacks.input.input()`
 
 ```lua
 ---@param opts? snacks.input.Opts
 ---@param on_confirm fun(value?: string)
 Snacks.input.input(opts, on_confirm)
-```
-
-### `Snacks.input.test()`
-
-```lua
-Snacks.input.test()
 ```

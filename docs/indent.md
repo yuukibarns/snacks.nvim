@@ -120,38 +120,3 @@ Enable indent guides
 ```lua
 Snacks.indent.enable()
 ```
-
-### `Snacks.indent.on_scope()`
-
-Called when the scope changes
-
-```lua
----@param win number
----@param _buf number
----@param scope snacks.indent.Scope?
----@param prev snacks.indent.Scope?
-Snacks.indent.on_scope(win, _buf, scope, prev)
-```
-
-### `Snacks.indent.on_win()`
-
-Called during every redraw cycle, so it should be fast.
-Everything that can be cached should be cached.
-
-```lua
----@param win number
----@param buf number
----@param top number -- 1-indexed
----@param bottom number -- 1-indexed
-Snacks.indent.on_win(win, buf, top, bottom)
-```
-
-### `Snacks.indent.render()`
-
-Render the scope overlappping the given range
-
-```lua
----@param scope snacks.indent.Scope
----@param ctx snacks.indent.ctx
-Snacks.indent.render(scope, ctx)
-```

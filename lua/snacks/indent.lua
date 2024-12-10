@@ -148,6 +148,7 @@ end
 ---@param buf number
 ---@param top number -- 1-indexed
 ---@param bottom number -- 1-indexed
+---@private
 function M.on_win(win, buf, top, bottom)
   cache_indents[buf] = cache_indents[buf]
       and cache_indents[buf].changedtick == vim.b[buf].changedtick
@@ -215,6 +216,7 @@ end
 --- Render the scope overlappping the given range
 ---@param scope snacks.indent.Scope
 ---@param ctx snacks.indent.ctx
+---@private
 function M.render(scope, ctx)
   local indent = (scope.indent or 2)
   local col = indent - ctx.leftcol
@@ -258,6 +260,7 @@ end
 ---@param _buf number
 ---@param scope snacks.indent.Scope?
 ---@param prev snacks.indent.Scope?
+---@private
 function M.on_scope(win, _buf, scope, prev)
   stats.scope = stats.scope + 1
   if prev then -- clear previous scope
