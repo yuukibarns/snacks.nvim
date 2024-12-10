@@ -207,6 +207,7 @@ function M.on_win(win, buf, top, bottom)
     shiftwidth = vim.bo[buf].shiftwidth,
     indents = cache_indents[buf].indents,
   }
+  ctx.shiftwidth = ctx.shiftwidth == 0 and vim.bo[buf].tabstop or ctx.shiftwidth
 
   local show_indent = not config.indent.only_current or ctx.is_current
   local show_scope = config.scope.enabled and (not config.scope.only_current or ctx.is_current)
