@@ -31,5 +31,6 @@
 Get the metadata for all snacks plugins
 
 ```lua
+---@return snacks.meta.Plugin[]
 Snacks.meta.get()
 ```
