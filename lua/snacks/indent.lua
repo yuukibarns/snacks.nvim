@@ -231,16 +231,16 @@ end
 ---@param scope snacks.indent.Scope
 ---@param ctx snacks.indent.ctx
 ---@private
-function M.render(scope, ctx)
+function M.render_scope(scope, ctx)
   local indent = (scope.indent or 2)
-  local col = indent - ctx.leftcol
-  if col < 0 then -- scope is hidden
-    return
-  end
   local hl = get_hl(scope.indent + 1, config.scope.hl)
-  if config.scope.underline and scope.from >= ctx.top and scope.from <= ctx.bottom and scope:size() > 1 then
-    vim.api.nvim_buf_set_extmark(scope.buf, ns, scope.from - 1, col, {
+  local to = M.animating and scope.step or scope.to
+  local col = indent - ctx.leftcol
+
+  if config.scope.underline and scope.from >= ctx.top and scope.from <= ctx.bottom then
+    vim.api.nvim_buf_set_extmark(scope.buf, ns, scope.from - 1, 0, {
       end_col = #vim.api.nvim_buf_get_lines(scope.buf, scope.from - 1, scope.from, false)[1],
+      virt_text_win_col = col,
       hl_group = get_underline_hl(hl),
       hl_mode = "combine",
       priority = config.priority + 1,
@@ -248,7 +248,11 @@ function M.render(scope, ctx)
       ephemeral = true,
     })
   end
-  local to = M.animating and scope.step or scope.to
+
+  if col < 0 then -- scope is hidden
+    return
+  end
+
   for l = math.max(scope.from, ctx.top), math.min(to, ctx.bottom) do
     local i = ctx.indents[l]
     if i and i > indent then
