@@ -14,6 +14,7 @@ M.meta = {
 ---@field view snacks.scroll.View
 ---@field current snacks.scroll.View
 ---@field target snacks.scroll.View
+---@field cursor number[]
 ---@field scrolloff number
 ---@field mousescroll number
 ---@field height number
@@ -138,8 +139,10 @@ local function update(state, changes)
     state.current = vim.tbl_extend("force", state.current, changes)
   end
 
+  local done = state.target.topline == state.current.topline
+
   -- adjust lnum for scrolloff when not at target topline
-  if state.target.topline == state.current.topline then
+  if done then
     state.current.lnum = state.target.lnum
   else
     state.current.lnum = math.max(
@@ -158,6 +161,9 @@ local function update(state, changes)
   vim.api.nvim_win_call(state.win, function()
     vim.fn.winrestview(state.current)
   end)
+  if done then
+    vim.api.nvim_win_set_cursor(state.win, state.cursor)
+  end
 end
 
 --- Check if we need to animate the scroll
@@ -181,6 +187,7 @@ function M.check(win)
   -- new target
   stats.targets = stats.targets + 1
   state.target = vim.deepcopy(state.view)
+  state.cursor = vim.api.nvim_win_get_cursor(win)
   update(state) -- reset to current state
 
   -- animate topline/lnum to target
