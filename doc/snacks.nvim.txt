@@ -118,10 +118,10 @@ LAZY.NVIM ~
   <https://github.com/folke/snacks.nvim/blob/main/lua/snacks/init.lua> to see
   what it does.
 
-  [!caution] You need to explicitely pass options for a plugin or set `enabled =
+  [!caution] You need to explicitly pass options for a plugin or set `enabled =
   true` to enable it.
 
-  [!tip] It’ a good idea to run `:checkhealth snacks` to see if everything is
+  [!tip] It’s a good idea to run `:checkhealth snacks` to see if everything is
   set up correctly.
 >lua
     {
