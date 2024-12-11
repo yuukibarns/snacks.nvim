@@ -217,6 +217,7 @@ function M.check(win)
       }, config.animate)
     )
   end
+      if state.scrolloff < (info.botline - info.topline) / 2 then
 end
 
 ---@private
