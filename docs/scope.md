@@ -34,6 +34,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
   min_size = 2,
   -- try to expand the scope to this size
   max_size = nil,
+  edge = true, -- include the edge of the scope (typically the line above and below with smaller indent)
   siblings = false, -- expand single line scopes with single line siblings
   -- what buffers to attach to
   filter = function(buf)
@@ -60,6 +61,36 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
       "for_statement",
     },
   },
+  keys = {
+    ---@type table<string, snacks.scope.TextObject|{desc?:string}>
+    textobject = {
+      ii = {
+        edge = false, -- don't include the edge
+        treesitter = { enabled = false },
+        desc = "inner scope",
+      },
+      ia = {
+        edge = true, -- include the edge
+        treesitter = { enabled = false },
+        desc = "scope with edge",
+      },
+    },
+    ---@type table<string, snacks.scope.Jump|{desc?:string}>
+    jump = {
+      ["[i"] = {
+        bottom = false,
+        edge = true,
+        treesitter = { enabled = false },
+        desc = "jump to top edge of scope",
+      },
+      ["]i"] = {
+        bottom = true,
+        edge = true,
+        treesitter = { enabled = false },
+        desc = "jump to bottom edge of scope",
+      },
+    },
+  },
 }
 ```
 
@@ -67,8 +98,21 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
 
 ```lua
 ---@class snacks.scope.Opts: snacks.scope.Config
----@field buf number
----@field pos {[1]:number, [2]:number} -- (1,0) indexed
+---@field buf? number
+---@field pos? {[1]:number, [2]:number} -- (1,0) indexed
+---@field end_pos? {[1]:number, [2]:number} -- (1,0) indexed
+```
+
+```lua
+---@class snacks.scope.TextObject: snacks.scope.Opts
+---@field linewise? boolean if nil, use visual mode. Defaults to `false` when not in visual mode
+---@field notify? boolean show a notification when no scope is found (defaults to true)
+```
+
+```lua
+---@class snacks.scope.Jump: snacks.scope.Opts
+---@field bottom? boolean if true, jump to the bottom of the scope, otherwise to the top
+---@field notify? boolean show a notification when no scope is found (defaults to true)
 ```
 
 ```lua
@@ -98,4 +142,26 @@ Snacks.scope.attach(cb, opts)
 ---@param opts? snacks.scope.Opts
 ---@return snacks.scope.Scope?
 Snacks.scope.get(opts)
+```
+
+### `Snacks.scope.jump()`
+
+Jump to the top or bottom of the scope
+If the scope is the same as the current scope, it will jump to the parent scope instead.
+
+```lua
+---@param opts? snacks.scope.Jump
+Snacks.scope.jump(opts)
+```
+
+### `Snacks.scope.textobject()`
+
+Text objects for indent scopes.
+Best to use with Treesitter disabled.
+When in visual mode, it will select the scope containing the visual selection.
+When the scope is the same as the visual selection, it will select the parent scope instead.
+
+```lua
+---@param opts? snacks.scope.TextObject
+Snacks.scope.textobject(opts)
 ```
