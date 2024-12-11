@@ -221,6 +221,9 @@ function M.check(win)
   local to_virtcol = vim.fn.virtcol({ state.target.lnum, state.target.col }, false, win)
 
   state.anim = Snacks.animate(0, scrolls, function(value, ctx)
+    if not vim.api.nvim_win_is_valid(win) then
+      return
+    end
     vim.api.nvim_win_call(win, function()
       scroll(value - ctx.prev)
 
