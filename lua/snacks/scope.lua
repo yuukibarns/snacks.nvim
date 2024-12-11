@@ -368,9 +368,11 @@ function M.get(opts)
 
   -- run in the context of the buffer if not current
   if vim.api.nvim_get_current_buf() ~= opts.buf then
-    return vim.api.nvim_buf_call(opts.buf, function()
-      return M.get(opts)
+    local ret ---@type snacks.scope.Scope?
+    vim.api.nvim_buf_call(opts.buf, function()
+      ret = M.get(opts)
     end)
+    return ret
   end
 
   ---@type snacks.scope.Scope
