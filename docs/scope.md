@@ -69,11 +69,13 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
     ---@type table<string, snacks.scope.TextObject|{desc?:string}>
     textobject = {
       ii = {
+        min_size = 1, -- allow single line scopes
         edge = false, -- don't include the edge
         treesitter = { enabled = false },
         desc = "inner scope",
       },
       ai = {
+        min_size = 1, -- allow single line scopes
         edge = true, -- include the edge
         treesitter = { enabled = false },
         desc = "scope with edge",
@@ -82,12 +84,14 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
     ---@type table<string, snacks.scope.Jump|{desc?:string}>
     jump = {
       ["[i"] = {
+        min_size = 1, -- allow single line scopes
         bottom = false,
         edge = true,
         treesitter = { enabled = false },
         desc = "jump to top edge of scope",
       },
       ["]i"] = {
+        min_size = 1, -- allow single line scopes
         bottom = true,
         edge = true,
         treesitter = { enabled = false },
