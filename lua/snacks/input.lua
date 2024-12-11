@@ -134,6 +134,7 @@ function M.input(opts, on_confirm)
     end
   end
 
+  local parent_win = vim.api.nvim_get_current_win()
   local win = Snacks.win(opts.win)
   ctx = { opts = opts, win = win }
   vim.cmd.startinsert()
@@ -146,7 +147,9 @@ function M.input(opts, on_confirm)
     vim.api.nvim_create_autocmd("TextChangedI", {
       buffer = win.buf,
       callback = function()
-        win:update()
+        vim.api.nvim_win_call(parent_win, function()
+          win:update()
+        end)
         vim.api.nvim_win_call(win.win, function()
           vim.fn.winrestview({ leftcol = 0 })
         end)
