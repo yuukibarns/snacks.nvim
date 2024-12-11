@@ -107,8 +107,10 @@ function Toggle:map(keys, opts)
   self.opts.map(mode, keys, function()
     self:toggle()
   end, opts)
-  if self.opts.which_key and pcall(require, "which-key") then
-    self:_wk(keys, mode)
+  if self.opts.which_key then
+    Snacks.util.on_module("which-key", function()
+      self:_wk(keys, mode)
+    end)
   end
 end
 
