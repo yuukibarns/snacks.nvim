@@ -12,6 +12,7 @@ M.animating = false
 ---@field enabled? boolean
 local defaults = {
   indent = {
+    enabled = true, -- enable indent guides
     char = "│",
     blank = " ",
     -- blank = "∙",
@@ -32,7 +33,7 @@ local defaults = {
   },
   ---@class snacks.indent.Scope.Config: snacks.scope.Config
   scope = {
-    enabled = true,
+    enabled = true, -- enable highlighting the current scope
     -- animate scopes. Enabled by default for Neovim >= 0.10
     -- Works on older versions but has to trigger redraws during animation.
     ---@type snacks.animate.Config|{enabled?: boolean}
@@ -209,7 +210,7 @@ function M.on_win(win, buf, top, bottom)
   }
   ctx.shiftwidth = ctx.shiftwidth == 0 and vim.bo[buf].tabstop or ctx.shiftwidth
 
-  local show_indent = not config.indent.only_current or ctx.is_current
+  local show_indent = config.indent.enabled and (not config.indent.only_current or ctx.is_current)
   local show_scope = config.scope.enabled and (not config.scope.only_current or ctx.is_current)
   local show_chunk = config.chunk.enabled and (not config.chunk.only_current or ctx.is_current)
 
