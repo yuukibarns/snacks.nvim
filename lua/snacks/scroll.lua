@@ -18,6 +18,7 @@ M.meta = {
 ---@field scrolloff number
 ---@field mousescroll number
 ---@field height number
+---@field virtualedit? string
 
 ---@class snacks.scroll.Config
 ---@field animate snacks.animate.Config
@@ -171,6 +172,15 @@ local function update(state, changes)
   end)
   if done then
     vim.api.nvim_win_set_cursor(state.win, state.cursor)
+---@param state snacks.scroll.State
+---@param value? string
+local function virtualedit(state, value)
+  if value then
+    state.virtualedit = state.virtualedit or vim.wo[state.win].virtualedit
+    vim.wo[state.win].virtualedit = value
+  elseif state.virtualedit then
+    vim.wo[state.win].virtualedit = state.virtualedit
+    state.virtualedit = nil
   end
 end
 
@@ -195,6 +205,7 @@ function M.check(win)
     stats.skipped = stats.skipped + 1
     state.current = vim.deepcopy(state.view)
     return
+      virtualedit(state) -- restore virtualedit
   end
 
   -- new target
@@ -217,6 +228,8 @@ function M.check(win)
       }, config.animate)
     )
   end
+  virtualedit(state, "all")
+        virtualedit(state) -- restore virtualedit
       if state.scrolloff < (info.botline - info.topline) / 2 then
 end
 
