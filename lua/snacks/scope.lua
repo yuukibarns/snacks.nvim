@@ -68,7 +68,7 @@ local defaults = {
         treesitter = { enabled = false },
         desc = "inner scope",
       },
-      ia = {
+      ai = {
         edge = true, -- include the edge
         treesitter = { enabled = false },
         desc = "scope with edge",

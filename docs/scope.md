@@ -73,7 +73,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
         treesitter = { enabled = false },
         desc = "inner scope",
       },
-      ia = {
+      ai = {
         edge = true, -- include the edge
         treesitter = { enabled = false },
         desc = "scope with edge",
