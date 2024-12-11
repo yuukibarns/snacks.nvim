@@ -333,4 +333,21 @@ function M.scroll()
   })
 end
 
+function M.zen()
+  return M.new({
+    id = "zen",
+    name = "Zen Mode",
+    get = function()
+      return Snacks.zen.win and Snacks.zen.win:valid() or false
+    end,
+    set = function(state)
+      if state then
+        Snacks.zen()
+      elseif Snacks.zen.win then
+        Snacks.zen.win:close()
+      end
+    end,
+  })
+end
+
 return M
