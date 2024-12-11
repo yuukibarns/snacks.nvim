@@ -385,8 +385,14 @@ function M.get(opts)
     ret = Class:find(opts)
   end
 
-  if ret and opts.end_pos then
-    ret = ret:expand(opts.end_pos[1]) or ret
+  if ret and opts.end_pos and false then
+    local end_scope = M.get(vim.tbl_extend("keep", { pos = opts.end_pos, end_pos = false }, opts))
+    if end_scope and end_scope.from < ret.from then
+      ret = ret:expand(end_scope.from) or ret
+    end
+    if end_scope and end_scope.to > ret.to then
+      ret = ret:expand(end_scope.to) or ret
+    end
   end
 
   local min_size = opts.min_size or 2
