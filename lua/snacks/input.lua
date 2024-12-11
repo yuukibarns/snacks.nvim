@@ -43,7 +43,9 @@ Snacks.config.style("input", {
   -- col = 0,
   wo = {
     winhighlight = "NormalFloat:SnacksInputNormal,FloatBorder:SnacksInputBorder,FloatTitle:SnacksInputTitle",
+    cursorline = false,
   },
+  bo = { filetype = "snacks_input" },
   keys = {
     i_esc = { "<esc>", { "cmp_close", "cancel" }, mode = "i" },
     -- i_esc = { "<esc>", "stopinsert", mode = "i" },
@@ -78,6 +80,11 @@ function M.input(opts, on_confirm)
   end
 
   opts = Snacks.config.get("input", defaults, opts) --[[@as snacks.input.Opts]]
+  opts.prompt = opts.prompt:gsub(":%s*$", "")
+  local statuscolumn = " %#" .. opts.icon_hl .. "#" .. opts.icon .. " "
+  if not opts.icon or opts.icon == "" then
+    statuscolumn = " "
+  end
 
   opts.win = Snacks.win.resolve("input", opts.win, {
     enter = true,
@@ -87,7 +94,7 @@ function M.input(opts, on_confirm)
       completefunc = "v:lua.Snacks.input.complete",
       omnifunc = "v:lua.Snacks.input.complete",
     },
-    wo = { statuscolumn = " %#" .. opts.icon_hl .. "#" .. opts.icon .. " " },
+    wo = { statuscolumn = statuscolumn },
     actions = {
       cancel = function(self)
         confirm()
