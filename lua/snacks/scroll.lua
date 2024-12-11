@@ -33,6 +33,8 @@ local defaults = {
   debug = false,
 }
 
+local SCROLL_WHEEL_DOWN, SCROLL_WHEEL_UP = vim.keycode("<ScrollWheelDown>"), vim.keycode("<ScrollWheelUp>")
+local mouse_scrolling = false
 M.enabled = false
 
 local states = {} ---@type table<number, snacks.scroll.State>
@@ -82,6 +84,12 @@ function M.enable()
 
   local group = vim.api.nvim_create_augroup("snacks_scroll", { clear = true })
 
+  -- track mouse scrolling
+  vim.on_key(function(key)
+    if key == SCROLL_WHEEL_DOWN or key == SCROLL_WHEEL_UP then
+      mouse_scrolling = true
+    end
+  end)
   -- initialize state for buffers entering windows
   vim.api.nvim_create_autocmd("BufWinEnter", {
     group = group,
