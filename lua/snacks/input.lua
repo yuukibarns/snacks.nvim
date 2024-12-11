@@ -72,10 +72,14 @@ local ctx = {}
 ---@param on_confirm fun(value?: string)
 function M.input(opts, on_confirm)
   assert(type(on_confirm) == "function", "`on_confirm` must be a function")
+
+  local parent_win = vim.api.nvim_get_current_win()
+
   local function confirm(value)
     ctx.win = nil
     ctx.opts = nil
     vim.cmd.stopinsert()
+    vim.api.nvim_set_current_win(parent_win)
     vim.schedule_wrap(on_confirm)(value)
   end
 
@@ -134,7 +138,6 @@ function M.input(opts, on_confirm)
     end
   end
 
-  local parent_win = vim.api.nvim_get_current_win()
   local win = Snacks.win(opts.win)
   ctx = { opts = opts, win = win }
   vim.cmd.startinsert()
