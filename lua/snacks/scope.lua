@@ -605,22 +605,27 @@ function M.textobject(opts)
     return opts.notify ~= false and Snacks.notify.warn("No scope in range")
   end
 
-  -- if the scope is the same as the visual selection
-  -- then select the parent scope instead.
-  if selection and scope.from == opts.pos[1] and scope.to == opts.end_pos[1] then
+  while scope do
+    -- determine scope range
+    local from, to =
+      { scope.from, opts.linewise and 0 or vim.fn.indent(scope.from) },
+      { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
+
+    -- if the scope is the same as the visual selection
+    -- then select the parent scope instead.
+    local same = selection and vim.deep_equal(from, opts.pos) and vim.deep_equal(to, opts.end_pos)
+
     local parent = scope:parent()
-    scope = parent and (opts.edge and parent:with_edge() or parent) or scope
+    if not same or not parent then
+      -- select the range
+      vim.api.nvim_win_set_cursor(0, to)
+      vim.cmd("normal! " .. (opts.linewise and "V" or "v"))
+      vim.api.nvim_win_set_cursor(0, from)
+      return
+    end
+
+    scope = opts.edge and parent:with_edge() or parent
   end
-
-  -- determine scope range
-  local from, to =
-    { scope.from, opts.linewise and 0 or vim.fn.indent(scope.from) },
-    { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
-
-  -- select the range
-  vim.api.nvim_win_set_cursor(0, to)
-  vim.cmd("normal! " .. (opts.linewise and "V" or "v"))
-  vim.api.nvim_win_set_cursor(0, from)
 end
 
 --- Jump to the top or bottom of the scope
