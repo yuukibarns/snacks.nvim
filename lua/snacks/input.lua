@@ -79,8 +79,10 @@ function M.input(opts, on_confirm)
     ctx.win = nil
     ctx.opts = nil
     vim.cmd.stopinsert()
-    vim.api.nvim_set_current_win(parent_win)
-    vim.schedule_wrap(on_confirm)(value)
+    vim.schedule(function()
+      vim.api.nvim_set_current_win(parent_win)
+      on_confirm(value)
+    end)
   end
 
   opts = Snacks.config.get("input", defaults, opts) --[[@as snacks.input.Opts]]
