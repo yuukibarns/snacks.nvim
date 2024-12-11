@@ -28,6 +28,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
 ```lua
 ---@class snacks.scope.Config
 ---@field max_size? number
+---@field enabled? boolean
 {
   -- absolute minimum size of the scope.
   -- can be less if the scope is a top-level single line scope
@@ -61,6 +62,9 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
       "for_statement",
     },
   },
+  -- These keymaps will only be set if the `scope` plugin is enabled.
+  -- Alternatively, you can set them manually in your config,
+  -- using the `Snacks.scope.textobject` and `Snacks.scope.jump` functions.
   keys = {
     ---@type table<string, snacks.scope.TextObject|{desc?:string}>
     textobject = {
