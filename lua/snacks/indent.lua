@@ -184,7 +184,6 @@ local function get_state(win, buf, top, bottom)
   end
   ---@class snacks.indent.State
   ---@field indents table<number, number>
-  ---@field blanks table<number, boolean>
   local state = {
     win = win,
     buf = buf,
@@ -195,7 +194,6 @@ local function get_state(win, buf, top, bottom)
     leftcol = vim.api.nvim_buf_call(buf, vim.fn.winsaveview).leftcol --[[@as number]],
     shiftwidth = vim.bo[buf].shiftwidth,
     indents = prev and prev.indents or { [0] = 0 },
-    blanks = prev and prev.blanks or {},
   }
   state.shiftwidth = state.shiftwidth == 0 and vim.bo[buf].tabstop or state.shiftwidth
   states[win] = state
@@ -237,13 +235,16 @@ function M.on_win(win, buf, top, bottom)
       if not indent then
         stats.indents = stats.indents + 1
         local next = vim.fn.nextnonblank(l)
-        -- Indent for a blank line is the minimum of the previous and next non-blank line
+        -- Indent for a blank line is the minimum of the previous and next non-blank line.
+        -- If the previous and next non-blank lines have different indents, add shiftwidth.
         if next ~= l then
-          state.blanks[l] = true
           local prev = vim.fn.prevnonblank(l)
           indents[prev] = indents[prev] or vim.fn.indent(prev)
           indents[next] = indents[next] or vim.fn.indent(next)
           indent = math.min(indents[prev], indents[next])
+          if indents[prev] ~= indents[next] then
+            indent = indent + state.shiftwidth
+          end
         else
           indent = vim.fn.indent(l)
         end
@@ -294,7 +295,7 @@ function M.render_scope(scope, state)
 
   for l = math.max(scope.from, state.top), math.min(to, state.bottom) do
     local i = state.indents[l]
-    if i and i > indent or state.blanks[l] then
+    if i and i > indent then
       vim.api.nvim_buf_set_extmark(scope.buf, ns, l - 1, 0, {
         virt_text = { { config.scope.char, hl } },
         virt_text_pos = "overlay",
