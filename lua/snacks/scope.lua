@@ -3,6 +3,7 @@ local M = {}
 
 M.meta = {
   desc = "Scope detection, text objects and jumping based on treesitter or indent",
+  needs_setup = true,
 }
 
 ---@class snacks.scope.Opts: snacks.scope.Config
