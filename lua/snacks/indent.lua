@@ -237,7 +237,7 @@ function M.on_win(win, buf, top, bottom)
   -- Calculate and render indents
   local indents = state.indents
   vim.api.nvim_buf_call(buf, function()
-    for l = top, bottom do
+    for l = state.top, state.bottom do
       local indent = indents[l]
       if not indent then
         stats.indents = stats.indents + 1
