@@ -64,6 +64,12 @@ Toggle keymaps integrated with which-key icons / colors
 Snacks.toggle()
 ```
 
+### `Snacks.toggle.animate()`
+
+```lua
+Snacks.toggle.animate()
+```
+
 ### `Snacks.toggle.diagnostics()`
 
 ```lua
