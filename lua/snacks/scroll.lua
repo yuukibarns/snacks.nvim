@@ -189,7 +189,7 @@ function M.check(win)
   -- if delta is 0, then we're animating.
   -- also skip if the difference is less than the mousescroll value,
   -- since most terminals support smooth mouse scrolling.
-  if state.view.topline == state.current.topline then
+  if math.abs(state.view.topline - state.current.topline) <= 1 then
     stats.skipped = stats.skipped + 1
     state.current = vim.deepcopy(state.view)
     return
