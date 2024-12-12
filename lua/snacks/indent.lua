@@ -31,20 +31,20 @@ local defaults = {
     --     "SnacksIndent8",
     -- },
   },
+  -- animate scopes. Enabled by default for Neovim >= 0.10
+  -- Works on older versions but has to trigger redraws during animation.
+  ---@type snacks.animate.Config|{enabled?: boolean}
+  animate = {
+    enabled = vim.fn.has("nvim-0.10") == 1,
+    easing = "linear",
+    duration = {
+      step = 20, -- ms per step
+      total = 500, -- maximum duration
+    },
+  },
   ---@class snacks.indent.Scope.Config: snacks.scope.Config
   scope = {
     enabled = true, -- enable highlighting the current scope
-    -- animate scopes. Enabled by default for Neovim >= 0.10
-    -- Works on older versions but has to trigger redraws during animation.
-    ---@type snacks.animate.Config|{enabled?: boolean}
-    animate = {
-      enabled = vim.fn.has("nvim-0.10") == 1,
-      easing = "linear",
-      duration = {
-        step = 20, -- ms per step
-        total = 500, -- maximum duration
-      },
-    },
     char = "│",
     underline = false, -- underline the start of the scope
     only_current = false, -- only show scope in the current window
