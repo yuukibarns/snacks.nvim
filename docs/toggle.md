@@ -156,3 +156,9 @@ Snacks.toggle.words()
 ```lua
 Snacks.toggle.zen()
 ```
+
+### `Snacks.toggle.zoom()`
+
+```lua
+Snacks.toggle.zoom()
+```
