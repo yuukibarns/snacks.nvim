@@ -25,6 +25,7 @@ local defaults = {
     duration = { step = 15, total = 250 },
     easing = "linear",
   },
+  spamming = 10, -- threshold for spamming detection
   -- what buffers to animate
   filter = function(buf)
     return vim.g.snacks_scroll ~= false and vim.b[buf].snacks_scroll ~= false and vim.bo[buf].buftype ~= "terminal"
@@ -40,9 +41,12 @@ local mouse_scrolling = false
 M.enabled = false
 
 local states = {} ---@type table<number, snacks.scroll.State>
-local stats = { targets = 0, animating = 0, reset = 0, skipped = 0, mousescroll = 0 }
+local stats =
+  { targets = 0, animating = 0, reset = 0, skipped = 0, mousescroll = 0, scrolls = 0, spamming_rate = 0, spamming = 0 }
 local config = Snacks.config.get("scroll", defaults)
 local debug_timer = assert((vim.uv or vim.loop).new_timer())
+local spamming = false
+local spammer_timer = assert((vim.uv or vim.loop).new_timer())
 
 -- get the state for a window.
 -- when the state doesn't exist, its target is the current view
@@ -83,6 +87,14 @@ function M.enable()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     get_state(win)
   end
+
+  local current, delta, ema, ms, alpha = 0, 0, 0, 100, 0.3
+  spammer_timer:start(ms, ms, function()
+    delta, current = stats.scrolls - current, stats.scrolls
+    ema = alpha * delta * 1000 / ms + (1 - alpha) * ema
+    spamming = ema > config.spamming
+    stats.spamming_rate = math.floor(ema)
+  end)
 
   local group = vim.api.nvim_create_augroup("snacks_scroll", { clear = true })
 
@@ -193,17 +205,23 @@ function M.check(win)
     stats.skipped = stats.skipped + 1
     state.current = vim.deepcopy(state.view)
     return
-  elseif mouse_scrolling then
+  elseif mouse_scrolling or spamming then
     if state.anim then
       state.anim:stop()
       state.anim = nil
       virtualedit(state) -- restore virtualedit
     end
-    mouse_scrolling = false
-    stats.mousescroll = stats.mousescroll + 1
+    if mouse_scrolling then
+      mouse_scrolling = false
+      stats.mousescroll = stats.mousescroll + 1
+    else -- spamming
+      stats.spamming = stats.spamming + 1
+      stats.scrolls = stats.scrolls + 1
+    end
     state.current = vim.deepcopy(state.view)
     return
   end
+  stats.scrolls = stats.scrolls + 1
 
   -- new target
   stats.targets = stats.targets + 1
