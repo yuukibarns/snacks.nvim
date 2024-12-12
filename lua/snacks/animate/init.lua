@@ -83,7 +83,7 @@ function Animation:next()
 end
 
 function Animation:enabled()
-  return vim.g.snacks_animate ~= false and (vim.b[self.opts.buf or 0].snacks_animate ~= false)
+  return M.enabled({ buf = self.opts.buf, name = tostring(self.id) })
 end
 
 ---@return boolean done
@@ -104,6 +104,19 @@ end
 
 function Animation:stop()
   active[self.id] = nil
+end
+
+--- Check if animations are enabled.
+--- Will return false if `snacks_animate` is set to false or if the buffer
+--- local variable `snacks_animate` is set to false.
+---@param opts? {buf?: number, name?: string}
+function M.enabled(opts)
+  opts = opts or {}
+  if opts.name and not M.enabled({ buf = opts.buf }) then
+    return false
+  end
+  local key = "snacks_animate" .. (opts.name and ("_" .. opts.name) or "")
+  return Snacks.util.var(opts.buf, key, true)
 end
 
 --- Add an animation

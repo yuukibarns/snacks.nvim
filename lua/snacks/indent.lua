@@ -6,7 +6,6 @@ M.meta = {
 }
 
 M.enabled = false
-M.animating = false
 
 ---@class snacks.indent.Config
 ---@field enabled? boolean
@@ -173,6 +172,10 @@ local function get_extmark(indent, state)
   return cache_extmarks[key]
 end
 
+local function animating(buf)
+  return Snacks.animate.enabled({ buf = buf, name = "indent" })
+end
+
 ---@param win number
 ---@param buf number
 ---@param top number
@@ -275,7 +278,7 @@ end
 function M.render_scope(scope, state)
   local indent = (scope.indent or 2)
   local hl = get_hl(scope.indent + 1, config.scope.hl)
-  local to = M.animating and scope.step or scope.to
+  local to = animating(scope.buf) and scope.step or scope.to
   local col = indent - state.leftcol
 
   if config.scope.underline and scope.from >= state.top and scope.from <= state.bottom then
@@ -319,7 +322,7 @@ function M.render_chunk(scope, state)
   if col < 0 then -- scope is hidden
     return
   end
-  local to = M.animating and scope.step or scope.to
+  local to = animating(scope.buf) and scope.step or scope.to
   local hl = get_hl(scope.indent + 1, config.chunk.hl)
   local char = config.chunk.char
 
@@ -349,11 +352,6 @@ function M.render_chunk(scope, state)
   end
 end
 
--- Toggle scope animations
-function M.animate()
-  M.animating = not M.animating
-end
-
 -- Called when the scope changes
 ---@param win number
 ---@param buf number
@@ -368,7 +366,7 @@ function M.on_scope(win, buf, scope, prev)
   if scope then
     scope.win = win
     scope.step = scope.from
-    if M.animating then
+    if animating(scope.buf) then
       Snacks.animate(
         scope.from,
         scope.to,
@@ -383,10 +381,10 @@ function M.on_scope(win, buf, scope, prev)
           int = true,
           id = "indent_scope_" .. win,
           buf = buf,
-        }, config.scope.animate)
+        }, config.animate)
       )
     end
-    Snacks.util.redraw_range(win, scope.from, M.animating and scope.from + 1 or scope.to)
+    Snacks.util.redraw_range(win, scope.from, animating(scope.buf) and scope.from + 1 or scope.to)
   end
 end
 
@@ -416,9 +414,7 @@ function M.enable()
     M.debug()
   end
 
-  if config.scope.animate.enabled then
-    M.animate()
-  end
+  vim.g.snacks_animate_indent = config.animate.enabled
 
   M.enabled = true
 

@@ -51,6 +51,9 @@ local function get_state(win)
   if not config.filter(buf) then
     return
   end
+  if not Snacks.animate.enabled({ buf = buf, name = "scroll" }) then
+    return
+  end
   local view = vim.api.nvim_win_call(win, vim.fn.winsaveview) ---@type vim.fn.winsaveview.ret
   if not (states[win] and states[win].buf == buf) then
     ---@diagnostic disable-next-line: missing-fields
