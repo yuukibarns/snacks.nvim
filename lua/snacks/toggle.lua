@@ -112,6 +112,7 @@ function Toggle:map(keys, opts)
       self:_wk(keys, mode)
     end)
   end
+  return self
 end
 
 function Toggle:_wk(keys, mode)
