@@ -384,9 +384,10 @@ local function step(scope, value, prev)
   elseif style == "up" then
     scope.animate = { from = scope.to - value, to = scope.to }
   elseif style == "out" then
+    local line = math.min(math.max(scope.from, cursor[1]), scope.to)
     scope.animate = {
-      from = math.max(scope.from, cursor[1] - value),
-      to = math.min(scope.to, cursor[1] + value),
+      from = math.max(scope.from, line - value),
+      to = math.min(scope.to, line + value),
     }
   else
     Snacks.notify.error("Invalid animate style: " .. style, { title = "Snacks Indent", once = true })
