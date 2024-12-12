@@ -370,4 +370,17 @@ function M.zoom()
   })
 end
 
+function M.animate()
+  return M.new({
+    id = "animate",
+    name = "Animations",
+    get = function()
+      return vim.g.snacks_animate ~= false
+    end,
+    set = function(state)
+      vim.g.snacks_animate = state
+    end,
+  })
+end
+
 return M

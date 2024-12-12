@@ -260,7 +260,7 @@ function M.check(win)
         vim.fn.winrestview(state.current)
       end
     end)
-  end, vim.tbl_extend("keep", { int = true, id = ("scroll_%d"):format(win) }, config.animate))
+  end, vim.tbl_extend("keep", { int = true, id = ("scroll_%d"):format(win), buf = state.buf }, config.animate))
 end
 
 ---@private
