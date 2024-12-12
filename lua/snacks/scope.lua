@@ -232,11 +232,17 @@ function IndentScope:find(opts)
 
   -- adjust line to the nearest indent block
   if prev_i <= indent and next_i > indent then
+    -- at top edge
     line = next_l
     indent = next_i
   elseif next_i <= indent and prev_i > indent then
+    -- at bottom edge
     line = prev_l
     indent = prev_i
+  elseif next_i > indent and prev_i > indent then
+    -- at edge of two blocks. Prefer the one below.
+    line = next_l
+    indent = next_i
   end
 
   -- expand to include bigger indents
