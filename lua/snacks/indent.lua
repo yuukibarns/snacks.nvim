@@ -405,7 +405,11 @@ function M.on_scope(win, buf, scope, prev)
   stats.scope = stats.scope + 1
   if scope then
     scope.win = win
-    if Snacks.animate.enabled({ buf = buf, name = "indent" }) then
+    local animate = Snacks.animate.enabled({ buf = buf, name = "indent" })
+    if prev and (vim.fn.nextnonblank(prev.from) == scope.from) then
+      animate = false
+    end
+    if animate then
       step(scope, 0)
       Snacks.animate(
         0,
