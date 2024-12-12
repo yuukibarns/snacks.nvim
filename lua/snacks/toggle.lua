@@ -352,4 +352,21 @@ function M.zen()
   })
 end
 
+function M.zoom()
+  return M.new({
+    id = "zoom",
+    name = "Zoom Mode",
+    get = function()
+      return Snacks.zen.win and Snacks.zen.win:valid() or false
+    end,
+    set = function(state)
+      if state then
+        Snacks.zen.zoom()
+      elseif Snacks.zen.win then
+        Snacks.zen.win:close()
+      end
+    end,
+  })
+end
+
 return M
