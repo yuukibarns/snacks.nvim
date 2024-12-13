@@ -205,19 +205,22 @@ function M.check(win)
     stats.skipped = stats.skipped + 1
     state.current = vim.deepcopy(state.view)
     return
-  elseif mouse_scrolling or spamming then
+  elseif spamming and not (state.anim and state.anim.done) then
+    -- just ignore the scroll when spamming and we're already animating
+    stats.spamming = stats.spamming + 1
+    stats.scrolls = stats.scrolls + 1
+    vim.api.nvim_win_call(win, function()
+      vim.fn.winrestview(state.current)
+    end)
+    return
+  elseif mouse_scrolling then
     if state.anim then
       state.anim:stop()
       state.anim = nil
       virtualedit(state) -- restore virtualedit
     end
-    if mouse_scrolling then
-      mouse_scrolling = false
-      stats.mousescroll = stats.mousescroll + 1
-    else -- spamming
-      stats.spamming = stats.spamming + 1
-      stats.scrolls = stats.scrolls + 1
-    end
+    mouse_scrolling = false
+    stats.mousescroll = stats.mousescroll + 1
     state.current = vim.deepcopy(state.view)
     return
   end
