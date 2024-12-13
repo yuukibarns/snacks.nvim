@@ -60,6 +60,7 @@ local scheduled = false
 ---@field opts snacks.animate.Opts
 ---@field from number start value
 ---@field to number end value
+---@field done boolean
 ---@field duration number total duration in ms
 ---@field easing snacks.animate.easing.Fn
 ---@field value number current value
@@ -93,6 +94,7 @@ function Animation:update()
   if prev ~= value or done then
     self.cb(value, { anim = self, prev = prev, done = done })
     self.value = value
+    self.done = done
   end
   return done
 end
