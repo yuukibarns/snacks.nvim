@@ -623,9 +623,9 @@ function M.textobject(opts)
     local parent = scope:parent()
     if not same or not parent then
       -- select the range
-      vim.api.nvim_win_set_cursor(0, to)
-      vim.cmd("normal! " .. (opts.linewise and "V" or "v"))
       vim.api.nvim_win_set_cursor(0, from)
+      vim.cmd("normal! " .. (opts.linewise and "V" or "v"))
+      vim.api.nvim_win_set_cursor(0, to)
       return
     end
 
