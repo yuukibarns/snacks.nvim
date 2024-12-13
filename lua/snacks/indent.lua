@@ -141,7 +141,7 @@ end
 ---@param indent number
 ---@param state snacks.indent.State
 local function get_extmark(indent, state)
-  local key = indent .. ":" .. state.leftcol .. ":" .. state.shiftwidth
+  local key = indent .. ":" .. state.leftcol .. ":" .. state.shiftwidth .. ":" .. state.indent_offset
   if cache_extmarks[key] ~= nil then
     return cache_extmarks[key]
   end
@@ -152,6 +152,7 @@ local function get_extmark(indent, state)
   indent = indent - state.leftcol -- adjust for visible indents
   local rem = indent % sw -- remaining spaces of the first partially visible indent
   indent = math.floor(indent / sw) -- full visible indents
+  local offset = math.max(math.floor((state.indent_offset - state.leftcol + sw) / sw), 0) -- offset for the scope
 
   -- hide if indent is 0 and no remaining spaces
   if indent < 1 and rem == 0 then
@@ -166,13 +167,18 @@ local function get_extmark(indent, state)
   text[1] = rem > 0 and { (config.indent.blank):rep(rem), get_hl(hidden, config.blank.hl) } or nil
 
   for i = 1, indent do
-    text[#text + 1] = { config.indent.char, get_hl(i + hidden, config.indent.hl) }
+    if i >= offset then
+      text[#text + 1] = { config.indent.char, get_hl(i + hidden, config.indent.hl) }
+    else
+      text[#text + 1] = { blank, get_hl(i + hidden, config.blank.hl) }
+    end
     text[#text + 1] = { blank, get_hl(i + hidden, config.blank.hl) }
   end
 
   cache_extmarks[key] = {
     virt_text = text,
     virt_text_pos = "overlay",
+    virt_text_win_col = 0,
     hl_mode = "combine",
     priority = config.priority,
     ephemeral = true,
@@ -201,6 +207,7 @@ local function get_state(win, buf, top, bottom)
     leftcol = vim.api.nvim_buf_call(buf, vim.fn.winsaveview).leftcol --[[@as number]],
     shiftwidth = vim.bo[buf].shiftwidth,
     indents = prev and prev.indents or { [0] = 0 },
+    indent_offset = 0, -- the start column of the indent guides
   }
   state.shiftwidth = state.shiftwidth == 0 and vim.bo[buf].tabstop or state.shiftwidth
   states[win] = state
@@ -218,14 +225,13 @@ function M.on_win(win, buf, top, bottom)
   local state = get_state(win, buf, top, bottom)
 
   local scope = scopes and scopes:get(win) --[[@as snacks.indent.Scope?]]
-  local indent_col = 0 -- the start column of the indent guides
 
   -- adjust top and bottom if only_scope is enabled
   if config.indent.only_scope then
     if not scope then
       return
     end
-    indent_col = scope.indent or 0
+    state.indent_offset = scope.indent or 0
     state.top = math.max(state.top, scope.from)
     state.bottom = math.min(state.bottom, scope.to)
   end
@@ -257,9 +263,9 @@ function M.on_win(win, buf, top, bottom)
         end
         indents[l] = indent
       end
-      local opts = show_indent and indent > 0 and get_extmark(indent - indent_col, state)
+      local opts = show_indent and indent > 0 and get_extmark(indent, state)
       if opts then
-        vim.api.nvim_buf_set_extmark(buf, ns, l - 1, indent_col, opts)
+        vim.api.nvim_buf_set_extmark(buf, ns, l - 1, 0, opts)
       end
     end
   end)
