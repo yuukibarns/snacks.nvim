@@ -12,6 +12,7 @@ M.meta = {
 ---@field end_pos? {[1]:number, [2]:number} -- (1,0) indexed
 
 ---@class snacks.scope.TextObject: snacks.scope.Opts
+---@field inner? boolean if true, select the inner scope. Defaults to `false`
 ---@field linewise? boolean if nil, use visual mode. Defaults to `false` when not in visual mode
 ---@field notify? boolean show a notification when no scope is found (defaults to true)
 
@@ -150,6 +151,13 @@ function Scope:with_edge()
   error("not implemented")
 end
 
+---@generic T: snacks.scope.scope
+---@param self T
+---@return T
+function Scope:inner()
+  error("not implemented")
+end
+
 ---@param line number
 function Scope.get_indent(line)
   local ret = vim.fn.indent(line)
@@ -203,6 +211,22 @@ function IndentScope._expand(line, indent, up)
     line = l
   end
   return line
+end
+
+-- Inner indent scope is all lines with higher indent than the current scope
+function IndentScope:inner()
+  local from, to, indent = nil, nil, math.huge
+  for l = self.from, self.to do
+    local i, il = IndentScope.get_indent(vim.fn.nextnonblank(l))
+    if il == l then
+      if i > self.indent then
+        from = from or l
+        to = l
+        indent = math.min(indent, i)
+      end
+    end
+  end
+  return from and to and self:with({ from = from, to = to, indent = indent }) or self
 end
 
 function IndentScope:with_edge()
@@ -367,6 +391,25 @@ end
 function TSScope:parent()
   local parent = self.node:parent()
   return parent and parent ~= self.node:tree():root() and self:with({ node = parent }):root() or nil
+end
+
+-- Inner treesitter scope includes all lines for which the node
+-- has a start position lower than the start of the scope.
+function TSScope:inner()
+  local from, to, indent = nil, nil, math.huge
+  for l = self.from + 1, self.to do
+    if l == vim.fn.nextnonblank(l) then
+      local col = (vim.fn.getline(l):find("%S") or 1) - 1
+      local node = vim.treesitter.get_node({ pos = { l - 1, col }, bufnr = self.buf })
+      local s = TSScope:new({ buf = self.buf, node = node }, self.opts):fix()
+      if s and s.from > self.from and s.to <= self.to then
+        from = from or l
+        to = l
+        indent = math.min(indent, vim.fn.indent(l))
+      end
+    end
+  end
+  return from and to and IndentScope:new({ from = from, to = to, indent = indent }, self.opts) or self
 end
 
 function Scope:__tostring()
