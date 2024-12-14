@@ -82,6 +82,7 @@ function M.input(opts, on_confirm)
   assert(type(on_confirm) == "function", "`on_confirm` must be a function")
 
   local parent_win = vim.api.nvim_get_current_win()
+  local mode = vim.fn.mode()
 
   local function confirm(value)
     ctx.win = nil
@@ -90,6 +91,9 @@ function M.input(opts, on_confirm)
     vim.schedule(function()
       if vim.api.nvim_win_is_valid(parent_win) then
         vim.api.nvim_set_current_win(parent_win)
+        if mode == "i" then
+          vim.cmd("startinsert")
+        end
       end
       on_confirm(value)
     end)
