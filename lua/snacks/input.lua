@@ -87,7 +87,9 @@ function M.input(opts, on_confirm)
     ctx.opts = nil
     vim.cmd.stopinsert()
     vim.schedule(function()
-      vim.api.nvim_set_current_win(parent_win)
+      if vim.api.nvim_win_is_valid(parent_win) then
+        vim.api.nvim_set_current_win(parent_win)
+      end
       on_confirm(value)
     end)
   end
@@ -177,9 +179,11 @@ function M.input(opts, on_confirm)
     vim.api.nvim_create_autocmd("TextChangedI", {
       buffer = win.buf,
       callback = function()
-        vim.api.nvim_win_call(parent_win, function()
-          win:update()
-        end)
+        if vim.api.nvim_win_is_valid(parent_win) then
+          vim.api.nvim_win_call(parent_win, function()
+            win:update()
+          end)
+        end
         vim.api.nvim_win_call(win.win, function()
           vim.fn.winrestview({ leftcol = 0 })
         end)
