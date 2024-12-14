@@ -6,13 +6,12 @@ M.meta = {
   needs_setup = true,
 }
 
----@class snacks.scope.Opts: snacks.scope.Config
+---@class snacks.scope.Opts: snacks.scope.Config,{}
 ---@field buf? number
 ---@field pos? {[1]:number, [2]:number} -- (1,0) indexed
 ---@field end_pos? {[1]:number, [2]:number} -- (1,0) indexed
 
 ---@class snacks.scope.TextObject: snacks.scope.Opts
----@field inner? boolean if true, select the inner scope. Defaults to `false`
 ---@field linewise? boolean if nil, use visual mode. Defaults to `false` when not in visual mode
 ---@field notify? boolean show a notification when no scope is found (defaults to true)
 
@@ -69,16 +68,15 @@ local defaults = {
     ---@type table<string, snacks.scope.TextObject|{desc?:string}>
     textobject = {
       ii = {
-        min_size = 1, -- allow single line scopes
-        edge = false, -- don't include the edge
-        treesitter = { enabled = false },
+        min_size = 2, -- minimum size of the scope
+        edge = false, -- inner scope
+        treesitter = { blocks = false },
         desc = "inner scope",
       },
       ai = {
-        min_size = 1, -- allow single line scopes
-        edge = true, -- include the edge
-        treesitter = { enabled = false },
-        desc = "scope with edge",
+        min_size = 2, -- minimum size of the scope
+        treesitter = { blocks = false },
+        desc = "full scope",
       },
     },
     ---@type table<string, snacks.scope.Jump|{desc?:string}>
@@ -435,7 +433,7 @@ end
 ---@param opts? snacks.scope.Opts
 ---@return snacks.scope.Scope?
 function M.get(opts)
-  opts = opts or {}
+  opts = Snacks.config.get("scope", defaults, opts or {}) --[[ @as snacks.scope.Opts ]]
   opts.buf = (opts.buf == nil or opts.buf == 0) and vim.api.nvim_get_current_buf() or opts.buf
   if not opts.pos then
     assert(opts.buf == vim.api.nvim_win_get_buf(0), "missing pos")
@@ -453,7 +451,7 @@ function M.get(opts)
 
   ---@type snacks.scope.Scope
   local Class = opts.treesitter.enabled and vim.b[opts.buf].ts_highlight and TSScope or IndentScope
-  local ret = Class:find(opts)
+  local ret = Class:find(opts) --[[ @as snacks.scope.Scope? ]]
 
   -- fallback to indent based detection
   if not ret and Class == TSScope then
@@ -463,8 +461,8 @@ function M.get(opts)
 
   -- when end_pos is provided, get its scope and expand the current scope
   -- to include it.
-  if ret and opts.end_pos and false then
-    local end_scope = M.get(vim.tbl_extend("keep", { pos = opts.end_pos, end_pos = false }, opts))
+  if ret and opts.end_pos and not vim.deep_equal(opts.pos, opts.end_pos) then
+    local end_scope = Class:find(vim.tbl_extend("keep", { pos = opts.end_pos }, opts)) --[[ @as snacks.scope.Scope? ]]
     if end_scope and end_scope.from < ret.from then
       ret = ret:expand(end_scope.from) or ret
     end
@@ -673,33 +671,24 @@ function M.textobject(opts)
     opts.pos = vim.api.nvim_buf_get_mark(0, "<")
     opts.end_pos = vim.api.nvim_buf_get_mark(0, ">")
   end
+  local inner = not opts.edge
+  opts.edge = true -- always include the edge of the scope to make inner work
 
   local scope = M.get(opts)
   if not scope then
     return opts.notify ~= false and Snacks.notify.warn("No scope in range")
   end
 
-  while scope do
-    -- determine scope range
-    local from, to =
-      { scope.from, opts.linewise and 0 or vim.fn.indent(scope.from) },
-      { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
+  scope = inner and scope:inner() or scope
+  -- determine scope range
+  local from, to =
+    { scope.from, opts.linewise and 0 or vim.fn.indent(scope.from) },
+    { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
 
-    -- if the scope is the same as the visual selection
-    -- then select the parent scope instead.
-    local same = selection and vim.deep_equal(from, opts.pos) and vim.deep_equal(to, opts.end_pos)
-
-    local parent = scope:parent()
-    if not same or not parent then
-      -- select the range
-      vim.api.nvim_win_set_cursor(0, from)
-      vim.cmd("normal! " .. (opts.linewise and "V" or "v"))
-      vim.api.nvim_win_set_cursor(0, to)
-      return
-    end
-
-    scope = opts.edge and parent:with_edge() or parent
-  end
+  -- select the range
+  vim.api.nvim_win_set_cursor(0, from)
+  vim.cmd("normal! " .. (opts.linewise and "V" or "v"))
+  vim.api.nvim_win_set_cursor(0, to)
 end
 
 --- Jump to the top or bottom of the scope
