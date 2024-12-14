@@ -11,6 +11,7 @@ M.enabled = false
 ---@field enabled? boolean
 local defaults = {
   indent = {
+    priority = 1,
     enabled = true, -- enable indent guides
     char = "│",
     blank = " ",
@@ -51,6 +52,7 @@ local defaults = {
   ---@class snacks.indent.Scope.Config: snacks.scope.Config
   scope = {
     enabled = true, -- enable highlighting the current scope
+    priority = 200,
     char = "│",
     underline = false, -- underline the start of the scope
     only_current = false, -- only show scope in the current window
@@ -62,6 +64,7 @@ local defaults = {
     enabled = false,
     -- only show chunk scopes in the current window
     only_current = false,
+    priority = 200,
     hl = "SnacksIndentChunk", ---@type string|string[] hl group for chunk scopes
     char = {
       corner_top = "┌",
@@ -82,7 +85,6 @@ local defaults = {
   filter = function(buf)
     return vim.g.snacks_indent ~= false and vim.b[buf].snacks_indent ~= false and vim.bo[buf].buftype == ""
   end,
-  priority = 200,
   debug = false,
 }
 
@@ -180,7 +182,7 @@ local function get_extmark(indent, state)
     virt_text_pos = "overlay",
     virt_text_win_col = 0,
     hl_mode = "combine",
-    priority = config.priority,
+    priority = config.indent.priority,
     ephemeral = true,
   }
   return cache_extmarks[key]
@@ -328,7 +330,7 @@ function M.render_scope(scope, state)
         virt_text_pos = "overlay",
         virt_text_win_col = col,
         hl_mode = "combine",
-        priority = config.priority + 1,
+        priority = config.scope.priority,
         strict = false,
         ephemeral = true,
       })
@@ -358,7 +360,7 @@ function M.render_chunk(scope, state)
       virt_text_pos = "overlay",
       virt_text_win_col = col,
       hl_mode = "combine",
-      priority = config.priority + 2,
+      priority = config.chunk.priority,
       strict = false,
       ephemeral = true,
     })
