@@ -115,7 +115,7 @@ Scope.__index = Scope
 ---@param opts snacks.scope.Opts
 ---@return T
 function Scope:new(scope, opts)
-  local ret = setmetatable(scope, { __index = self, __eq = self.__eq })
+  local ret = setmetatable(scope, { __index = self, __eq = self.__eq, __tostring = self.__tostring })
   ret.opts = opts
   return ret
 end
@@ -367,6 +367,17 @@ end
 function TSScope:parent()
   local parent = self.node:parent()
   return parent and parent ~= self.node:tree():root() and self:with({ node = parent }):root() or nil
+end
+
+function Scope:__tostring()
+  local meta = getmetatable(self)
+  return ("%s(buf=%d, from=%d, to=%d, indent=%d)"):format(
+    meta == TSScope and "TSScope" or meta == IndentScope and "IndentSCope" or "Scope",
+    self.buf or -1,
+    self.from or -1,
+    self.to or -1,
+    self.indent or 0
+  )
 end
 
 ---@param opts? snacks.scope.Opts
