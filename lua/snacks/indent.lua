@@ -14,7 +14,7 @@ local defaults = {
     priority = 1,
     enabled = true, -- enable indent guides
     char = "│",
-    blank = vim.opt.listchars:get().space or " ",
+    blank = nil, ---@type string? blank space character. If nil, it will use listchars when list is enabled.
     -- blank = "∙",
     only_scope = false, -- only show indent guides of the scope
     only_current = false, -- only show indent guides in the current window
@@ -143,7 +143,8 @@ end
 ---@param indent number
 ---@param state snacks.indent.State
 local function get_extmark(indent, state)
-  local key = indent .. ":" .. state.leftcol .. ":" .. state.shiftwidth .. ":" .. state.indent_offset
+  local space = config.indent.blank or state.listchars.space or " "
+  local key = indent .. ":" .. state.leftcol .. ":" .. state.shiftwidth .. ":" .. state.indent_offset .. ":" .. space
   if cache_extmarks[key] ~= nil then
     return cache_extmarks[key]
   end
@@ -163,10 +164,10 @@ local function get_extmark(indent, state)
   end
 
   local hidden = math.ceil(state.leftcol / sw) -- level of the last hidden indent
-  local blank = config.indent.blank:rep(sw - vim.api.nvim_strwidth(config.indent.char))
+  local blank = space:rep(sw - vim.api.nvim_strwidth(config.indent.char))
 
   local text = {} ---@type string[][]
-  text[1] = rem > 0 and { (config.indent.blank):rep(rem), get_hl(hidden, config.blank.hl) } or nil
+  text[1] = rem > 0 and { (blank):rep(rem), get_hl(hidden, config.blank.hl) } or nil
 
   for i = 1, indent do
     if i >= offset then
@@ -186,6 +187,18 @@ local function get_extmark(indent, state)
     ephemeral = true,
   }
   return cache_extmarks[key]
+end
+
+local function get_listchars(win)
+  local chars = vim.wo[win].list and vim.wo[win].listchars
+  local ret = {} ---@type table<string, string>
+  for _, o in ipairs(chars and vim.split(chars, ",") or {}) do
+    local k, v = o:match("(.-):(.+)")
+    if k then
+      ret[k] = v
+    end
+  end
+  return ret
 end
 
 ---@param win number
@@ -210,6 +223,7 @@ local function get_state(win, buf, top, bottom)
     shiftwidth = vim.bo[buf].shiftwidth,
     indents = prev and prev.indents or { [0] = 0 },
     indent_offset = 0, -- the start column of the indent guides
+    listchars = get_listchars(win),
   }
   state.shiftwidth = state.shiftwidth == 0 and vim.bo[buf].tabstop or state.shiftwidth
   states[win] = state
@@ -515,7 +529,7 @@ function M.enable()
   -- redraw when shiftwidth changes
   vim.api.nvim_create_autocmd("OptionSet", {
     group = group,
-    pattern = { "shiftwidth" },
+    pattern = { "shiftwidth", "listchars", "list" },
     callback = vim.schedule_wrap(function()
       vim.cmd([[redraw!]])
     end),
