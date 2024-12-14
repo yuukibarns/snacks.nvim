@@ -273,7 +273,7 @@ function M.on_win(win, buf, top, bottom)
   end)
 
   -- Render scope
-  if scope and scope:size() > 1 then
+  if scope and (scope:size() > 1 or vim.g.snacks_indent_overlap) then
     show_chunk = show_chunk and (scope.indent or 0) >= state.shiftwidth
     if show_chunk then
       M.render_chunk(scope, state)
@@ -324,7 +324,7 @@ function M.render_scope(scope, state)
 
   for l = from, to do
     local i = state.indents[l]
-    if i and i > indent then
+    if (i and i > indent) or vim.g.snacks_indent_overlap then
       vim.api.nvim_buf_set_extmark(scope.buf, ns, l - 1, 0, {
         virt_text = { { config.scope.char, hl } },
         virt_text_pos = "overlay",
