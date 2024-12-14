@@ -121,7 +121,11 @@ function Scope:new(scope, opts)
 end
 
 function Scope:__eq(other)
-  return other and self.buf == other.buf and self.from == other.from and self.to == other.to
+  return other
+    and self.buf == other.buf
+    and self.from == other.from
+    and self.to == other.to
+    and self.indent == other.indent
 end
 
 ---@generic T: snacks.scope.Scope
