@@ -57,6 +57,10 @@ local defaults = {
       "if_statement",
       "for_statement",
     },
+    -- these treesitter fields will be considered as blocks
+    field_blocks = {
+      "local_declaration",
+    },
   },
   -- These keymaps will only be set if the `scope` plugin is enabled.
   -- Alternatively, you can set them manually in your config,
@@ -302,7 +306,7 @@ function TSScope:fill()
   local u, _, d = n:range()
   while n do
     local uu, _, dd = n:range()
-    if uu == u and dd == d then
+    if uu == u and dd == d and not self:is_field(n) then
       self.node = n
     else
       break
@@ -315,30 +319,35 @@ function TSScope:fix()
   self:fill()
   self.from, _, self.to = self.node:range()
   self.from, self.to = self.from + 1, self.to + 1
-  self.indent = math.huge
-  local l = self.from
-  while l and l > 0 and l <= self.to do
-    self.indent = math.min(self.indent, vim.fn.indent(l))
-    l = vim.fn.nextnonblank(l + 1)
-  end
-  self.indent = self.indent == math.huge and 0 or self.indent
+  self.indent = math.min(vim.fn.indent(self.from), vim.fn.indent(self.to))
   return self
 end
 
-function TSScope:with_edge()
-  local prev = vim.fn.prevnonblank(self.from - 1)
-  local next = vim.fn.nextnonblank(self.from + 1)
-  if vim.fn.indent(next) > self.indent then
-    return self
+---@param node? TSNode
+function TSScope:is_field(node)
+  node = node or self.node
+  local parent = node:parent()
+  parent = parent ~= node:tree():root() and parent or nil
+  if not parent then
+    return false
   end
-  local parent, ret = self:parent(), self
-  while parent and parent.indent < self.indent do
-    if parent.from >= prev then
-      ret = parent
+  for child, field in parent:iter_children() do
+    if child == node then
+      return not (field == nil or vim.tbl_contains(self.opts.treesitter.field_blocks, field))
     end
-    parent = parent:parent()
   end
-  return ret
+  error("node not found in parent")
+end
+
+function TSScope:with_edge()
+  local ret = self ---@type snacks.scope.TSScope?
+  while ret do
+    if ret:size() >= 1 and not ret:is_field() then
+      return ret
+    end
+    ret = ret:parent()
+  end
+  return self
 end
 
 function TSScope:root()
