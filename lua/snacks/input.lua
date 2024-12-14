@@ -44,6 +44,7 @@ Snacks.config.style("input", {
   height = 1,
   width = 60,
   relative = "editor",
+  noautocmd = true,
   row = 2,
   -- relative = "cursor",
   -- row = -3,
