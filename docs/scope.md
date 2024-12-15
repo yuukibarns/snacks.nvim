@@ -49,8 +49,9 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
     -- detect scope based on treesitter.
     -- falls back to indent based detection if not available
     enabled = true,
-    ---@type string[]|false
+    ---@type string[]|{enabled?:boolean}
     blocks = {
+      enabled = false, -- enable to use the following blocks
       "function_declaration",
       "function_definition",
       "method_declaration",
@@ -78,13 +79,13 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
         min_size = 2, -- minimum size of the scope
         edge = false, -- inner scope
         cursor = false,
-        treesitter = { blocks = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "inner scope",
       },
       ai = {
         cursor = false,
         min_size = 2, -- minimum size of the scope
-        treesitter = { blocks = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "full scope",
       },
     },
@@ -95,7 +96,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
         bottom = false,
         cursor = false,
         edge = true,
-        treesitter = { enabled = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "jump to top edge of scope",
       },
       ["]i"] = {
@@ -103,7 +104,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
         bottom = true,
         cursor = false,
         edge = true,
-        treesitter = { enabled = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "jump to bottom edge of scope",
       },
     },
