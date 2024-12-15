@@ -227,8 +227,8 @@ function M.on_key(key, cb)
   keys[code] = keys[code] or {}
   table.insert(keys[code], cb)
   on_key_ns = on_key_ns
-    or vim.on_key(function(_, typed)
-      for _, c in ipairs(keys[typed] or {}) do
+    or vim.on_key(function(resolved, typed)
+      for _, c in ipairs(keys[typed or resolved] or {}) do
         pcall(c, typed)
       end
     end)
