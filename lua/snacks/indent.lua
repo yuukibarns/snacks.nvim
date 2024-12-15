@@ -333,7 +333,7 @@ function M.render_scope(scope, state)
       end_col = #vim.api.nvim_buf_get_lines(scope.buf, scope.from - 1, scope.from, false)[1],
       hl_group = get_underline_hl(hl),
       hl_mode = "combine",
-      priority = config.priority + 1,
+      priority = config.scope.priority + 1,
       strict = false,
       ephemeral = true,
     })
