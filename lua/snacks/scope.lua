@@ -30,6 +30,7 @@ local defaults = {
   min_size = 2,
   -- try to expand the scope to this size
   max_size = nil,
+  cursor = true, -- when true, the column of the cursor is used to determine the scope
   edge = true, -- include the edge of the scope (typically the line above and below with smaller indent)
   siblings = false, -- expand single line scopes with single line siblings
   -- what buffers to attach to
@@ -70,10 +71,12 @@ local defaults = {
       ii = {
         min_size = 2, -- minimum size of the scope
         edge = false, -- inner scope
+        cursor = false,
         treesitter = { blocks = false },
         desc = "inner scope",
       },
       ai = {
+        cursor = false,
         min_size = 2, -- minimum size of the scope
         treesitter = { blocks = false },
         desc = "full scope",
@@ -84,6 +87,7 @@ local defaults = {
       ["[i"] = {
         min_size = 1, -- allow single line scopes
         bottom = false,
+        cursor = false,
         edge = true,
         treesitter = { enabled = false },
         desc = "jump to top edge of scope",
@@ -91,6 +95,7 @@ local defaults = {
       ["]i"] = {
         min_size = 1, -- allow single line scopes
         bottom = true,
+        cursor = false,
         edge = true,
         treesitter = { enabled = false },
         desc = "jump to bottom edge of scope",
@@ -275,6 +280,10 @@ function IndentScope:find(opts)
     indent = next_i
   end
 
+  if opts.cursor then
+    indent = math.min(indent, opts.pos[2] + 1)
+  end
+
   -- expand to include bigger indents
   return IndentScope:new({
     buf = opts.buf,
@@ -391,8 +400,17 @@ function TSScope:find(opts)
   if not node then
     return
   end
-  local ret = TSScope:new({ buf = opts.buf, node = node }, opts)
-  return ret:root()
+
+  if opts.cursor then
+    -- expand to biggest ancestor with a lower start position
+    local n = node ---@type TSNode?
+    while n and n ~= n:tree():root() and ({ n:range() })[2] > opts.pos[2] do
+      node, n = n, n:parent()
+    end
+  end
+
+  local ret = TSScope:new({ buf = opts.buf, node = node }, opts):root()
+  return ret
 end
 
 function TSScope:parent()
