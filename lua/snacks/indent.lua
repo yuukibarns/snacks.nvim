@@ -168,7 +168,7 @@ local function get_extmark(indent, state)
   local blank = space:rep(sw - vim.api.nvim_strwidth(config.indent.char))
 
   local text = {} ---@type string[][]
-  text[1] = rem > 0 and { (blank):rep(rem), get_hl(hidden, config.blank.hl) } or nil
+  text[1] = rem > 0 and { (space):rep(rem), get_hl(hidden, config.blank.hl) } or nil
 
   for i = 1, indent do
     if i >= offset then
