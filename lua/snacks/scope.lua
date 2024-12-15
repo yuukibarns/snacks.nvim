@@ -281,7 +281,9 @@ function IndentScope:find(opts)
   end
 
   if opts.cursor then
-    indent = math.min(indent, opts.pos[2] + 1)
+    local before = vim.fn.getline(opts.pos[1]):sub(1, opts.pos[2])
+    before = before:gsub("\t", (" "):rep(vim.bo[opts.buf].tabstop or 2))
+    indent = math.min(indent, vim.api.nvim_strwidth(before) + 1)
   end
 
   -- expand to include bigger indents
