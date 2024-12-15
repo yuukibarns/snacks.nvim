@@ -43,8 +43,9 @@ local defaults = {
     -- detect scope based on treesitter.
     -- falls back to indent based detection if not available
     enabled = true,
-    ---@type string[]|false
+    ---@type string[]|{enabled?:boolean}
     blocks = {
+      enabled = false, -- enable to use the following blocks
       "function_declaration",
       "function_definition",
       "method_declaration",
@@ -72,13 +73,13 @@ local defaults = {
         min_size = 2, -- minimum size of the scope
         edge = false, -- inner scope
         cursor = false,
-        treesitter = { blocks = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "inner scope",
       },
       ai = {
         cursor = false,
         min_size = 2, -- minimum size of the scope
-        treesitter = { blocks = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "full scope",
       },
     },
@@ -89,7 +90,7 @@ local defaults = {
         bottom = false,
         cursor = false,
         edge = true,
-        treesitter = { enabled = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "jump to top edge of scope",
       },
       ["]i"] = {
@@ -97,7 +98,7 @@ local defaults = {
         bottom = true,
         cursor = false,
         edge = true,
-        treesitter = { enabled = false },
+        treesitter = { blocks = { enabled = false } },
         desc = "jump to bottom edge of scope",
       },
     },
@@ -360,7 +361,7 @@ function TSScope:with_edge()
 end
 
 function TSScope:root()
-  if self.opts.treesitter.blocks == false then
+  if type(self.opts.treesitter.blocks) ~= "table" or not self.opts.treesitter.blocks.enabled then
     return self:fix()
   end
   local root = self.node --[[@as TSNode?]]
