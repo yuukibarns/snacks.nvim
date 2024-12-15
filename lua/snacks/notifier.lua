@@ -91,7 +91,7 @@ Snacks.config.style("notification", {
   bo = { filetype = "snacks_notif" },
 })
 
-Snacks.config.style("notification.history", {
+Snacks.config.style("notification_history", {
   border = "rounded",
   zindex = 100,
   width = 0.6,
