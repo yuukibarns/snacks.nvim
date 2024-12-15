@@ -282,7 +282,7 @@ function M.on_win(win, buf, top, bottom)
         indents[l] = indent
       end
       if indent ~= current_indent then
-        parent_indent = current_indent
+        parent_indent = current_indent or indent
         current_indent = indent
       end
       indent = math.min(indent, parent_indent + state.shiftwidth)
