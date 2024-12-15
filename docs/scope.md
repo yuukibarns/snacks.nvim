@@ -35,6 +35,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
   min_size = 2,
   -- try to expand the scope to this size
   max_size = nil,
+  cursor = true, -- when true, the column of the cursor is used to determine the scope
   edge = true, -- include the edge of the scope (typically the line above and below with smaller indent)
   siblings = false, -- expand single line scopes with single line siblings
   -- what buffers to attach to
@@ -75,10 +76,12 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
       ii = {
         min_size = 2, -- minimum size of the scope
         edge = false, -- inner scope
+        cursor = false,
         treesitter = { blocks = false },
         desc = "inner scope",
       },
       ai = {
+        cursor = false,
         min_size = 2, -- minimum size of the scope
         treesitter = { blocks = false },
         desc = "full scope",
@@ -89,6 +92,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
       ["[i"] = {
         min_size = 1, -- allow single line scopes
         bottom = false,
+        cursor = false,
         edge = true,
         treesitter = { enabled = false },
         desc = "jump to top edge of scope",
@@ -96,6 +100,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
       ["]i"] = {
         min_size = 1, -- allow single line scopes
         bottom = true,
+        cursor = false,
         edge = true,
         treesitter = { enabled = false },
         desc = "jump to bottom edge of scope",
