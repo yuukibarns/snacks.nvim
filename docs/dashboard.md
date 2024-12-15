@@ -105,6 +105,7 @@ In the example below, both sections are equivalent.
 -- lazy.nvim
 {
   "folke/snacks.nvim",
+  ---@type snacks.Config
   opts = {
     dashboard = {
       -- your dashboard configuration comes here
@@ -435,6 +436,9 @@ Similar to the Vim Startify dashboard
 ```
 
 ## 🎨 Styles
+
+Check the [styles](https://github.com/folke/snacks.nvim/blob/main/docs/styles.md)
+docs for more information on how to customize these styles
 
 ### `dashboard`
 

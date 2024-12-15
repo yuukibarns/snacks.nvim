@@ -63,6 +63,7 @@ Easily create and manage floating windows or splits
     -- lazy.nvim
     {
       "folke/snacks.nvim",
+      ---@type snacks.Config
       opts = {
         win = {
           -- your win configuration comes here
@@ -117,6 +118,10 @@ Easily create and manage floating windows or splits
 
 ==============================================================================
 4. Styles                                                  *snacks-win-styles*
+
+Check the styles
+<https://github.com/folke/snacks.nvim/blob/main/docs/styles.md> docs for more
+information on how to customize these styles
 
 
 FLOAT                                                *snacks-win-styles-float*

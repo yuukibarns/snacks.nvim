@@ -13,6 +13,7 @@ in [mini.indentscope](https://github.com/echasnovski/mini.indentscope).
 -- lazy.nvim
 {
   "folke/snacks.nvim",
+  ---@type snacks.Config
   opts = {
     scope = {
       -- your scope configuration comes here

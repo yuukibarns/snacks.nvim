@@ -24,6 +24,7 @@ The indent-based algorithm is similar to what is used in mini.indentscope
     -- lazy.nvim
     {
       "folke/snacks.nvim",
+      ---@type snacks.Config
       opts = {
         scope = {
           -- your scope configuration comes here
