@@ -260,6 +260,7 @@ function M.on_win(win, buf, top, bottom)
   -- Calculate and render indents
   local indents = state.indents
   vim.api.nvim_buf_call(buf, function()
+    local parent_indent, current_indent ---@type number, number
     for l = state.top, state.bottom do
       local indent = indents[l]
       if not indent then
@@ -280,6 +281,11 @@ function M.on_win(win, buf, top, bottom)
         end
         indents[l] = indent
       end
+      if indent ~= current_indent then
+        parent_indent = current_indent
+        current_indent = indent
+      end
+      indent = math.min(indent, parent_indent + state.shiftwidth)
       local opts = show_indent and indent > 0 and get_extmark(indent, state)
       if opts then
         vim.api.nvim_buf_set_extmark(buf, ns, l - 1, 0, opts)
