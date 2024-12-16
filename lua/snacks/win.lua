@@ -442,10 +442,10 @@ function M:show()
   for k, v in pairs(self.opts.w or {}) do
     vim.w[self.win][k] = v
   end
-  Snacks.util.wo(self.win, self.opts.wo)
   if Snacks.util.is_transparent() then
     self.opts.wo.winblend = 0
   end
+  Snacks.util.wo(self.win, self.opts.wo)
   if self.opts.on_win then
     self.opts.on_win(self)
   end
