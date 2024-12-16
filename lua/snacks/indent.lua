@@ -174,7 +174,7 @@ local function get_extmark(indent, state)
     if i >= offset then
       text[#text + 1] = { config.indent.char, get_hl(i + hidden, config.indent.hl) }
     else
-      text[#text + 1] = { blank, get_hl(i + hidden, config.blank.hl) }
+      text[#text + 1] = { space, get_hl(i + hidden, config.blank.hl) }
     end
     text[#text + 1] = { blank, get_hl(i + hidden, config.blank.hl) }
   end
