@@ -237,7 +237,7 @@ local function get_state(win, buf, top, bottom)
     blanks = prev and prev.blanks or {},
     indent_offset = 0, -- the start column of the indent guides
     listchars = get_listchars(win),
-    breakindent = vim.wo[win].breakindent and vim.wo[win].wrap and vim.wo[win].wrap,
+    breakindent = vim.wo[win].breakindent and vim.wo[win].wrap,
     space = " ",
   }
   state.space = config.indent.blank or state.listchars.lead or state.listchars.space or " "
@@ -414,10 +414,10 @@ function M.render_chunk(scope, state)
       end
       add(l, char.corner_top .. (char.horizontal):rep(i - col - 1))
     elseif l == scope.to then -- bottom line
-      add(l, char.corner_bottom .. (char.horizontal):rep(i - col - 2) .. char.arrow)
       if state.breakindent then
         add(l, char.vertical .. (state.space):rep(i - col - 2), true)
       end
+      add(l, char.corner_bottom .. (char.horizontal):rep(i - col - 2) .. char.arrow)
     elseif i and i > col then -- middle line
       add(l, char.vertical, state.breakindent)
     end
