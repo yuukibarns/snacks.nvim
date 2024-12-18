@@ -14,8 +14,6 @@ local defaults = {
     priority = 1,
     enabled = true, -- enable indent guides
     char = "│",
-    blank = nil, ---@type string? blank space character. If nil, it will use listchars when list is enabled.
-    -- blank = "∙",
     only_scope = false, -- only show indent guides of the scope
     only_current = false, -- only show indent guides in the current window
     hl = "SnacksIndent", ---@type string|string[] hl groups for indent guides
@@ -166,7 +164,7 @@ local function get_extmarks(indent, state)
     local col = (i - 1) * sw - state.leftcol
     if col >= 0 then
       table.insert(cache_extmarks[key], {
-        virt_text = { { config.indent.char, get_hl(i + 1, config.indent.hl) } },
+        virt_text = { { config.indent.char, get_hl(i, config.indent.hl) } },
         virt_text_pos = "overlay",
         virt_text_win_col = col,
         hl_mode = "combine",
