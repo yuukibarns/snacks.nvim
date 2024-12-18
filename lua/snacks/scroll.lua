@@ -131,6 +131,18 @@ function M.enable()
     end),
   })
 
+  -- clear scroll state when leaving the cmdline after a search with incsearch
+  vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
+    group = group,
+    callback = function(ev)
+      if (ev.file == "/" or ev.file == "?") and vim.o.incsearch then
+        for _, win in ipairs(vim.fn.win_findbuf(ev.buf)) do
+          states[win] = nil
+        end
+      end
+    end,
+  })
+
   -- listen to scroll events with topline changes
   vim.api.nvim_create_autocmd("WinScrolled", {
     group = group,
