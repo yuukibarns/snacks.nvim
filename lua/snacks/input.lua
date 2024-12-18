@@ -69,7 +69,7 @@ Snacks.config.style("input", {
 
 local ui_input = vim.ui.input
 
----@class snacks.input.Opts: snacks.input.Config
+---@class snacks.input.Opts: snacks.input.Config|{}
 ---@field prompt? string
 ---@field default? string
 ---@field completion? string
