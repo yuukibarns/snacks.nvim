@@ -89,7 +89,7 @@ docs for more information on how to customize these styles
 ```
 
 ```lua
----@class snacks.input.Opts: snacks.input.Config
+---@class snacks.input.Opts: snacks.input.Config|{}
 ---@field prompt? string
 ---@field default? string
 ---@field completion? string
