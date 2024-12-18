@@ -272,6 +272,7 @@ The other options are used with `:lua Snacks.dashboard()`
   height = 0,
   backdrop = { transparent = true, blend = 40 },
   keys = { q = false },
+  zindex = 40,
   wo = {
     winhighlight = "NormalFloat:Normal",
   },
