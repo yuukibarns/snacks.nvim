@@ -49,6 +49,9 @@ local spammer_timer = assert((vim.uv or vim.loop).new_timer())
 -- get the state for a window.
 -- when the state doesn't exist, its target is the current view
 local function get_state(win)
+  if not vim.api.nvim_win_is_valid(win) then
+    return
+  end
   local buf = vim.api.nvim_win_get_buf(win)
   if not config.filter(buf) then
     return
