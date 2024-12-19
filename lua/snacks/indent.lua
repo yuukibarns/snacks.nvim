@@ -219,6 +219,11 @@ function M.on_win(win, buf, top, bottom)
   local state = get_state(win, buf, top, bottom)
 
   local scope = scopes and scopes:get(win) --[[@as snacks.indent.Scope?]]
+  vim.api.nvim_buf_call(buf, function()
+    if scope and vim.fn.foldclosed(scope.from) ~= -1 then
+      scope = nil
+    end
+  end)
 
   -- adjust top and bottom if only_scope is enabled
   if config.indent.only_scope then
