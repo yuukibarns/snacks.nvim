@@ -420,10 +420,12 @@ function M.on_scope(win, buf, scope, prev)
     scope.win = win
     local animate = Snacks.animate.enabled({ buf = buf, name = "indent" })
 
-    -- skip animation if new lines have been added before or inside the scope
-    if prev and (vim.fn.nextnonblank(prev.from) == scope.from) then
-      animate = false
-    end
+    vim.api.nvim_buf_call(buf, function()
+      -- skip animation if new lines have been added before or inside the scope
+      if prev and (vim.fn.nextnonblank(prev.from) == scope.from) then
+        animate = false
+      end
+    end)
 
     if animate then
       step(scope, 0)
