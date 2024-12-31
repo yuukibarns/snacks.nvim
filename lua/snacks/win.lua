@@ -98,6 +98,8 @@ Snacks.config.style("minimal", {
   },
 })
 
+local SCROLL_UP, SCROLL_DOWN = Snacks.util.keycode("<c-u>"), Snacks.util.keycode("<c-d>")
+
 local split_commands = {
   editor = {
     top = "topleft",
@@ -244,6 +246,14 @@ function M:focus()
   if self:valid() then
     vim.api.nvim_set_current_win(self.win)
   end
+end
+
+
+---@param up? boolean
+function M:scroll(up)
+  vim.api.nvim_buf_call(self.buf, function()
+    vim.cmd(("normal! %s"):format(up and SCROLL_UP or SCROLL_DOWN))
+  end)
 end
 
 ---@param opts? { buf: boolean }
