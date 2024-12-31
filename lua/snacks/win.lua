@@ -346,6 +346,7 @@ function M:open_win()
   local relative = self.opts.relative or "editor"
   local position = self.opts.position or "float"
   local enter = self.opts.enter == nil or self.opts.enter or false
+  enter = not self.opts.focusable and enter or false
   local opts = self:win_opts()
   if position == "float" then
     self.win = vim.api.nvim_open_win(self.buf, enter, opts)
