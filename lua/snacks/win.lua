@@ -6,6 +6,7 @@
 ---@field augroup? number
 ---@field backdrop? snacks.win
 ---@field keys snacks.win.Keys[]
+---@field events (snacks.win.Event|{event:string|string[]})[]
 ---@overload fun(opts? :snacks.win.Config|{}): snacks.win
 local M = setmetatable({}, {
   __call = function(t, ...)
@@ -22,6 +23,11 @@ M.meta = {
 ---@field [1]? string
 ---@field [2]? string|string[]|fun(self: snacks.win): string?
 ---@field mode? string|string[]
+
+---@class snacks.win.Event: vim.api.keyset.create_autocmd
+---@field buf? true
+---@field win? true
+---@field callback? fun(self: snacks.win)
 
 ---@class snacks.win.Backdrop
 ---@field bg? string
@@ -48,6 +54,7 @@ M.meta = {
 ---@field keys? table<string, false|string|fun(self: snacks.win)|snacks.win.Keys> Key mappings
 ---@field on_buf? fun(self: snacks.win) Callback after opening the buffer
 ---@field on_win? fun(self: snacks.win) Callback after opening the window
+---@field on_close? fun(self: snacks.win) Callback after closing the window
 ---@field fixbuf? boolean don't allow other buffers to be opened in this window
 ---@field text? string|string[]|fun():(string[]|string) Initial lines to set in the buffer
 ---@field actions? table<string, fun(self: snacks.win):(boolean|string?)> Actions that can be used in key mappings
@@ -202,6 +209,7 @@ function M.new(opts)
   end
 
   self.keys = {}
+  self.events = {}
   for key, spec in pairs(opts.keys) do
     if spec then
       if type(spec) == "string" then
@@ -212,6 +220,11 @@ function M.new(opts)
       table.insert(self.keys, spec)
     end
   end
+
+  self:on("WinClosed", self.on_close, { win = true })
+
+  -- update window size when resizing
+  self:on("VimResized", self.update)
 
   ---@cast opts snacks.win.Config
   self.opts = opts
@@ -240,7 +253,41 @@ function M:action(actions)
         return action
       end
     end
+
+---@param event string|string[]
+---@param cb fun(self: snacks.win)
+---@param opts? snacks.win.Event
+function M:on(event, cb, opts)
+  opts = opts or {}
+  opts.callback = cb
+  table.insert(self.events, vim.tbl_extend("keep", { event = event }, opts))
+  if self:valid() then
+    self:_on(event, opts)
   end
+end
+
+---@param event string|string[]
+---@param opts snacks.win.Event
+function M:_on(event, opts)
+  local event_opts = {} ---@type vim.api.keyset.create_autocmd
+  local skip = { "buf", "win", "event" }
+  for k, v in pairs(opts) do
+    if not vim.tbl_contains(skip, k) then
+      event_opts[k] = v
+    end
+  end
+  event_opts.group = event_opts.group or self.augroup
+  event_opts.callback = function()
+    opts.callback(self)
+  end
+  if event_opts.pattern or event_opts.buffer then
+    -- don't alter the pattern or buffer
+  elseif opts.win then
+    event_opts.pattern = self.win .. ""
+  elseif opts.buf then
+    event_opts.buffer = self.buf
+  end
+  vim.api.nvim_create_autocmd(event, event_opts)
 end
 
 function M:focus()
@@ -478,24 +525,9 @@ function M:show()
     end
   end
 
-  -- Go back to the previous window when closing,
-  -- and it's the current window
-  vim.api.nvim_create_autocmd("WinClosed", {
-    group = self.augroup,
-    callback = function(ev)
-      if ev.buf == self.buf and vim.api.nvim_get_current_win() == self.win then
-        pcall(vim.cmd.wincmd, "p")
-      end
-    end,
-  })
-
-  -- update window size when resizing
-  vim.api.nvim_create_autocmd("VimResized", {
-    group = self.augroup,
-    callback = function()
-      self:update()
-    end,
-  })
+  for _, event in ipairs(self.events) do
+    self:_on(event.event, event)
+  end
 
   -- swap buffers when opening a new buffer in the same window
   vim.api.nvim_create_autocmd("BufWinEnter", {
@@ -559,6 +591,22 @@ function M:show()
   self:drop()
 
   return self
+end
+
+function M:on_close()
+  -- close the backdrop
+  if self.backdrop then
+    self.backdrop:close()
+    self.backdrop = nil
+  end
+  if self.opts.on_close then
+    self.opts.on_close(self)
+  end
+  -- Go back to the previous window when closing,
+  -- and it's the current window
+  if vim.api.nvim_get_current_win() == self.win then
+    pcall(vim.cmd.wincmd, "p")
+  end
 end
 
 function M:add_padding()
@@ -628,16 +676,6 @@ function M:drop()
       filetype = "snacks_win_backdrop",
     },
   }, backdrop.win))
-  vim.api.nvim_create_autocmd("WinClosed", {
-    group = self.augroup,
-    pattern = self.win .. "",
-    callback = function()
-      if self.backdrop then
-        self.backdrop:close()
-        self.backdrop = nil
-      end
-    end,
-  })
 end
 
 function M:line(line)
