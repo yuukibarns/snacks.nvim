@@ -237,6 +237,18 @@ function M.on_key(key, cb)
 end
 
 ---@generic T
+---@param t T
+---@return { value?:T }|fun():T?
+function M.ref(t)
+  return setmetatable({ value = t }, {
+    __mode = "v",
+    __call = function(m)
+      return m.value
+    end,
+  })
+end
+
+---@generic T
 ---@param fn T
 ---@param opts? {ms?:number}
 ---@return T
