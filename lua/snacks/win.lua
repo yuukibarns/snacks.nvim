@@ -248,6 +248,13 @@ function M:focus()
   end
 end
 
+function M:redraw()
+  if vim.api.nvim__redraw then
+    vim.api.nvim__redraw({ win = self.win, valid = false, flush = true })
+  else
+    vim.cmd("redraw")
+  end
+end
 
 ---@param up? boolean
 function M:scroll(up)
