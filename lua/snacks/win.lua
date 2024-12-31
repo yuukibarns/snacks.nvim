@@ -35,6 +35,12 @@ M.meta = {
 ---@field transparent? boolean defaults to true
 ---@field win? snacks.win.Config overrides the backdrop window config
 
+---@alias snacks.win.Action.fn fun(self: snacks.win):(boolean|string?)
+---@alias snacks.win.Action.spec snacks.win.Action|snacks.win.Action.fn
+---@class snacks.win.Action
+---@field action snacks.win.Action.fn
+---@field desc? string
+
 ---@class snacks.win.Config: vim.api.keyset.win_config
 ---@field style? string merges with config from `Snacks.config.styles[style]`
 ---@field show? boolean Show the window immediately (default: true)
@@ -57,7 +63,7 @@ M.meta = {
 ---@field on_close? fun(self: snacks.win) Callback after closing the window
 ---@field fixbuf? boolean don't allow other buffers to be opened in this window
 ---@field text? string|string[]|fun():(string[]|string) Initial lines to set in the buffer
----@field actions? table<string, fun(self: snacks.win):(boolean|string?)> Actions that can be used in key mappings
+---@field actions? table<string, snacks.win.Action.spec> Actions that can be used in key mappings
 local defaults = {
   show = true,
   fixbuf = true,
@@ -235,24 +241,37 @@ function M.new(opts)
 end
 
 ---@param actions string|string[]
----@return fun(): boolean|string?
+---@return (fun(): boolean|string?) action, string? desc
 function M:action(actions)
   actions = type(actions) == "string" and { actions } or actions
   ---@cast actions string[]
+  local desc = {} ---@type string[]
+  for a, name in ipairs(actions) do
+    desc[a] = name:gsub("_", " ")
+    if self.opts.actions and self.opts.actions[name] then
+      local action = self.opts.actions[name]
+      desc[a] = type(action) == "table" and action.desc and action.desc or desc[a]
+    end
+  end
   return function()
-    for _, action in ipairs(actions) do
-      if self.opts.actions and self.opts.actions[action] then
-        local ret = self.opts.actions[action](self)
+    for _, name in ipairs(actions) do
+      if self.opts.actions and self.opts.actions[name] then
+        local a = self.opts.actions[name]
+        local fn = type(a) == "function" and a or a.action
+        local ret = fn(self)
         if ret then
           return type(ret) == "string" and ret or nil
         end
-      elseif self[action] then
-        self[action](self)
+      elseif self[name] then
+        self[name](self)
         return
       else
-        return action
+        return name
       end
     end
+  end,
+    table.concat(desc, ", ")
+end
 
 ---@param event string|string[]
 ---@param cb fun(self: snacks.win)
@@ -574,15 +593,21 @@ function M:show()
     opts[1] = nil
     opts[2] = nil
     opts.mode = nil
+    ---@diagnostic disable-next-line: cast-type-mismatch
+    ---@cast opts vim.keymap.set.Opts
     opts.buffer = self.buf
     opts.nowait = true
     local rhs = spec[2]
     local is_action = type(rhs) == "string" or type(rhs) == "table"
     if is_action then
-      opts.expr = true
-    end
-    rhs = is_action and self:action(rhs) or function()
-      return spec[2](self)
+      local desc = spec.desc
+      ---@cast rhs string|string[]
+      rhs, desc = self:action(rhs)
+      opts.desc = opts.desc or desc
+    else
+      rhs = function()
+        return spec[2](self)
+      end
     end
     ---@cast spec snacks.win.Keys
     vim.keymap.set(spec.mode or "n", spec[1], rhs, opts)
