@@ -12,6 +12,7 @@ local M = setmetatable({}, {
     return t.new(...)
   end,
 })
+M.__index = M
 
 M.meta = {
   desc = "Create and manage floating windows or splits",
@@ -181,7 +182,7 @@ end
 ---@param opts? snacks.win.Config|{}
 ---@return snacks.win
 function M.new(opts)
-  local self = setmetatable({}, { __index = M })
+  local self = setmetatable({}, M)
   id = id + 1
   self.id = id
   opts = M.resolve(Snacks.config.get("win", defaults), opts)
