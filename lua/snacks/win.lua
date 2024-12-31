@@ -35,6 +35,13 @@ M.meta = {
 ---@field transparent? boolean defaults to true
 ---@field win? snacks.win.Config overrides the backdrop window config
 
+---@class snacks.win.Dim
+---@field width number width of the window, without borders
+---@field height number height of the window, without borders
+---@field row number row of the window (0-indexed)
+---@field col number column of the window (0-indexed)
+---@field border? boolean whether the window has a border
+
 ---@alias snacks.win.Action.fn fun(self: snacks.win):(boolean|string?)
 ---@alias snacks.win.Action.spec snacks.win.Action|snacks.win.Action.fn
 ---@class snacks.win.Action
@@ -46,6 +53,12 @@ M.meta = {
 ---@field show? boolean Show the window immediately (default: true)
 ---@field height? number|fun(self:snacks.win):number Height of the window. Use <1 for relative height. 0 means full height. (default: 0.9)
 ---@field width? number|fun(self:snacks.win):number Width of the window. Use <1 for relative width. 0 means full width. (default: 0.9)
+---@field min_height? number Minimum height of the window
+---@field max_height? number Maximum height of the window
+---@field min_width? number Minimum width of the window
+---@field max_width? number Maximum width of the window
+---@field col? number|fun(self:snacks.win):number Column of the window. Use <1 for relative column. (default: center)
+---@field row? number|fun(self:snacks.win):number Row of the window. Use <1 for relative row. (default: center)
 ---@field minimal? boolean Disable a bunch of options to make the window minimal (default: true)
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
 ---@field border? "none"|"top"|"right"|"bottom"|"left"|"rounded"|"single"|"double"|"solid"|"shadow"|string[]|false
@@ -728,6 +741,7 @@ function M:text(from, to)
   return table.concat(self:lines(from, to), "\n")
 end
 
+---@return { height: number, width: number }
 function M:parent_size()
   return {
     height = self.opts.relative == "win" and vim.api.nvim_win_get_height(self.opts.win) or vim.o.lines,
@@ -741,23 +755,17 @@ function M:win_opts()
   for _, k in ipairs(win_opts) do
     opts[k] = self.opts[k]
   end
-  local parent = self:parent_size()
-  opts.height = type(opts.height) == "function" and opts.height(self) or opts.height
-  opts.width = type(opts.width) == "function" and opts.width(self) or opts.width
-  -- Special case for 0, which means 100%
-  opts.height = opts.height == 0 and parent.height or opts.height
-  opts.width = opts.width == 0 and parent.width or opts.width
-  opts.height = math.floor(opts.height < 1 and parent.height * opts.height or opts.height)
-  opts.width = math.floor(opts.width < 1 and parent.width * opts.width or opts.width)
+
+  opts.border = opts.border and (borders[opts.border] or opts.border) or "none"
 
   if opts.relative == "cursor" then
-    return opts
+    self.opts.row = self.opts.row or 0
+    self.opts.col = self.opts.col or 0
   end
-  local border_offset = self:has_border() and 2 or 0
-  opts.row = opts.row and opts.row < 0 and parent.height + opts.row - opts.height + 1 or opts.row
-  opts.col = opts.col and opts.col < 0 and parent.width + opts.col - opts.width + 1 or opts.col
-  opts.row = opts.row or math.floor((parent.height - opts.height - border_offset) / 2)
-  opts.col = opts.col or math.floor((parent.width - opts.width - border_offset) / 2)
+
+  local dim = self:dim()
+  opts.height, opts.width = dim.height, dim.width
+  opts.row, opts.col = dim.row, dim.col
 
   if opts.title_pos and not opts.title then
     opts.title_pos = nil
@@ -765,10 +773,15 @@ function M:win_opts()
   if opts.footer_pos and not opts.footer then
     opts.footer_pos = nil
   end
+
   if vim.fn.has("nvim-0.10") == 0 then
     opts.footer, opts.footer_pos = nil, nil
   end
 
+  if not self:has_border() then
+    opts.title, opts.footer = nil, nil
+    opts.title_pos, opts.footer_pos = nil, nil
+  end
   return opts
 end
 
@@ -830,6 +843,64 @@ end
 
 function M:valid()
   return self:win_valid() and self:buf_valid() and vim.api.nvim_win_get_buf(self.win) == self.buf
+end
+
+---@param parent? snacks.win.Dim
+function M:dim(parent)
+  parent = parent or self:parent_size()
+  ---@type snacks.win.Dim
+  local ret = {
+    height = 0,
+    width = 0,
+    col = 0,
+    row = 0,
+    border = self:has_border(),
+  }
+
+  ---@param s? number|fun(win:snacks.win):number? size
+  ---@param ps number parent size
+  local function size(s, ps, border_offset)
+    s = type(s) == "function" and s(self) or s or 0
+    ---@cast s number
+    if s == 0 then -- full size
+      return ps - border_offset
+    elseif s < 1 then -- relative size
+      return math.floor(ps * s) - border_offset
+    end
+    return s
+  end
+
+  ---@param p? number|fun(win:snacks.win):number? pos
+  ---@param s number size
+  ---@param ps number parent size
+  local function pos(p, s, ps, border_offset)
+    p = type(p) == "function" and p(self) or p
+    if not p then -- center
+      return math.floor((ps - s) / 2) + border_offset
+    end
+    ---@cast p number
+    if p < 0 then -- negative position
+      return ps + p - border_offset
+    elseif p < 1 and p > 0 then -- relative position
+      return math.floor(ps * p) + border_offset
+    end
+    return p
+  end
+
+  local border = self:border_size()
+
+  ret.height = size(self.opts.height, parent.height, border.top + border.bottom)
+  ret.height = math.max(ret.height, self.opts.min_height or 0, 1)
+  ret.height = math.min(ret.height, self.opts.max_height or ret.height, parent.height)
+
+  ret.width = size(self.opts.width, parent.width, border.left + border.right)
+  ret.width = math.max(ret.width, self.opts.min_width or 0, 1)
+  ret.width = math.min(ret.width, self.opts.max_width or ret.width, parent.width)
+
+  ret.row = pos(self.opts.row, ret.height, parent.height, border.top)
+  ret.col = pos(self.opts.col, ret.width, parent.width, border.left)
+
+  return ret
 end
 
 return M
