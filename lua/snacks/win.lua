@@ -48,6 +48,7 @@ M.meta = {
 ---@field width? number|fun(self:snacks.win):number Width of the window. Use <1 for relative width. 0 means full width. (default: 0.9)
 ---@field minimal? boolean Disable a bunch of options to make the window minimal (default: true)
 ---@field position? "float"|"bottom"|"top"|"left"|"right"
+---@field border? "none"|"top"|"right"|"bottom"|"left"|"rounded"|"single"|"double"|"solid"|"shadow"|string[]|false
 ---@field buf? number If set, use this buffer instead of creating a new one
 ---@field file? string If set, use this file instead of creating a new buffer
 ---@field enter? boolean Enter the window after opening (default: false)
@@ -150,6 +151,14 @@ local win_opts = {
   "width",
   "win",
   "zindex",
+}
+
+---@type table<string, string[]>
+local borders = {
+  left = { "│", "", "", "", "", "", "│", "│" },
+  right = { "", "", "│", "│", "│", "", "", "" },
+  top = { "─", "─", "─", "", "", "", "", "" },
+  bottom = { "", "", "", "", "─", "─", "─", "" },
 }
 
 Snacks.util.set_hl({
