@@ -716,6 +716,19 @@ function M:has_border()
   return self.opts.border and self.opts.border ~= "" and self.opts.border ~= "none"
 end
 
+--- Calculate the size of the border
+function M:border_size()
+  local border = self.opts.border and self.opts.border ~= "" and self.opts.border ~= "none" and self.opts.border
+  local full = border and not vim.tbl_contains({ "top", "right", "bottom", "left" }, border)
+  ---@type { top: number, right: number, bottom: number, left: number }
+  return {
+    top = (full or border == "top") and 1 or 0,
+    right = (full or border == "right") and 1 or 0,
+    bottom = (full or border == "bottom") and 1 or 0,
+    left = (full or border == "left") and 1 or 0,
+  }
+end
+
 function M:border_text_width()
   if not self:has_border() then
     return 0
