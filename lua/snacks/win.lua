@@ -640,6 +640,7 @@ function M:show()
   return self
 end
 
+---@private
 function M:on_close()
   -- close the backdrop
   if self.backdrop then
