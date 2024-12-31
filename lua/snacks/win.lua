@@ -718,6 +718,7 @@ function M:drop()
     wo = {
       winhighlight = "Normal:" .. group,
       winblend = winblend,
+      colorcolumn = "",
     },
     bo = {
       buftype = "nofile",
