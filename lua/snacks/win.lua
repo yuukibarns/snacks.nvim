@@ -265,7 +265,7 @@ function M:close(opts)
   local buf = wipe and self.buf
 
   -- never close modified buffers
-  if buf and vim.bo[buf].modified then
+  if buf and vim.bo[buf].modified and vim.bo[buf].buftype == "" then
     if not pcall(vim.api.nvim_buf_delete, buf, { force = false }) then
       return
     end
