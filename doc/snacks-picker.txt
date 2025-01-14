@@ -193,39 +193,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
         },
       },
       win = {
-        list = {
-          keys = {
-            ["<CR>"] = "confirm",
-            ["gg"] = "list_top",
-            ["G"] = "list_bottom",
-            ["i"] = "focus_input",
-            ["j"] = "list_down",
-            ["k"] = "list_up",
-            ["q"] = "close",
-            ["<Tab>"] = "select_and_next",
-            ["<S-Tab>"] = "select_and_prev",
-            ["<Down>"] = "list_down",
-            ["<Up>"] = "list_up",
-            ["<c-d>"] = "list_scroll_down",
-            ["<c-u>"] = "list_scroll_up",
-            ["zt"] = "list_scroll_top",
-            ["zb"] = "list_scroll_bottom",
-            ["zz"] = "list_scroll_center",
-            ["/"] = "toggle_focus",
-            ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
-            ["<ScrollWheelUp>"] = "list_scroll_wheel_up",
-            ["<c-f>"] = "preview_scroll_down",
-            ["<c-b>"] = "preview_scroll_up",
-            ["<c-v>"] = "edit_vsplit",
-            ["<c-s>"] = "edit_split",
-            ["<c-j>"] = "list_down",
-            ["<c-k>"] = "list_up",
-            ["<c-n>"] = "list_down",
-            ["<c-p>"] = "list_up",
-            ["<a-w>"] = "cycle_win",
-            ["<Esc>"] = "close",
-          },
-        },
+        -- input window
         input = {
           keys = {
             ["<Esc>"] = "close",
@@ -268,6 +236,41 @@ Table of Contents                            *snacks-picker-table-of-contents*
             minipairs_disable = true,
           },
         },
+        -- result list window
+        list = {
+          keys = {
+            ["<CR>"] = "confirm",
+            ["gg"] = "list_top",
+            ["G"] = "list_bottom",
+            ["i"] = "focus_input",
+            ["j"] = "list_down",
+            ["k"] = "list_up",
+            ["q"] = "close",
+            ["<Tab>"] = "select_and_next",
+            ["<S-Tab>"] = "select_and_prev",
+            ["<Down>"] = "list_down",
+            ["<Up>"] = "list_up",
+            ["<c-d>"] = "list_scroll_down",
+            ["<c-u>"] = "list_scroll_up",
+            ["zt"] = "list_scroll_top",
+            ["zb"] = "list_scroll_bottom",
+            ["zz"] = "list_scroll_center",
+            ["/"] = "toggle_focus",
+            ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
+            ["<ScrollWheelUp>"] = "list_scroll_wheel_up",
+            ["<c-f>"] = "preview_scroll_down",
+            ["<c-b>"] = "preview_scroll_up",
+            ["<c-v>"] = "edit_vsplit",
+            ["<c-s>"] = "edit_split",
+            ["<c-j>"] = "list_down",
+            ["<c-k>"] = "list_up",
+            ["<c-n>"] = "list_down",
+            ["<c-p>"] = "list_up",
+            ["<a-w>"] = "cycle_win",
+            ["<Esc>"] = "close",
+          },
+        },
+        -- preview window
         preview = {
           minimal = false,
           wo = {
@@ -457,13 +460,6 @@ TROUBLE                                       *snacks-picker-examples-trouble*
 4. Types                                                 *snacks-picker-types*
 
 >lua
-    ---@class snacks.picker.Last
-    ---@field opts snacks.picker.Config
-    ---@field selected snacks.picker.Item[]
-    ---@field filter snacks.picker.Filter
-<
-
->lua
     ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number}
     ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean}
     ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -532,6 +528,13 @@ Generic filter used by finders to pre-filter items
     ---@field input? snacks.win.Config|{}
     ---@field list? snacks.win.Config|{}
     ---@field preview? snacks.win.Config|{}
+<
+
+>lua
+    ---@class snacks.picker.Last
+    ---@field opts snacks.picker.Config
+    ---@field selected snacks.picker.Item[]
+    ---@field filter snacks.picker.Filter
 <
 
 
