@@ -7,16 +7,17 @@ local M = {}
 ---@alias snacks.picker.preview fun(ctx: snacks.picker.preview.ctx):boolean?
 ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
 
----@class snacks.picker.finder.Item: snacks.picker.Item
----@field idx? number
----@field score? number
-
 --- Generic filter used by finders to pre-filter items
 ---@class snacks.picker.filter.Config
 ---@field cwd? boolean|string only show files for the given cwd
 ---@field buf? boolean|number only show items for the current or given buffer
 ---@field paths? table<string, boolean> only show items that include or exclude the given paths
 ---@field filter? fun(item:snacks.picker.finder.Item):boolean custom filter function
+
+---@class snacks.picker.matcher.Config
+---@field fuzzy? boolean use fuzzy matching (defaults to true)
+---@field smartcase? boolean use smartcase (defaults to true)
+---@field ignorecase? boolean use ignorecase (defaults to true)
 
 ---@class snacks.picker.Item
 ---@field [string] any
@@ -27,6 +28,10 @@ local M = {}
 ---@field pos? {[1]:number, [2]:number}
 ---@field end_pos? {[1]:number, [2]:number}
 ---@field highlights? snacks.picker.Highlight[][]
+
+---@class snacks.picker.finder.Item: snacks.picker.Item
+---@field idx? number
+---@field score? number
 
 ---@class snacks.picker.sources.Config
 
@@ -48,9 +53,9 @@ local M = {}
 ---@field preset? string|fun(source:string):string
 
 ---@class snacks.picker.win.Config
----@field input? snacks.win.Config|{}
----@field list? snacks.win.Config|{}
----@field preview? snacks.win.Config|{}
+---@field input? snacks.win.Config|{} input window config
+---@field list? snacks.win.Config|{} result list window config
+---@field preview? snacks.win.Config|{} preview window config
 
 ---@class snacks.picker.Config
 ---@field source? string source name and config to use
@@ -88,6 +93,7 @@ local defaults = {
   sources = {},
   layout = {
     cycle = true,
+    --- Use the default layout or vertical if the window is too narrow
     preset = function()
       return vim.o.columns >= 120 and "default" or "vertical"
     end,

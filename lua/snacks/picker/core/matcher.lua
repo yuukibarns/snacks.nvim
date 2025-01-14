@@ -17,11 +17,6 @@ M.INVERSE_SCORE = 1000
 local YIELD_MATCH = 5 -- ms
 local clear = require("table.clear")
 
----@class snacks.picker.matcher.Config
----@field fuzzy? boolean
----@field smartcase? boolean
----@field ignorecase? boolean
-
 ---@class snacks.picker.matcher.Mods
 ---@field pattern string
 ---@field entropy number higher entropy is less likely to match

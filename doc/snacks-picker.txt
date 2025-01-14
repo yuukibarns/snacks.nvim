@@ -3,18 +3,20 @@
 ==============================================================================
 Table of Contents                            *snacks-picker-table-of-contents*
 
-1. Setup                                                 |snacks-picker-setup|
-2. Config                                               |snacks-picker-config|
-3. Examples                                           |snacks-picker-examples|
+1. Features                                           |snacks-picker-features|
+2. Usage                                                 |snacks-picker-usage|
+3. Setup                                                 |snacks-picker-setup|
+4. Config                                               |snacks-picker-config|
+5. Examples                                           |snacks-picker-examples|
   - general                                   |snacks-picker-examples-general|
   - todo_comments                       |snacks-picker-examples-todo_comments|
   - trouble                                   |snacks-picker-examples-trouble|
-4. Types                                                 |snacks-picker-types|
-5. Module                                               |snacks-picker-module|
+6. Types                                                 |snacks-picker-types|
+7. Module                                               |snacks-picker-module|
   - Snacks.picker()                     |snacks-picker-module-snacks.picker()|
   - Snacks.picker.pick()           |snacks-picker-module-snacks.picker.pick()|
   - Snacks.picker.select()       |snacks-picker-module-snacks.picker.select()|
-6. Sources                                             |snacks-picker-sources|
+8. Sources                                             |snacks-picker-sources|
   - autocmds                                  |snacks-picker-sources-autocmds|
   - buffers                                    |snacks-picker-sources-buffers|
   - cliphist                                  |snacks-picker-sources-cliphist|
@@ -58,7 +60,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
   - resume                                      |snacks-picker-sources-resume|
   - search_history                      |snacks-picker-sources-search_history|
   - zoxide                                      |snacks-picker-sources-zoxide|
-7. Layouts                                             |snacks-picker-layouts|
+9. Layouts                                             |snacks-picker-layouts|
   - default                                    |snacks-picker-layouts-default|
   - dropdown                                  |snacks-picker-layouts-dropdown|
   - ivy                                            |snacks-picker-layouts-ivy|
@@ -66,7 +68,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
   - telescope                                |snacks-picker-layouts-telescope|
   - vertical                                  |snacks-picker-layouts-vertical|
   - vscode                                      |snacks-picker-layouts-vscode|
-8. snacks.picker.actions                 |snacks-picker-snacks.picker.actions|
+10. snacks.picker.actions                |snacks-picker-snacks.picker.actions|
   - Snacks.picker.actions.cmd()|snacks-picker-snacks.picker.actions-snacks.picker.actions.cmd()|
   - Snacks.picker.actions.copy()|snacks-picker-snacks.picker.actions-snacks.picker.actions.copy()|
   - Snacks.picker.actions.cycle_win()|snacks-picker-snacks.picker.actions-snacks.picker.actions.cycle_win()|
@@ -105,7 +107,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
   - Snacks.picker.actions.toggle_live()|snacks-picker-snacks.picker.actions-snacks.picker.actions.toggle_live()|
   - Snacks.picker.actions.toggle_maximize()|snacks-picker-snacks.picker.actions-snacks.picker.actions.toggle_maximize()|
   - Snacks.picker.actions.toggle_preview()|snacks-picker-snacks.picker.actions-snacks.picker.actions.toggle_preview()|
-9. snacks.picker.core.picker         |snacks-picker-snacks.picker.core.picker|
+11. snacks.picker.core.picker        |snacks-picker-snacks.picker.core.picker|
   - picker:action()  |snacks-picker-snacks.picker.core.picker-picker:action()|
   - picker:close()    |snacks-picker-snacks.picker.core.picker-picker:close()|
   - picker:count()    |snacks-picker-snacks.picker.core.picker-picker:count()|
@@ -121,9 +123,48 @@ Table of Contents                            *snacks-picker-table-of-contents*
   - picker:selected()|snacks-picker-snacks.picker.core.picker-picker:selected()|
   - picker:set_layout()|snacks-picker-snacks.picker.core.picker-picker:set_layout()|
   - picker:word()      |snacks-picker-snacks.picker.core.picker-picker:word()|
+12. Links                                                |snacks-picker-links|
+Snacks now comes with a modern fuzzy-finder to navigate the Neovim universe.
+
+
+
 
 ==============================================================================
-1. Setup                                                 *snacks-picker-setup*
+1. Features                                           *snacks-picker-features*
+
+- over 40 built-in sources <https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#-sources>
+- Fast and powerful fuzzy matching engine that supports the fzf <https://junegunn.github.io/fzf/search-syntax/> search syntax
+    - additionally supports field searches like `file:lua$ 'function`
+- uses **treesitter** highlighting where it makes sense
+- Sane default settings so you can start using it right away
+- Finders and matchers run asynchronously for maximum performance
+- Different layouts <https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#%EF%B8%8F-layouts> to suit your needs, or create your own.
+    Uses Snacks.layout <https://github.com/folke/snacks.nvim/blob/main/docs/layout.md>
+    under the hood.
+- Simple API to create your own pickers
+- Better `vim.ui.select`
+
+
+==============================================================================
+2. Usage                                                 *snacks-picker-usage*
+
+The best way to get started is to copy some of the example configs
+<https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#-examples>
+below.
+
+>lua
+    -- Show all pickers
+    Snacks.picker()
+    
+    -- run files picker (all three are equivalent)
+    Snacks.picker.files(opts)
+    Snacks.picker.pick("files", opts)
+    Snacks.picker.pick({source = "files", ...})
+<
+
+
+==============================================================================
+3. Setup                                                 *snacks-picker-setup*
 
 >lua
     -- lazy.nvim
@@ -142,7 +183,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
 
 
 ==============================================================================
-2. Config                                               *snacks-picker-config*
+4. Config                                               *snacks-picker-config*
 
 >lua
     ---@class snacks.picker.Config
@@ -181,6 +222,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
       sources = {},
       layout = {
         cycle = true,
+        --- Use the default layout or vertical if the window is too narrow
         preset = function()
           return vim.o.columns >= 120 and "default" or "vertical"
         end,
@@ -354,7 +396,7 @@ Table of Contents                            *snacks-picker-table-of-contents*
 
 
 ==============================================================================
-3. Examples                                           *snacks-picker-examples*
+5. Examples                                           *snacks-picker-examples*
 
 
 GENERAL                                       *snacks-picker-examples-general*
@@ -457,7 +499,7 @@ TROUBLE                                       *snacks-picker-examples-trouble*
 
 
 ==============================================================================
-4. Types                                                 *snacks-picker-types*
+6. Types                                                 *snacks-picker-types*
 
 >lua
     ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number}
@@ -466,12 +508,6 @@ TROUBLE                                       *snacks-picker-examples-trouble*
     ---@alias snacks.picker.format fun(item:snacks.picker.Item, picker:snacks.Picker):snacks.picker.Highlight[]
     ---@alias snacks.picker.preview fun(ctx: snacks.picker.preview.ctx):boolean?
     ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
-<
-
->lua
-    ---@class snacks.picker.finder.Item: snacks.picker.Item
-    ---@field idx? number
-    ---@field score? number
 <
 
 Generic filter used by finders to pre-filter items
@@ -485,6 +521,13 @@ Generic filter used by finders to pre-filter items
 <
 
 >lua
+    ---@class snacks.picker.matcher.Config
+    ---@field fuzzy? boolean use fuzzy matching (defaults to true)
+    ---@field smartcase? boolean use smartcase (defaults to true)
+    ---@field ignorecase? boolean use ignorecase (defaults to true)
+<
+
+>lua
     ---@class snacks.picker.Item
     ---@field [string] any
     ---@field idx number
@@ -494,6 +537,12 @@ Generic filter used by finders to pre-filter items
     ---@field pos? {[1]:number, [2]:number}
     ---@field end_pos? {[1]:number, [2]:number}
     ---@field highlights? snacks.picker.Highlight[][]
+<
+
+>lua
+    ---@class snacks.picker.finder.Item: snacks.picker.Item
+    ---@field idx? number
+    ---@field score? number
 <
 
 >lua
@@ -525,9 +574,9 @@ Generic filter used by finders to pre-filter items
 
 >lua
     ---@class snacks.picker.win.Config
-    ---@field input? snacks.win.Config|{}
-    ---@field list? snacks.win.Config|{}
-    ---@field preview? snacks.win.Config|{}
+    ---@field input? snacks.win.Config|{} input window config
+    ---@field list? snacks.win.Config|{} result list window config
+    ---@field preview? snacks.win.Config|{} preview window config
 <
 
 >lua
@@ -539,7 +588,7 @@ Generic filter used by finders to pre-filter items
 
 
 ==============================================================================
-5. Module                                               *snacks-picker-module*
+7. Module                                               *snacks-picker-module*
 
 >lua
     ---@class snacks.picker
@@ -593,7 +642,7 @@ Implementation for `vim.ui.select`
 
 
 ==============================================================================
-6. Sources                                             *snacks-picker-sources*
+8. Sources                                             *snacks-picker-sources*
 
 
 AUTOCMDS                                      *snacks-picker-sources-autocmds*
@@ -1333,7 +1382,7 @@ Open a project from zoxide
 
 
 ==============================================================================
-7. Layouts                                             *snacks-picker-layouts*
+9. Layouts                                             *snacks-picker-layouts*
 
 
 DEFAULT                                        *snacks-picker-layouts-default*
@@ -1504,7 +1553,7 @@ VSCODE                                          *snacks-picker-layouts-vscode*
 
 
 ==============================================================================
-8. snacks.picker.actions                 *snacks-picker-snacks.picker.actions*
+10. snacks.picker.actions                *snacks-picker-snacks.picker.actions*
 
 >lua
     ---@class snacks.picker.actions
@@ -1792,7 +1841,7 @@ SNACKS.PICKER.ACTIONS.TOGGLE_PREVIEW()*snacks-picker-snacks.picker.actions-snack
 
 
 ==============================================================================
-9. snacks.picker.core.picker         *snacks-picker-snacks.picker.core.picker*
+11. snacks.picker.core.picker        *snacks-picker-snacks.picker.core.picker*
 
 >lua
     ---@class snacks.Picker
@@ -1962,6 +2011,14 @@ Get the word under the cursor or the current visual selection
 >lua
     picker:word()
 <
+
+==============================================================================
+12. Links                                                *snacks-picker-links*
+
+1. *image*: https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d
+2. *image*: https://github.com/user-attachments/assets/3203aec4-7d75-4bca-b3d5-18d931277e4e
+3. *image*: https://github.com/user-attachments/assets/291dcf63-0c1d-4e9a-97cb-dd5503660e6f
+4. *image*: https://github.com/user-attachments/assets/976e0ed8-eb80-43e1-93ac-4683136c0a3c
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 

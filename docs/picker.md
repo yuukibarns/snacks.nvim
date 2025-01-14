@@ -1,5 +1,40 @@
 # 🍿 picker
 
+Snacks now comes with a modern fuzzy-finder to navigate the Neovim universe.
+
+![image](https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d)
+![image](https://github.com/user-attachments/assets/3203aec4-7d75-4bca-b3d5-18d931277e4e)
+![image](https://github.com/user-attachments/assets/291dcf63-0c1d-4e9a-97cb-dd5503660e6f)
+![image](https://github.com/user-attachments/assets/976e0ed8-eb80-43e1-93ac-4683136c0a3c)
+
+## ✨ Features
+
+- 🔎 over 40 [built-in sources](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#-sources)
+- 🚀 Fast and powerful fuzzy matching engine that supports the [fzf](https://junegunn.github.io/fzf/search-syntax/) search syntax
+  - additionally supports field searches like `file:lua$ 'function`
+- 🌲 uses **treesitter** highlighting where it makes sense
+- 🧹 Sane default settings so you can start using it right away
+- 💪 Finders and matchers run asynchronously for maximum performance
+- 🪟 Different [layouts](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#%EF%B8%8F-layouts) to suit your needs, or create your own.
+  Uses [Snacks.layout](https://github.com/folke/snacks.nvim/blob/main/docs/layout.md)
+  under the hood.
+- 💻 Simple API to create your own pickers
+- 📋 Better `vim.ui.select`
+
+## 📚 Usage
+
+The best way to get started is to copy some of the [example configs](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#-examples) below.
+
+```lua
+-- Show all pickers
+Snacks.picker()
+
+-- run files picker (all three are equivalent)
+Snacks.picker.files(opts)
+Snacks.picker.pick("files", opts)
+Snacks.picker.pick({source = "files", ...})
+```
+
 <!-- docgen -->
 
 ## 📦 Setup
@@ -58,6 +93,7 @@
   sources = {},
   layout = {
     cycle = true,
+    --- Use the default layout or vertical if the window is too narrow
     preset = function()
       return vim.o.columns >= 120 and "default" or "vertical"
     end,
@@ -345,12 +381,6 @@
 ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
 ```
 
-```lua
----@class snacks.picker.finder.Item: snacks.picker.Item
----@field idx? number
----@field score? number
-```
-
 Generic filter used by finders to pre-filter items
 
 ```lua
@@ -359,6 +389,13 @@ Generic filter used by finders to pre-filter items
 ---@field buf? boolean|number only show items for the current or given buffer
 ---@field paths? table<string, boolean> only show items that include or exclude the given paths
 ---@field filter? fun(item:snacks.picker.finder.Item):boolean custom filter function
+```
+
+```lua
+---@class snacks.picker.matcher.Config
+---@field fuzzy? boolean use fuzzy matching (defaults to true)
+---@field smartcase? boolean use smartcase (defaults to true)
+---@field ignorecase? boolean use ignorecase (defaults to true)
 ```
 
 ```lua
@@ -371,6 +408,12 @@ Generic filter used by finders to pre-filter items
 ---@field pos? {[1]:number, [2]:number}
 ---@field end_pos? {[1]:number, [2]:number}
 ---@field highlights? snacks.picker.Highlight[][]
+```
+
+```lua
+---@class snacks.picker.finder.Item: snacks.picker.Item
+---@field idx? number
+---@field score? number
 ```
 
 ```lua
@@ -402,9 +445,9 @@ Generic filter used by finders to pre-filter items
 
 ```lua
 ---@class snacks.picker.win.Config
----@field input? snacks.win.Config|{}
----@field list? snacks.win.Config|{}
----@field preview? snacks.win.Config|{}
+---@field input? snacks.win.Config|{} input window config
+---@field list? snacks.win.Config|{} result list window config
+---@field preview? snacks.win.Config|{} preview window config
 ```
 
 ## 📦 Module
