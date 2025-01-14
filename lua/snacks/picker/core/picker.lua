@@ -35,6 +35,8 @@ M._pickers = setmetatable({}, { __mode = "k" })
 M._active = {}
 
 ---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
 ---@field opts snacks.picker.Config
 ---@field selected snacks.picker.Item[]
 ---@field filter snacks.picker.Filter
@@ -93,7 +95,9 @@ function M.new(opts)
   M.last = {
     opts = self.opts,
     selected = {},
+    cursor = self.list.cursor,
     filter = self.input.filter,
+    topline = self.list.top,
   }
 
   self.source_name = Snacks.picker.util.title(self.opts.source or "search")
@@ -236,6 +240,12 @@ function M.resume()
   ret.list:set_selected(last.selected)
   ret.list:update()
   ret.input:update()
+  ret.matcher.task:on(
+    "done",
+    vim.schedule_wrap(function()
+      ret.list:view(last.cursor, last.topline)
+    end)
+  )
   return ret
 end
 
@@ -318,6 +328,8 @@ function M:close()
     return
   end
   M.last.selected = self:selected({ fallback = false })
+  M.last.cursor = self.list.cursor
+  M.last.topline = self.list.top
   self.closed = true
   Snacks.picker.current = nil
   local current = vim.api.nvim_get_current_win()
