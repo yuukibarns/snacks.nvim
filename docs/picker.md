@@ -5,6 +5,7 @@ Snacks now comes with a modern fuzzy-finder to navigate the Neovim universe.
 ![image](https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d)
 ![image](https://github.com/user-attachments/assets/3203aec4-7d75-4bca-b3d5-18d931277e4e)
 ![image](https://github.com/user-attachments/assets/291dcf63-0c1d-4e9a-97cb-dd5503660e6f)
+![image](https://github.com/user-attachments/assets/1aba5737-a650-4a00-94f8-033b7d8d21ba)
 ![image](https://github.com/user-attachments/assets/976e0ed8-eb80-43e1-93ac-4683136c0a3c)
 
 ## ✨ Features
