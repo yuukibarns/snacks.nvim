@@ -22,6 +22,12 @@ Snacks now comes with a modern fuzzy-finder to navigate the Neovim universe.
 - 💻 Simple API to create your own pickers
 - 📋 Better `vim.ui.select`
 
+Some acknowledgements:
+
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua)
+- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+- [mini.pick](https://github.com/echasnovski/mini.pick)
+
 ## 📚 Usage
 
 The best way to get started is to copy some of the [example configs](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#-examples) below.
@@ -111,6 +117,9 @@ Snacks.picker.pick({source = "files", ...})
     input = {
       keys = {
         ["<Esc>"] = "close",
+        -- to close the picker on ESC instead of going to normal mode,
+        -- add the following keymap to your config
+        -- ["<Esc>"] = { "close", mode = { "n", "i" } },
         ["<CR>"] = "confirm",
         ["G"] = "list_bottom",
         ["gg"] = "list_top",
@@ -446,6 +455,8 @@ Generic filter used by finders to pre-filter items
 
 ```lua
 ---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
 ---@field opts snacks.picker.Config
 ---@field selected snacks.picker.Item[]
 ---@field filter snacks.picker.Filter

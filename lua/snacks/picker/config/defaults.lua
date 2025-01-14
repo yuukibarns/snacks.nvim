@@ -110,6 +110,9 @@ local defaults = {
     input = {
       keys = {
         ["<Esc>"] = "close",
+        -- to close the picker on ESC instead of going to normal mode,
+        -- add the following keymap to your config
+        -- ["<Esc>"] = { "close", mode = { "n", "i" } },
         ["<CR>"] = "confirm",
         ["G"] = "list_bottom",
         ["gg"] = "list_top",
