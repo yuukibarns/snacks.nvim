@@ -24,7 +24,7 @@ local ns_loc = vim.api.nvim_create_namespace("snacks.picker.preview.loc")
 ---@param main? number
 function M.new(opts, main)
   local self = setmetatable({}, M)
-  self.winhl = Snacks.picker.highlight.winhl("SnacksPickerPreview")
+  self.winhl = Snacks.picker.highlight.winhl("SnacksPickerPreview", { CursorLine = "Visual" })
   local win_opts = Snacks.win.resolve(
     {
       title_pos = "center",
