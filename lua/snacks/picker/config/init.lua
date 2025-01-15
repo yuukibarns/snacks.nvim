@@ -7,6 +7,7 @@ M.alias = {
   find_files = "files",
   git_commits = "git_log",
   git_bcommits = "git_log_file",
+  oldfiles = "recent",
 }
 
 ---@param opts? snacks.picker.Config
@@ -18,14 +19,14 @@ function M.get(opts)
   local defaults = require("snacks.picker.config.defaults").defaults
   defaults.sources = sources
   local user = Snacks.config.picker or {}
-  local source = M.alias[opts.source] or opts.source
+  opts.source = M.alias[opts.source] or opts.source
 
   local global = Snacks.config.get("picker", defaults, opts) -- defaults + global user config
   ---@type snacks.picker.Config[]
   local todo = {
     defaults,
     user,
-    source and global.sources[source] or {},
+    opts.source and global.sources[opts.source] or {},
     opts,
   }
 
