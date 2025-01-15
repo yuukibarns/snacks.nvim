@@ -19,7 +19,7 @@ function M.severity(item, picker)
 end
 
 ---@param item snacks.picker.Item
-function M.filename(item)
+function M.filename(item, picker)
   ---@type snacks.picker.Highlight[]
   local ret = {}
   if not item.file then
@@ -35,8 +35,10 @@ function M.filename(item)
     cat = "directory"
   end
 
-  local icon, hl = Snacks.util.icon(name, cat)
-  ret[#ret + 1] = { icon .. " ", hl, virtual = true }
+  if picker.opts.icons.files.enabled ~= false then
+    local icon, hl = Snacks.util.icon(name, cat)
+    ret[#ret + 1] = { icon .. " ", hl, virtual = true }
+  end
 
   local dir, file = path:match("^(.*)/(.+)$")
   if dir then
@@ -70,7 +72,7 @@ function M.file(item, picker)
     table.insert(ret, 2, { " ", virtual = true })
   end
 
-  vim.list_extend(ret, M.filename(item))
+  vim.list_extend(ret, M.filename(item, picker))
 
   if item.comment then
     table.insert(ret, { item.comment, "SnacksPickerComment" })
@@ -216,7 +218,8 @@ function M.diagnostic(item, picker)
     vim.list_extend(ret, M.severity(item, picker))
   end
 
-  ret[#ret + 1] = { diag.message }
+  local message = diag.message:gsub("\n", " ")
+  ret[#ret + 1] = { message }
   Snacks.picker.highlight.markdown(ret)
   ret[#ret + 1] = { " " }
 
@@ -270,7 +273,7 @@ function M.man(item)
 end
 
 -- Pretty keymaps using which-key icons when available
-function M.keymap(item)
+function M.keymap(item, picker)
   local ret = {} ---@type snacks.picker.Highlight[]
   ---@type vim.api.keyset.get_keymap
   local k = item.item
@@ -333,12 +336,12 @@ function M.keymap(item)
 
   if item.file then
     ret[#ret + 1] = { " " }
-    vim.list_extend(ret, M.filename(item))
+    vim.list_extend(ret, M.filename(item, picker))
   end
   return ret
 end
 
-function M.git_status(item)
+function M.git_status(item, picker)
   local ret = {} ---@type snacks.picker.Highlight[]
   local a = Snacks.picker.util.align
   local s = vim.trim(item.status):sub(1, 1)
@@ -353,7 +356,7 @@ function M.git_status(item)
   local hl = hls[s] or "SnacksPickerGitStatus"
   ret[#ret + 1] = { a(item.status, 2, { align = "right" }), hl }
   ret[#ret + 1] = { " " }
-  vim.list_extend(ret, M.filename(item))
+  vim.list_extend(ret, M.filename(item, picker))
   return ret
 end
 
@@ -368,13 +371,13 @@ function M.register(item)
   return ret
 end
 
-function M.buffer(item)
+function M.buffer(item, picker)
   local ret = {} ---@type snacks.picker.Highlight[]
   ret[#ret + 1] = { Snacks.picker.util.align(tostring(item.buf), 3), "SnacksPickerBufNr" }
   ret[#ret + 1] = { " " }
   ret[#ret + 1] = { Snacks.picker.util.align(item.flags, 2, { align = "right" }), "SnacksPickerBufFlags" }
   ret[#ret + 1] = { " " }
-  vim.list_extend(ret, M.filename(item))
+  vim.list_extend(ret, M.filename(item, picker))
   return ret
 end
 

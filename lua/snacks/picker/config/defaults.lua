@@ -206,6 +206,9 @@ local defaults = {
   ---@class snacks.picker.icons
     -- stylua: ignore
   icons = {
+    files = {
+      enabled = true, -- show file icons
+    },
     indent = {
       vertical    = "│ ",
       middle = "├╴",
