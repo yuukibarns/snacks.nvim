@@ -5,7 +5,6 @@ local Async = require("snacks.picker.util.async")
 ---@field mods snacks.picker.matcher.Mods[][]
 ---@field one? snacks.picker.matcher.Mods
 ---@field pattern string
----@field min_score number
 ---@field tick number
 ---@field task snacks.picker.Async
 ---@field live? boolean
@@ -19,6 +18,7 @@ local clear = require("table.clear")
 
 ---@class snacks.picker.matcher.Mods
 ---@field pattern string
+---@field chars string[]
 ---@field entropy number higher entropy is less likely to match
 ---@field field? string
 ---@field ignorecase? boolean
@@ -49,7 +49,6 @@ function M.new(opts)
     ignorecase = true,
   }, opts or {})
   self.pattern = ""
-  self.min_score = 0
   self.task = Async.nop()
   self.mods = {}
   self.tick = 0
@@ -123,7 +122,6 @@ function M:init(opts)
   self.tick = self.tick + 1
   local pattern = vim.trim(opts.pattern or self.pattern)
   self.mods = {}
-  self.min_score = 0
   self.pattern = pattern
   self:abort()
   self.one = nil
@@ -165,7 +163,7 @@ end
 ---@return snacks.picker.matcher.Mods
 function M:_prepare(pattern)
   ---@type snacks.picker.matcher.Mods
-  local mods = { pattern = pattern, entropy = 0 }
+  local mods = { pattern = pattern, entropy = 0, chars = {} }
   local field, p = pattern:match("^([%w_]+):(.*)$")
   if field then
     mods.field = field
@@ -210,6 +208,9 @@ function M:_prepare(pattern)
   if not mods.ignorecase and not is_lower then
     mods.entropy = mods.entropy * 2
   end
+  for c = 1, #mods.pattern do
+    mods.chars[c] = mods.pattern:sub(c, c)
+  end
   return mods
 end
 
@@ -224,52 +225,71 @@ function M:update(item)
   return true
 end
 
+--- Matches an item and returns the score.
+--- Score is 0 if no match is found.
 ---@param item snacks.picker.Item
----@param opts? {positions: boolean}
----@return number score, number[]? positions
-function M:match(item, opts)
-  opts = opts or {}
+function M:match(item)
   if self:empty() then
     return M.DEFAULT_SCORE -- empty pattern matches everything
   end
-  local score = 0
-  local positions = opts.positions and {} or nil ---@type number[]?
+  local score, s = 0, nil
+  -- fast path for single pattern
   if self.one then
-    score = self:_match(item, self.one, positions) or 0
-    return score, positions
+    return self:_match(item, self.one) or 0
   end
-  for _, ors in ipairs(self.mods) do
-    local s = 0 ---@type number?
-    local p = opts.positions and {} or nil ---@type number[]?
-    if #ors == 1 then
-      s = self:_match(item, ors[1], p)
+  for _, any in ipairs(self.mods) do
+    -- fast path for single OR pattern
+    if #any == 1 then
+      s = self:_match(item, any[1])
     else
-      for _, mods in ipairs(ors) do
-        s = self:_match(item, mods, p)
+      for _, mods in ipairs(any) do
+        s = self:_match(item, mods)
         if s then
           break
         end
       end
     end
-    if s then
-      score, positions = M:merge(score, positions, s, p)
-    else
+    if not s then
       return 0
     end
+    score = score + s
   end
-  return score, positions
+  return score
 end
 
----@param score_a? number
----@param positions_a? number[]
----@param score_b? number
----@param positions_b? number[]
-function M:merge(score_a, positions_a, score_b, positions_b)
-  local positions = positions_a or positions_b
-  if positions_a and positions_b then
-    table.move(positions_b, 1, #positions_b, #positions + 1, positions)
+--- Returns the positions of the matched pattern in the item.
+--- All search patterns are combined with OR.
+---@param item snacks.picker.Item
+function M:positions(item)
+  local all = {} ---@type snacks.picker.matcher.Mods[]
+  local ret = {} ---@type number[]
+  for _, any in ipairs(self.mods) do
+    vim.list_extend(all, any)
   end
-  return score_a + score_b, positions
+  for _, mods in ipairs(all) do
+    local _, from, to, str = self:_match(item, mods)
+    if from and to and str then
+      if mods.fuzzy then
+        vim.list_extend(ret, self:fuzzy_positions(str, mods.chars, from))
+      else
+        for c = from, to do
+          ret[#ret + 1] = c
+        end
+      end
+    end
+  end
+  return ret
+end
+
+---@param str string
+---@param pattern string[]
+---@param from number
+function M:fuzzy_positions(str, pattern, from)
+  local ret = { from } ---@type number[]
+  for i = 2, #pattern do
+    ret[#ret + 1] = string.find(str, pattern[i], ret[#ret] + 1, true)
+  end
+  return ret
 end
 
 ---@param str string
@@ -281,14 +301,13 @@ end
 
 ---@param item snacks.picker.Item
 ---@param mods snacks.picker.matcher.Mods
----@param positions? number[]
----@return number? score
-function M:_match(item, mods, positions)
+---@return number? score, number? from, number? to, string? str
+function M:_match(item, mods)
   local str = item.text
   if mods.field then
     if item[mods.field] == nil then
       if mods.inverse then
-        return M.INVERSE_SCORE
+        return 0, 0
       end
       return
     end
@@ -296,51 +315,40 @@ function M:_match(item, mods, positions)
   end
 
   str = mods.ignorecase and str:lower() or str
-  if mods.fuzzy then
-    return self:fuzzy(str, mods.pattern, positions)
-  end
   local from, to ---@type number?, number?
-  if mods.exact_prefix then
-    if str:sub(1, #mods.pattern) == mods.pattern then
-      from, to = 1, #mods.pattern
-    end
-  elseif mods.exact_suffix then
-    if str:sub(-#mods.pattern) == mods.pattern then
-      from, to = #str - #mods.pattern + 1, #str
-    end
+  if mods.fuzzy then
+    from, to = self:fuzzy(str, mods.chars)
   else
-    from, to = str:find(mods.pattern, 1, true)
-
-    -- word match
-    while mods.word and from and to do
-      local bound_left = from == 1 or not M.is_alpha(str, from - 1)
-      local bound_right = to == #str or not M.is_alpha(str, to + 1)
-      if bound_left and bound_right then
-        break
+    if mods.exact_prefix then
+      if str:sub(1, #mods.pattern) == mods.pattern then
+        from, to = 1, #mods.pattern
       end
-      from, to = str:find(mods.pattern, to + 1, true)
+    elseif mods.exact_suffix then
+      if str:sub(-#mods.pattern) == mods.pattern then
+        from, to = #str - #mods.pattern + 1, #str
+      end
+    else
+      from, to = str:find(mods.pattern, 1, true)
+      -- word match
+      while mods.word and from and to do
+        local bound_left = from == 1 or not M.is_alpha(str, from - 1)
+        local bound_right = to == #str or not M.is_alpha(str, to + 1)
+        if bound_left and bound_right then
+          break
+        end
+        from, to = str:find(mods.pattern, to + 1, true)
+      end
+    end
+    if mods.inverse then
+      if not from then
+        return 0, 0
+      end
+      return
     end
   end
-  if mods.inverse then
-    if not from then
-      return M.INVERSE_SCORE
-    end
-    return
-  end
-  if from and to then
-    if positions then
-      M.positions(from, to, positions)
-    end
-    return self.score(from, to, #str)
-  end
-end
-
----@param from number
----@param to number
----@param positions number[]
-function M.positions(from, to, positions)
-  for i = from, to do
-    table.insert(positions, i)
+  if from then
+    ---@cast to number
+    return M.score(from, to, #str), from, to, str
   end
 end
 
@@ -354,105 +362,47 @@ function M.score(from, to, len)
 end
 
 ---@param str string
----@param pattern string
----@param positions? number[]
----@return number? score
-function M:fuzzy_fast(str, pattern, positions)
-  local n, m, p, c = #str, #pattern, 1, 1
-  positions = positions or M.clear(fuzzy_fast_positions)
-  while c <= n and p <= m do
-    local pos = str:find(pattern:sub(p, p), c, true)
-    if not pos then
-      break
-    end
-    positions[p] = pos
-    p = p + 1
-    c = pos + 1
+---@param pattern string[]
+---@param init? number
+---@return number? from, number? to
+function M:fuzzy_find(str, pattern, init)
+  local from = string.find(str, pattern[1], init or 1, true)
+  if not from then
+    return
   end
-  return p > m and M.score(positions[1], positions[m], n) or nil
+  ---@type number?, number
+  local last, n = from, #pattern
+  for i = 2, n do
+    last = string.find(str, pattern[i], last + 1, true)
+    if not last then
+      return
+    end
+  end
+  return from, last
 end
 
 --- Does a forward scan followed by a backward scan for each end position,
 --- to find the best match.
 ---@param str string
----@param pattern string
----@param best_positions? number[]
----@return number? score
-function M:fuzzy(str, pattern, best_positions)
-  local n, m, p, c = #str, #pattern, 1, 1
-  -- Find last char positions first for early exit
-  best_positions = best_positions or M.clear(fuzzy_best_positions)
-  local best_score = -1
-
-  -- initial forward scan
-  while c <= n and p <= m do
-    local pos = str:find(pattern:sub(p, p), c, true)
-    if not pos then
-      break
-    end
-    best_positions[p] = pos
-    p = p + 1
-    c = pos + 1
-  end
-
-  -- no full match
-  if p <= m then
+---@param pattern string[]
+---@return number? from, number? to
+function M:fuzzy(str, pattern)
+  local from, to = self:fuzzy_find(str, pattern)
+  if not from then
     return
+  elseif from == to then
+    return from, to
   end
 
-  -- calculate score for the initial match
-  best_score = M.score(best_positions[1], best_positions[m], n)
-
-  -- early exit for exact match
-  if best_positions[m] - best_positions[1] + 1 == m then
-    return best_score
-  end
-
-  -- find all last positions
-  local last_positions = M.clear(fuzzy_last_positions)
-  last_positions[1] = best_positions[m]
-  local last_p = pattern:sub(m, m)
-  while c <= n do
-    local pos = str:find(last_p, c, true)
-    if not pos then
-      break
+  local best_from, best_to, best_width = from, to, to - from
+  repeat
+    local width = to - from
+    if width < best_width then
+      best_from, best_to, best_width = from, to, width
     end
-    table.insert(last_positions, pos)
-    c = pos + 1
-  end
-
-  local rev = str:reverse()
-
-  -- backward scan from last positions to refine the match
-  local positions = M.clear(fuzzy_positions)
-  local best = best_positions
-  for _, last in ipairs(last_positions) do
-    p = m - 1 -- Start from the second last character of the pattern
-    positions[m] = last
-    c = n - last + 1
-    local score = 0
-    while c > 0 and p > 0 do
-      local pos = rev:find(pattern:sub(p, p), c, true)
-      local from = n - pos + 1
-      score = M.score(from, last, n)
-      if score <= best_score then
-        break
-      end
-      positions[p] = from
-      p = p - 1
-      c = pos + 1
-    end
-    if score > best_score then
-      best_score = score
-      positions, best = best, positions
-    end
-  end
-
-  if best ~= best_positions then
-    table.move(best, 1, m, 1, best_positions)
-  end
-
-  return best_score
+    from, to = self:fuzzy_find(str, pattern, from + 1)
+  until not from
+  return best_from, best_to
 end
 
 return M

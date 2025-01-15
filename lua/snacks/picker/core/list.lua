@@ -377,11 +377,8 @@ function M:format(item)
     end
   end
   local str = table.concat(parts, ""):gsub("\n", " ")
-  local _, positions = self.matcher:match({ text = str:gsub("%s*$", ""), idx = 1, score = 0 }, {
-    positions = true,
-    force = true,
-  })
-  for _, pos in ipairs(positions or {}) do
+  local positions = self.matcher:positions({ text = str:gsub("%s*$", ""), idx = 1, score = 0 })
+  for _, pos in ipairs(positions) do
     table.insert(ret, {
       col = pos - 1,
       end_col = pos,

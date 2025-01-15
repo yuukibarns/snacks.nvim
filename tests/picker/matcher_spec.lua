@@ -71,21 +71,24 @@ describe("fuzzy matching", function()
   for t, test in ipairs(tests) do
     it("should find optimal match for " .. t, function()
       matcher:init({ pattern = test[2] })
-      local score, positions = matcher:match({ text = test[1], idx = 1, score = 0 }, { positions = true })
+      local item = { text = test[1], idx = 1, score = 0 }
+      local score = matcher:match(item)
       assert(score and score > 0, "no match found")
+      local positions = matcher:positions(item)
       assert.are.same(test[3], positions)
     end)
   end
 
   local patterns = { "snacks", "lua", "sgbs", "mark", "dcs", "xxx", "lsw" }
-  local algos = { "fuzzy", "fuzzy_fast" }
+  local algos = { "fuzzy", "fuzzy_find" }
   for _, pattern in ipairs(patterns) do
+    local chars = vim.split(pattern, "")
     local expect = fuzzy(pattern)
     for _, algo in ipairs(algos) do
       it(("should find fuzzy matches for %q with %s"):format(pattern, algo), function()
         local matches = {} ---@type string[]
         for _, file in ipairs(M.files) do
-          if matcher[algo](matcher, file, pattern) then
+          if matcher[algo](matcher, file, chars) then
             table.insert(matches, file)
           end
         end
