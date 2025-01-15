@@ -74,8 +74,8 @@ Snacks.picker.pick({source = "files", ...})
 ---@field ui_select? boolean set `vim.ui.select` to a snacks picker
 --- Source definition
 ---@field items? snacks.picker.finder.Item[] items to show instead of using a finder
----@field format? snacks.picker.format|string format function or preset
----@field finder? snacks.picker.finder|string finder function or preset
+---@field format? string|snacks.picker.format|string format function or preset
+---@field finder? string|snacks.picker.finder|snacks.picker.finder.multi finder function or preset
 ---@field preview? snacks.picker.preview|string preview function or preset
 ---@field matcher? snacks.picker.matcher.Config matcher config
 ---@field sort? snacks.picker.sort|snacks.picker.sort.Config sort function or config
@@ -381,6 +381,15 @@ Snacks.picker.pick({source = "files", ...})
 ## 📚 Types
 
 ```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -456,15 +465,6 @@ Generic filter used by finders to pre-filter items
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
 ```
 
 ## 📦 Module
@@ -1629,8 +1629,6 @@ Snacks.picker.actions.toggle_maximize(picker)
 Snacks.picker.actions.toggle_preview(picker)
 ```
 
-
-
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -1787,3 +1785,5 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
+
+
