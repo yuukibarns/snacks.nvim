@@ -129,6 +129,7 @@ Snacks.picker.pick({source = "files", ...})
         ["q"] = "close",
         ["?"] = "toggle_help",
         ["<a-d>"] = { "inspect", mode = { "n", "i" } },
+        ["<c-a>"] = { "select_all", mode = { "n", "i" } },
         ["<a-m>"] = { "toggle_maximize", mode = { "i", "n" } },
         ["<a-p>"] = { "toggle_preview", mode = { "i", "n" } },
         ["<a-w>"] = { "cycle_win", mode = { "i", "n" } },
@@ -183,6 +184,7 @@ Snacks.picker.pick({source = "files", ...})
         ["/"] = "toggle_focus",
         ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
         ["<ScrollWheelUp>"] = "list_scroll_wheel_up",
+        ["<c-a>"] = "select_all",
         ["<c-f>"] = "preview_scroll_down",
         ["<c-b>"] = "preview_scroll_up",
         ["<c-v>"] = "edit_vsplit",
@@ -1573,6 +1575,15 @@ Snacks.picker.actions.qflist(picker)
 
 ```lua
 Snacks.picker.actions.search(picker, item)
+```
+
+### `Snacks.picker.actions.select_all()`
+
+Selects all items in the list.
+Or clears the selection if all items are selected.
+
+```lua
+Snacks.picker.actions.select_all(picker)
 ```
 
 ### `Snacks.picker.actions.select_and_next()`
