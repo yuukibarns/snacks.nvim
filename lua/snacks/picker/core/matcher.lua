@@ -13,7 +13,7 @@ M.__index = M
 M.DEFAULT_SCORE = 1000
 M.INVERSE_SCORE = 1000
 
-local YIELD_MATCH = 5 -- ms
+local YIELD_MATCH = 1 -- ms
 
 ---@class snacks.picker.matcher.Mods
 ---@field pattern string
