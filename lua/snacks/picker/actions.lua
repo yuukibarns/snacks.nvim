@@ -146,6 +146,12 @@ function M.select_and_prev(picker)
   M.list_up(picker)
 end
 
+--- Selects all items in the list.
+--- Or clears the selection if all items are selected.
+function M.select_all(picker)
+  picker.list:select_all()
+end
+
 function M.cmd(picker, item)
   picker:close()
   if item and item.cmd then
