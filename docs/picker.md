@@ -212,11 +212,6 @@ Snacks.picker.pick({source = "files", ...})
     },
     -- preview window
     preview = {
-      minimal = false,
-      wo = {
-        cursorline = false,
-        colorcolumn = "",
-      },
       keys = {
         ["<Esc>"] = "close",
         ["q"] = "close",
