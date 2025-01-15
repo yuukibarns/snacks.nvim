@@ -163,6 +163,13 @@ M.git_status = {
   finder = "git_status",
   format = "git_status",
   preview = "git_status",
+  win = {
+    input = {
+      keys = {
+        ["<Tab>"] = { "git_stage", mode = { "n", "i" } },
+      },
+    },
+  },
 }
 
 ---@class snacks.picker.grep.Config: snacks.picker.proc.Config
