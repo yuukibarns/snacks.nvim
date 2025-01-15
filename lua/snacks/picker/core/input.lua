@@ -53,6 +53,13 @@ function M.new(picker)
       if not self.win:valid() then
         return
       end
+      -- only one line
+      -- Can happen when someone pastes a multiline string
+      if vim.api.nvim_buf_line_count(self.win.buf) > 1 then
+        local line = vim.trim(self.win:text():gsub("\n", " "))
+        vim.api.nvim_buf_set_lines(self.win.buf, 0, -1, false, { line })
+        vim.api.nvim_win_set_cursor(self.win.win, { 1, #line + 1 })
+      end
       vim.bo[self.win.buf].modified = false
       local pattern = self:get()
       if self.picker.opts.live then
