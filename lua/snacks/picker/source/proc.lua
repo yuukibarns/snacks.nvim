@@ -5,13 +5,15 @@ local M = {}
 local uv = vim.uv or vim.loop
 M.USE_QUEUE = true
 
+---@alias snacks.picker.transform fun(item:snacks.picker.finder.Item):(false|snacks.picker.finder.Item?)
+
 ---@class snacks.picker.proc.Config: snacks.picker.Config
 ---@field cmd string
 ---@field args? string[]
 ---@field env? table<string, string>
 ---@field cwd? string
 ---@field notify? boolean Notify on failure
----@field transform? fun(item: snacks.picker.finder.Item): boolean?
+---@field transform? snacks.picker.transform
 
 ---@param opts snacks.picker.proc.Config
 ---@return fun(cb:async fun(item:snacks.picker.finder.Item))
@@ -22,7 +24,9 @@ function M.proc(opts)
     if opts.transform then
       local _cb = cb
       cb = function(item)
-        if opts.transform(item) ~= false then
+        local t = opts.transform(item)
+        item = type(t) == "table" and t or item
+        if t ~= false then
           _cb(item)
         end
       end
