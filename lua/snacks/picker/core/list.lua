@@ -13,6 +13,7 @@
 ---@field reverse? boolean
 ---@field selected snacks.picker.Item[]
 ---@field selected_map table<string, snacks.picker.Item>
+---@field matcher snacks.picker.Matcher matcher for formatting list items
 local M = {}
 M.__index = M
 
@@ -35,6 +36,7 @@ function M.new(picker)
   self.picker = picker
   self.selected = {}
   self.selected_map = {}
+  self.matcher = require("snacks.picker.core.matcher").new(picker.opts.matcher)
   local win_opts = Snacks.win.resolve(picker.opts.win.list, {
     show = false,
     enter = false,
@@ -374,7 +376,7 @@ function M:format(item)
     end
   end
   local str = table.concat(parts, ""):gsub("\n", " ")
-  local _, positions = self.picker.matcher:match({ text = str:gsub("%s*$", ""), idx = 1, score = 0 }, {
+  local _, positions = self.matcher:match({ text = str:gsub("%s*$", ""), idx = 1, score = 0 }, {
     positions = true,
     force = true,
   })
@@ -424,6 +426,13 @@ function M:render()
     local lines = vim.split(string.rep("\n", self.state.height), "\n")
     vim.api.nvim_buf_set_lines(self.win.buf, 0, -1, false, lines)
 
+    -- matcher for highlighting should include the search filter
+    local pattern = vim.trim(self.picker.input.filter.pattern .. " " .. self.picker.input.filter.search)
+    if self.matcher.pattern ~= pattern then
+      self.matcher:init({ pattern = pattern })
+    end
+
+    -- render items
     for i = self.top, math.min(self:count(), self.top + height - 1) do
       local item = assert(self:get(i), "item not found")
       local row = self:idx2row(i)

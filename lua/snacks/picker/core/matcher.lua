@@ -52,7 +52,6 @@ function M.new(opts)
   self.min_score = 0
   self.task = Async.nop()
   self.mods = {}
-  self.live = false
   self.tick = 0
   return self
 end
@@ -118,7 +117,7 @@ function M:run(picker, opts)
   end)
 end
 
----@param opts? {pattern?: string, live?: boolean}
+---@param opts? {pattern?: string}
 function M:init(opts)
   opts = opts or {}
   self.tick = self.tick + 1
@@ -128,7 +127,6 @@ function M:init(opts)
   self.pattern = pattern
   self:abort()
   self.one = nil
-  self.live = opts.live
   if pattern == "" then
     return
   end
@@ -227,11 +225,11 @@ function M:update(item)
 end
 
 ---@param item snacks.picker.Item
----@param opts? {positions: boolean, force?: boolean}
+---@param opts? {positions: boolean}
 ---@return number score, number[]? positions
 function M:match(item, opts)
   opts = opts or {}
-  if self:empty() or (self.live and not opts.force) then
+  if self:empty() then
     return M.DEFAULT_SCORE -- empty pattern matches everything
   end
   local score = 0
