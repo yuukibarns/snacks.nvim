@@ -107,6 +107,9 @@ Snacks.picker.pick({source = "files", ...})
   },
   ui_select = true, -- replace `vim.ui.select` with the snacks picker
   previewers = {
+    git = {
+      native = false, -- use native (terminal) or Neovim for previewing git diffs and commits
+    },
     file = {
       max_size = 1024 * 1024, -- 1MB
       max_line_length = 500,
@@ -383,15 +386,6 @@ Snacks.picker.pick({source = "files", ...})
 ## 📚 Types
 
 ```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -443,6 +437,7 @@ Generic filter used by finders to pre-filter items
 ---@class snacks.picker.preview.Config
 ---@field man_pager? string MANPAGER env to use for `man` preview
 ---@field file snacks.picker.preview.file.Config
+---@field git snacks.picker.preview.git.Config
 ```
 
 ```lua
@@ -450,6 +445,11 @@ Generic filter used by finders to pre-filter items
 ---@field max_size? number default 1MB
 ---@field max_line_length? number defaults to 500
 ---@field ft? string defaults to auto-detect
+```
+
+```lua
+---@class snacks.picker.preview.git.Config
+---@field native? boolean use terminal or Neovim for previewing git diffs and commits
 ```
 
 ```lua
@@ -467,6 +467,15 @@ Generic filter used by finders to pre-filter items
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
 ```
 
 ## 📦 Module
@@ -1640,6 +1649,8 @@ Snacks.picker.actions.toggle_maximize(picker)
 Snacks.picker.actions.toggle_preview(picker)
 ```
 
+
+
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -1796,5 +1807,3 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
-
-
