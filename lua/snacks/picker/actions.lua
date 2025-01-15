@@ -88,7 +88,7 @@ end
 function M.qflist(picker)
   picker:close()
   local sel = picker:selected()
-  local items = #sel > 0 and sel or picker.finder.items
+  local items = #sel > 0 and sel or picker:items()
   setqflist(items)
 end
 
@@ -96,7 +96,7 @@ end
 function M.loclist(picker)
   picker:close()
   local sel = picker:selected()
-  local items = #sel > 0 and sel or picker.finder.items
+  local items = #sel > 0 and sel or picker:items()
   setqflist(items, { win = picker.main })
 end
 
