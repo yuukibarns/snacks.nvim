@@ -1745,7 +1745,7 @@ picker:is_active()
 
 ### `picker:items()`
 
-Get all finder items
+Get all filtered items in the picker.
 
 ```lua
 picker:items()
@@ -1753,7 +1753,7 @@ picker:items()
 
 ### `picker:iter()`
 
-Returns an iterator over the items in the picker.
+Returns an iterator over the filtered items in the picker.
 Items will be in sorted order.
 
 ```lua
