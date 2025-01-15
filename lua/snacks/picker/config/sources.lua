@@ -172,6 +172,8 @@ M.git_status = {
 ---@field dirs? string[] directories to search
 ---@field follow? boolean follow symlinks
 ---@field glob? string|string[] glob file pattern(s)
+---@field ft? string|string[] ripgrep file type(s). See `rg --type-list`
+---@field regex? boolean use regex search pattern (defaults to `true`)
 ---@field buffers? boolean search in open buffers
 ---@field need_search? boolean require a search pattern
 M.grep = {

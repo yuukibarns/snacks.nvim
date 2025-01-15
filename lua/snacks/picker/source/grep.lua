@@ -41,6 +41,17 @@ local function get_cmd(opts, filter)
     args[#args + 1] = "-L"
   end
 
+  local types = type(opts.ft) == "table" and opts.ft or { opts.ft }
+  ---@cast types string[]
+  for _, t in ipairs(types) do
+    args[#args + 1] = "-t"
+    args[#args + 1] = t
+  end
+
+  if opts.regex == false then
+    args[#args + 1] = "--fixed-strings"
+  end
+
   local glob = type(opts.glob) == "table" and opts.glob or { opts.glob }
   ---@cast glob string[]
   for _, g in ipairs(glob) do
