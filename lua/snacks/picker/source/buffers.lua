@@ -6,6 +6,13 @@ local M = {}
 ---@param opts snacks.picker.buffers.Config
 ---@type snacks.picker.finder
 function M.buffers(opts, filter)
+  opts = vim.tbl_extend("force", {
+    hidden = false,
+    unloaded = true,
+    current = true,
+    nofile = false,
+    sort_lastused = true,
+  }, opts)
   local items = {} ---@type snacks.picker.finder.Item[]
   local current_buf = vim.api.nvim_get_current_buf()
   local alternate_buf = vim.fn.bufnr("#")

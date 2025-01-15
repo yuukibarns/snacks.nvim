@@ -9,6 +9,7 @@ local M = {}
 M.__index = M
 
 ---@alias snacks.picker.finder fun(opts:snacks.picker.Config, filter:snacks.picker.Filter): (snacks.picker.finder.Item[] | fun(cb:async fun(item:snacks.picker.finder.Item)))
+---@alias snacks.picker.finder.multi (snacks.picker.finder|string)[]
 
 local YIELD_FIND = 1 -- ms
 
@@ -41,7 +42,7 @@ end
 
 ---@param picker snacks.Picker
 function M:run(picker)
-  local score = require("snacks.picker.core.matcher").DEFAULT_SCORE
+  local default_score = require("snacks.picker.core.matcher").DEFAULT_SCORE
   self.task:abort()
   self.items = {}
   local yield ---@type fun()
@@ -49,12 +50,17 @@ function M:run(picker)
   local finder = self._find(picker.opts, self.filter)
   local limit = picker.opts.limit or math.huge
 
+  ---@param item snacks.picker.finder.Item
+  local function add(item)
+    item.idx, item.score = #self.items + 1, default_score
+    self.items[item.idx] = item
+  end
+
   -- PERF: if finder is a table, we can skip the async part
   if type(finder) == "table" then
     local items = finder --[[@as snacks.picker.finder.Item[] ]]
-    for i, item in ipairs(items) do
-      item.idx, item.score = i, score
-      self.items[i] = item
+    for _, item in ipairs(items) do
+      add(item)
     end
     return
   end
@@ -72,8 +78,7 @@ function M:run(picker)
         end
         return
       end
-      item.idx, item.score = #self.items + 1, score
-      self.items[item.idx] = item
+      add(item)
       picker.matcher.task:resume()
       yield = yield or Async.yielder(YIELD_FIND)
       yield()
@@ -83,6 +88,34 @@ function M:run(picker)
     picker.matcher.task:resume()
     picker:update()
   end)
+end
+
+---@param finders snacks.picker.finder[]
+---@return snacks.picker.finder
+function M.multi(finders)
+  return function(opts, filter)
+    ---@type fun(cb:async fun(item:snacks.picker.finder.Item))[]
+    local running = {}
+    local items = {} ---@type snacks.picker.finder.Item[]
+    for _, finder in ipairs(finders) do
+      local find = finder(opts, filter)
+      if type(find) == "table" then
+        vim.list_extend(items, find)
+      else
+        running[#running + 1] = find
+      end
+    end
+    return #running == 0 and items
+      or function(cb)
+        for _, item in ipairs(items) do
+          cb(item)
+        end
+        items = {} -- release memory
+        for _, find in ipairs(running) do
+          find(cb)
+        end
+      end
+  end
 end
 
 return M

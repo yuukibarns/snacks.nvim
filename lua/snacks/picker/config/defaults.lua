@@ -67,8 +67,8 @@ local M = {}
 ---@field ui_select? boolean set `vim.ui.select` to a snacks picker
 --- Source definition
 ---@field items? snacks.picker.finder.Item[] items to show instead of using a finder
----@field format? snacks.picker.format|string format function or preset
----@field finder? snacks.picker.finder|string finder function or preset
+---@field format? string|snacks.picker.format|string format function or preset
+---@field finder? string|snacks.picker.finder|snacks.picker.finder.multi finder function or preset
 ---@field preview? snacks.picker.preview|string preview function or preset
 ---@field matcher? snacks.picker.matcher.Config matcher config
 ---@field sort? snacks.picker.sort|snacks.picker.sort.Config sort function or config

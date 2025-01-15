@@ -76,17 +76,32 @@ function M.resolve(v, ...)
 end
 
 --- Get the finder
----@param finder string|snacks.picker.finder
+---@param finder string|snacks.picker.finder|snacks.picker.finder.multi
 ---@return snacks.picker.finder
 function M.finder(finder)
+  local nop = function()
+    Snacks.notify.error("Finder not found:\n```lua\n" .. vim.inspect(finder) .. "\n```", { title = "Snacks Picker" })
+  end
   if not finder or type(finder) == "function" then
     return finder
   end
+  if type(finder) == "table" then
+    ---@cast finder snacks.picker.finder.multi
+    ---@type snacks.picker.finder[]
+    local finders = vim.tbl_map(function(f)
+      return M.finder(f)
+    end, finder)
+    return require("snacks.picker.core.finder").multi(finders)
+  end
+  ---@cast finder string
   local mod, fn = finder:match("^(.-)_(.+)$")
   if not (mod and fn) then
     mod, fn = finder, finder
   end
-  return require("snacks.picker.source." .. mod)[fn]
+  local ok, ret = pcall(function()
+    return require("snacks.picker.source." .. mod)[fn]
+  end)
+  return ok and ret or nop
 end
 
 local did_setup = false
