@@ -29,6 +29,8 @@ local function get_cmd(opts, filter)
   -- hidden
   if opts.hidden then
     table.insert(args, "--hidden")
+  else
+    table.insert(args, "--no-hidden")
   end
 
   -- ignored
