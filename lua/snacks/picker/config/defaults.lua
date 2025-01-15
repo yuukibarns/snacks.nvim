@@ -194,11 +194,6 @@ local defaults = {
     },
     -- preview window
     preview = {
-      minimal = false,
-      wo = {
-        cursorline = false,
-        colorcolumn = "",
-      },
       keys = {
         ["<Esc>"] = "close",
         ["q"] = "close",
