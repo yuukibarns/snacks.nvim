@@ -297,7 +297,7 @@ function M:_match(item, mods)
   if mods.field then
     if item[mods.field] == nil then
       if mods.inverse then
-        return 0, 0
+        return M.INVERSE_SCORE
       end
       return
     end
@@ -331,7 +331,7 @@ function M:_match(item, mods)
     end
     if mods.inverse then
       if not from then
-        return 0, 0
+        return M.INVERSE_SCORE
       end
       return
     end
