@@ -728,6 +728,13 @@ Git log
   finder = "git_status",
   format = "git_status",
   preview = "git_status",
+  win = {
+    input = {
+      keys = {
+        ["<Tab>"] = { "git_stage", mode = { "n", "i" } },
+      },
+    },
+  },
 }
 ```
 
@@ -1434,6 +1441,12 @@ Snacks.picker.actions.focus_list(picker)
 
 ```lua
 Snacks.picker.actions.focus_preview(picker)
+```
+
+### `Snacks.picker.actions.git_stage()`
+
+```lua
+Snacks.picker.actions.git_stage(picker)
 ```
 
 ### `Snacks.picker.actions.help()`
