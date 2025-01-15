@@ -46,6 +46,7 @@ function M.new(picker)
     minimal = true,
     bo = { modifiable = false, filetype = "snacks_picker_list" },
     wo = {
+      foldenable = false,
       conceallevel = 3,
       concealcursor = "nvc",
       cursorline = false,
