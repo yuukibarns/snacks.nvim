@@ -102,7 +102,7 @@ function M.file(ctx)
           line = line:sub(1, ctx.picker.opts.previewers.file.max_line_length) .. "..."
         end
         -- Check for binary data in the current line
-        if line:find("[%z\1-\8\13\14\16-\31]") then
+        if line:find("[%z\1-\8\11\12\14-\31]") then
           ctx.preview:notify("binary file", "warn")
           return
         end
