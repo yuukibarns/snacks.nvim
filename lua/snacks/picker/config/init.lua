@@ -1,6 +1,14 @@
 ---@class snacks.picker.config
 local M = {}
 
+--- Source aliases
+M.alias = {
+  live_grep = "grep",
+  find_files = "files",
+  git_commits = "git_log",
+  git_bcommits = "git_log_file",
+}
+
 ---@param opts? snacks.picker.Config
 function M.get(opts)
   M.setup()
@@ -10,13 +18,14 @@ function M.get(opts)
   local defaults = require("snacks.picker.config.defaults").defaults
   defaults.sources = sources
   local user = Snacks.config.picker or {}
+  local source = M.alias[opts.source] or opts.source
 
   local global = Snacks.config.get("picker", defaults, opts) -- defaults + global user config
   ---@type snacks.picker.Config[]
   local todo = {
     defaults,
     user,
-    opts.source and global.sources[opts.source] or {},
+    source and global.sources[source] or {},
     opts,
   }
 
