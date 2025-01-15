@@ -128,6 +128,7 @@ Snacks.picker.pick({source = "files", ...})
         ["/"] = "toggle_focus",
         ["q"] = "close",
         ["?"] = "toggle_help",
+        ["<c-i>"] = { "inspect", mode = { "n", "i" } },
         ["<a-m>"] = { "toggle_maximize", mode = { "i", "n" } },
         ["<a-p>"] = { "toggle_preview", mode = { "i", "n" } },
         ["<a-w>"] = { "cycle_win", mode = { "i", "n" } },
@@ -173,6 +174,7 @@ Snacks.picker.pick({source = "files", ...})
         ["<S-Tab>"] = "select_and_prev",
         ["<Down>"] = "list_down",
         ["<Up>"] = "list_up",
+        ["<c-i>"] = "inspect",
         ["<c-d>"] = "list_scroll_down",
         ["<c-u>"] = "list_scroll_up",
         ["zt"] = "list_scroll_top",
@@ -1457,6 +1459,12 @@ Snacks.picker.actions.history_back(picker)
 
 ```lua
 Snacks.picker.actions.history_forward(picker)
+```
+
+### `Snacks.picker.actions.inspect()`
+
+```lua
+Snacks.picker.actions.inspect(picker, item)
 ```
 
 ### `Snacks.picker.actions.list_bottom()`
