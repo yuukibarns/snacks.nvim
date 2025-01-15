@@ -537,6 +537,10 @@ Snacks.picker.select(...)
   unloaded = true,
   current = true,
   sort_lastused = true,
+  win = {
+    input = { keys = { ["dd"] = "bufdelete" } },
+    list = { keys = { ["dd"] = "bufdelete" } },
+  },
 }
 ```
 
@@ -1381,6 +1385,12 @@ Open a project from zoxide
 ---@class snacks.picker.actions
 ---@field [string] snacks.picker.Action.spec
 local M = {}
+```
+
+### `Snacks.picker.actions.bufdelete()`
+
+```lua
+Snacks.picker.actions.bufdelete(picker)
 ```
 
 ### `Snacks.picker.actions.cmd()`
