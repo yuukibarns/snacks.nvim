@@ -38,11 +38,15 @@ local M = {}
 ---@class snacks.picker.preview.Config
 ---@field man_pager? string MANPAGER env to use for `man` preview
 ---@field file snacks.picker.preview.file.Config
+---@field git snacks.picker.preview.git.Config
 
 ---@class snacks.picker.preview.file.Config
 ---@field max_size? number default 1MB
 ---@field max_line_length? number defaults to 500
 ---@field ft? string defaults to auto-detect
+
+---@class snacks.picker.preview.git.Config
+---@field native? boolean use terminal or Neovim for previewing git diffs and commits
 
 ---@class snacks.picker.layout.Config
 ---@field layout snacks.layout.Box
@@ -100,6 +104,9 @@ local defaults = {
   },
   ui_select = true, -- replace `vim.ui.select` with the snacks picker
   previewers = {
+    git = {
+      native = false, -- use native (terminal) or Neovim for previewing git diffs and commits
+    },
     file = {
       max_size = 1024 * 1024, -- 1MB
       max_line_length = 500,
