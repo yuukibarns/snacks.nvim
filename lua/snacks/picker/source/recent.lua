@@ -37,6 +37,8 @@ function M.files(opts, filter)
   end
 end
 
+M.recent = M.files
+
 --- Get the most recent projects based on git roots of recent files.
 --- The default action will change the directory to the project root,
 --- try to restore the session and open the picker if the session is not restored.
