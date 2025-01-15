@@ -25,6 +25,10 @@ M.buffers = {
   unloaded = true,
   current = true,
   sort_lastused = true,
+  win = {
+    input = { keys = { ["dd"] = "bufdelete" } },
+    list = { keys = { ["dd"] = "bufdelete" } },
+  },
 }
 
 M.cliphist = {

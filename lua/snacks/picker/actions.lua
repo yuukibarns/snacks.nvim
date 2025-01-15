@@ -58,6 +58,18 @@ function M.toggle_preview(picker)
   picker:show_preview()
 end
 
+function M.bufdelete(picker)
+  for _, item in ipairs(picker:selected({ fallback = true })) do
+    Snacks.bufdelete.delete(item.buf)
+  end
+  local cursor = picker.list.cursor
+  picker:find({
+    on_done = function()
+      picker.list:view(cursor)
+    end,
+  })
+end
+
 function M.git_stage(picker)
   local items = picker:selected({ fallback = true })
   local cursor = picker.list.cursor
