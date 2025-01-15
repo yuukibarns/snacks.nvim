@@ -85,7 +85,8 @@ Snacks.picker.pick({source = "files", ...})
 ---@field icons? snacks.picker.icons
 ---@field prompt? string prompt text / icon
 --- Preset options
----@field previewers? snacks.picker.preview.Config
+---@field previewers? snacks.picker.previewers.Config|{}
+---@field formatters? snacks.picker.formatters.Config|{}
 ---@field sources? snacks.picker.sources.Config|{}
 ---@field layouts? table<string, snacks.picker.layout.Config>
 --- Actions
@@ -106,14 +107,23 @@ Snacks.picker.pick({source = "files", ...})
     end,
   },
   ui_select = true, -- replace `vim.ui.select` with the snacks picker
+  ---@class snacks.picker.formatters.Config
+  formatters = {
+    file = {
+      filename_first = false, -- display filename before the file path
+    },
+  },
+  ---@class snacks.picker.previewers.Config
   previewers = {
     git = {
       native = false, -- use native (terminal) or Neovim for previewing git diffs and commits
     },
     file = {
       max_size = 1024 * 1024, -- 1MB
-      max_line_length = 500,
+      max_line_length = 500, -- max line length
+      ft = nil, ---@type string? filetype for highlighting. Use `nil` for auto detect
     },
+    man_pager = nil, ---@type string? MANPAGER env to use for `man` preview
   },
   win = {
     -- input window
@@ -427,29 +437,6 @@ Generic filter used by finders to pre-filter items
 ---@class snacks.picker.finder.Item: snacks.picker.Item
 ---@field idx? number
 ---@field score? number
-```
-
-```lua
----@class snacks.picker.sources.Config
-```
-
-```lua
----@class snacks.picker.preview.Config
----@field man_pager? string MANPAGER env to use for `man` preview
----@field file snacks.picker.preview.file.Config
----@field git snacks.picker.preview.git.Config
-```
-
-```lua
----@class snacks.picker.preview.file.Config
----@field max_size? number default 1MB
----@field max_line_length? number defaults to 500
----@field ft? string defaults to auto-detect
-```
-
-```lua
----@class snacks.picker.preview.git.Config
----@field native? boolean use terminal or Neovim for previewing git diffs and commits
 ```
 
 ```lua
