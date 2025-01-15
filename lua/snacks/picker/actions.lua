@@ -64,7 +64,7 @@ local function setqflist(items, opts)
   local qf = {} ---@type vim.quickfix.entry[]
   for _, item in ipairs(items) do
     qf[#qf + 1] = {
-      filename = item.file,
+      filename = Snacks.picker.util.path(item),
       bufnr = item.buf,
       lnum = item.pos and item.pos[1] or 1,
       col = item.pos and item.pos[2] or 1,
