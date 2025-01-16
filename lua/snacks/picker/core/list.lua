@@ -348,6 +348,11 @@ function M:format(item)
     table.remove(line)
   end
 
+  if self.picker.opts.debug.scores then
+    local score = item.score and ("%.2f "):format(item.score) or "nil"
+    table.insert(line, 1, { score, "Number" })
+  end
+
   local col = selw
   for _, text in ipairs(line) do
     if type(text[1]) == "string" then
