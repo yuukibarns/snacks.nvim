@@ -267,10 +267,11 @@ function M.new(opts)
       elseif type(spec) == "function" then
         spec = { key, spec }
       elseif type(spec) == "table" and spec[1] and not spec[2] then
+        spec = vim.deepcopy(spec) -- deepcopy just in case
         spec[1], spec[2] = key, spec[1]
       end
       ---@cast spec snacks.win.Keys
-      local lhs = vim.fn.keytrans(Snacks.util.keycode(spec[1]))
+      local lhs = vim.fn.keytrans(Snacks.util.keycode(spec[1] or ""))
       if done[lhs] then
         Snacks.notify.warn(
           ("# Duplicate key mapping for `%s` (check case):\n```lua\n%s\n```\n```lua\n%s\n```"):format(
