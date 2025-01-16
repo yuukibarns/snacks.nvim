@@ -1,7 +1,7 @@
 local M = {}
 
 ---@class snacks.picker
----@field smart fun(opts: snacks.picker.smart.Config): snacks.picker.finder
+---@field smart fun(opts?: snacks.picker.smart.Config): snacks.picker.finder
 
 ---@param opts snacks.picker.smart.Config
 ---@type snacks.picker.finder

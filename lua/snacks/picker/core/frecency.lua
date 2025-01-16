@@ -55,7 +55,6 @@ function M.load()
   ---@diagnostic disable-next-line: assign-type-mismatch
   M.store = require("string.buffer").decode(data) or {}
   local ms = (uv.hrtime() - t) / 1e6
-  dd(vim.tbl_count(M.store), ms .. "ms")
 end
 
 function M.save()
