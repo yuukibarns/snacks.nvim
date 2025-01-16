@@ -87,6 +87,8 @@ local M = {}
 ---@field main? snacks.picker.main.Config main editor window config
 ---@field on_change? fun(picker:snacks.Picker, item:snacks.picker.Item) called when the cursor changes
 ---@field on_show? fun(picker:snacks.Picker) called when the picker is shown
+--- Other
+---@field debug? snacks.picker.debug|{}
 local defaults = {
   prompt = " ",
   sources = {},
@@ -280,6 +282,7 @@ local defaults = {
       Variable      = "󰀫 ",
     },
   },
+  ---@class snacks.picker.debug
   debug = {
     scores = false, -- show scores in the list
   },
