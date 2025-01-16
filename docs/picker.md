@@ -287,6 +287,9 @@ Snacks.picker.pick({source = "files", ...})
       Variable      = "󰀫 ",
     },
   },
+  debug = {
+    scores = false, -- show scores in the list
+  },
 }
 ```
 
