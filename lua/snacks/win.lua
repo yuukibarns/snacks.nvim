@@ -1069,6 +1069,9 @@ function M:dim(parent)
   ---@param ps number parent size
   local function pos(p, s, ps, border_from, border_to)
     p = type(p) == "function" and p(self) or p
+    if self.opts.relative == "cursor" then
+      return p or 0
+    end
     if not p then -- center
       return math.floor((ps - s) / 2) - border_from
     end
@@ -1091,9 +1094,6 @@ function M:dim(parent)
   ret.width = math.max(ret.width, self.opts.min_width or 0, 1)
   ret.width = math.min(ret.width, self.opts.max_width or ret.width, parent.width)
 
-  if self.opts.relative == "cursor" then
-    ret.row, ret.col = ret.row or 0, ret.col or 0
-  end
   ret.row = pos(self.opts.row, ret.height, parent.height, border.top, border.bottom)
   ret.col = pos(self.opts.col, ret.width, parent.width, border.left, border.right)
 
