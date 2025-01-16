@@ -50,6 +50,13 @@ function M.edit(picker)
     -- center
     vim.cmd("norm! zzzv")
   end
+  -- HACK: this should fix folds
+  if vim.wo.foldmethod == "expr" then
+    vim.schedule(function()
+      vim.opt.foldmethod = "expr"
+    end)
+  end
+
   if current_empty and vim.api.nvim_buf_is_valid(current_buf) then
     vim.api.nvim_buf_delete(current_buf, { force = true })
   end
