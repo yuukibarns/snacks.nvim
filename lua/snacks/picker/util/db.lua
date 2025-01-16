@@ -155,15 +155,4 @@ function M:get(key)
   return ret
 end
 
-local db = M.new("test.sqlite3", "number")
-db:set("foo", 123)
-db:begin()
-p(function()
-  -- db:set("foo", 123)
-  -- db:set("bar", 456)
-  -- db:set("baz", 789)
-  db:get("foo")
-  -- db:set("foo", 123)
-end, { count = 100 })
-
 return M
