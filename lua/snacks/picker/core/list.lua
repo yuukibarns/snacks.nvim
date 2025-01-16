@@ -350,7 +350,13 @@ function M:format(item)
 
   if self.picker.opts.debug.scores then
     local score = item.score and ("%.2f "):format(item.score) or "nil"
-    table.insert(line, 1, { score, "Number" })
+    parts[#parts + 1] = score
+    ret[#ret + 1] = {
+      col = selw,
+      end_col = selw + vim.api.nvim_strwidth(score),
+      hl_group = "Number",
+    }
+    selw = selw + vim.api.nvim_strwidth(score)
   end
 
   local col = selw
