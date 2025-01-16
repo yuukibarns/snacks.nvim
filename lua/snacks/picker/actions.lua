@@ -58,7 +58,10 @@ function M.edit(picker)
   end
 
   if current_empty and vim.api.nvim_buf_is_valid(current_buf) then
-    vim.api.nvim_buf_delete(current_buf, { force = true })
+    local w = vim.fn.bufwinid(current_buf)
+    if w == -1 then
+      vim.api.nvim_buf_delete(current_buf, { force = true })
+    end
   end
 end
 
