@@ -603,7 +603,7 @@ function M:scratch()
   vim.bo[self.buf].swapfile = false
   self.scratch_buf = self.buf
   local text = type(self.opts.text) == "function" and self.opts.text() or self.opts.text
-  text = type(text) == "string" and { text } or text
+  text = type(text) == "string" and vim.split(text, "\n") or text
   if text then
     ---@cast text string[]
     vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, text)
