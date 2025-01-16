@@ -31,6 +31,8 @@ local M = {}
 ---@field [string] any
 ---@field idx number
 ---@field score number
+---@field score_add? number
+---@field score_mul? number
 ---@field match_tick? number
 ---@field text string
 ---@field pos? {[1]:number, [2]:number}

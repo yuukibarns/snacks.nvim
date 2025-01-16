@@ -213,6 +213,14 @@ function M:update(item)
     return false
   end
   local score = self:match(item)
+  if score ~= 0 then
+    if item.score_add then
+      score = score + item.score_add
+    end
+    if item.score_mul then
+      score = score * item.score_mul
+    end
+  end
   item.match_tick, item.score = self.tick, score
   return true
 end
