@@ -63,7 +63,7 @@ function M:run(picker, opts)
   self.task:abort()
 
   -- PERF: fast path for empty pattern
-  if self:empty() and not picker.finder.task:running() then
+  if self:empty() and not picker.finder.task:running() and not picker.finder.has_scores then
     picker.list.items = picker.finder.items
     picker:update()
     return

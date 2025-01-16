@@ -48,13 +48,11 @@ function M.load()
     return
   end
   loaded_time = os.time()
-  local t = uv.hrtime()
   ---@type string
   local data = fd:read("*a")
   fd:close()
   ---@diagnostic disable-next-line: assign-type-mismatch
   M.store = require("string.buffer").decode(data) or {}
-  local ms = (uv.hrtime() - t) / 1e6
 end
 
 function M.save()
