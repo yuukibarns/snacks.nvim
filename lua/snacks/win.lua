@@ -1069,6 +1069,7 @@ function M:dim(parent)
   ---@param ps number parent size
   local function pos(p, s, ps, border_from, border_to)
     p = type(p) == "function" and p(self) or p
+    ---@cast p number?
     if self.opts.relative == "cursor" then
       return p or 0
     end
