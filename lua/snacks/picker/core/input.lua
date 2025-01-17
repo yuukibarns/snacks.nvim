@@ -16,6 +16,7 @@ function M.new(picker)
   self.totals = ""
   self.picker = picker
   self.filter = require("snacks.picker.core.filter").new(picker)
+  picker.matcher:init({ pattern = self.filter.pattern })
   self._statuscolumn = self:statuscolumn()
 
   self.win = Snacks.win(Snacks.win.resolve(picker.opts.win.input, {
