@@ -96,6 +96,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@field main? snacks.picker.main.Config main editor window config
 ---@field on_change? fun(picker:snacks.Picker, item:snacks.picker.Item) called when the cursor changes
 ---@field on_show? fun(picker:snacks.Picker) called when the picker is shown
+---@field jump? snacks.picker.jump.Config|{}
 --- Other
 ---@field debug? snacks.picker.debug|{}
 {
@@ -142,6 +143,12 @@ Snacks.picker.pick({source = "files", ...})
       ft = nil, ---@type string? filetype for highlighting. Use `nil` for auto detect
     },
     man_pager = nil, ---@type string? MANPAGER env to use for `man` preview
+  },
+  ---@class snacks.picker.jump.Config
+  jump = {
+    jumplist = true, -- save the current position in the jumplist
+    tagstack = false, -- save the current position in the tagstack
+    reuse_win = false, -- reuse an existing window if the buffer is already open
   },
   win = {
     -- input window
@@ -415,6 +422,15 @@ Snacks.picker.pick({source = "files", ...})
 ## 📚 Types
 
 ```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -480,15 +496,6 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
 ```
 
 ## 📦 Module
@@ -956,6 +963,7 @@ LSP declarations
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 ```
 
@@ -970,6 +978,7 @@ LSP definitions
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 ```
 
@@ -984,6 +993,7 @@ LSP implementations
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 ```
 
@@ -1000,6 +1010,7 @@ LSP references
   include_declaration = true,
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 ```
 
@@ -1065,6 +1076,7 @@ LSP type definitions
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 ```
 
@@ -1475,12 +1487,6 @@ Snacks.picker.actions.copy(_, item)
 Snacks.picker.actions.cycle_win(picker)
 ```
 
-### `Snacks.picker.actions.edit()`
-
-```lua
-Snacks.picker.actions.edit(picker)
-```
-
 ### `Snacks.picker.actions.edit_split()`
 
 ```lua
@@ -1545,6 +1551,12 @@ Snacks.picker.actions.history_forward(picker)
 
 ```lua
 Snacks.picker.actions.inspect(picker, item)
+```
+
+### `Snacks.picker.actions.jump()`
+
+```lua
+Snacks.picker.actions.jump(picker)
 ```
 
 ### `Snacks.picker.actions.list_bottom()`
@@ -1718,8 +1730,6 @@ Snacks.picker.actions.toggle_maximize(picker)
 Snacks.picker.actions.toggle_preview(picker)
 ```
 
-
-
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -1876,3 +1886,5 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
+
+
