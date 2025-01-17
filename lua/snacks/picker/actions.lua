@@ -60,9 +60,7 @@ function M.jump(picker)
     end
 
     if not vim.api.nvim_buf_is_loaded(buf) then
-      vim.api.nvim_buf_call(buf, function()
-        vim.cmd("edit")
-      end)
+      vim.cmd("buffer " .. buf)
       vim.bo[buf].buflisted = true
     end
 
