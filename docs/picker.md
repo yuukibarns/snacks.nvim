@@ -297,7 +297,7 @@ Snacks.picker.pick({source = "files", ...})
       Text          = " ",
       TypeParameter = " ",
       Unit          = " ",
-      Uknown        = " ",
+      Unknown        = " ",
       Value         = " ",
       Variable      = "󰀫 ",
     },
@@ -534,6 +534,7 @@ Implementation for `vim.ui.select`
 ---@type snacks.picker.ui_select
 Snacks.picker.select(...)
 ```
+
 ## 🔍 Sources
 
 ### `autocmds`
@@ -1436,7 +1437,6 @@ Open a project from zoxide
   },
 }
 ```
-
 
 ## 📦 `snacks.picker.actions`
 
