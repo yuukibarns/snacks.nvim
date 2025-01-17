@@ -685,6 +685,7 @@ Neovim commands
 ---@field ignored? boolean show ignored files
 ---@field dirs? string[] directories to search
 ---@field follow? boolean follow symlinks
+---@field exclude? string[] exclude patterns
 {
   finder = "files",
   format = "file",
@@ -797,6 +798,7 @@ Git log
 ---@field regex? boolean use regex search pattern (defaults to `true`)
 ---@field buffers? boolean search in open buffers
 ---@field need_search? boolean require a search pattern
+---@field exclude? string[] exclude patterns
 {
   finder = "grep",
   format = "file",
