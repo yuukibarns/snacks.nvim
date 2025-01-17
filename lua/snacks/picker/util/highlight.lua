@@ -175,4 +175,46 @@ function M.winhl(prefix, links)
   return table.concat(ret, ",")
 end
 
+---@param line snacks.picker.Highlight[]
+---@param opts? {offset?:number}
+function M.to_text(line, opts)
+  local offset = opts and opts.offset or 0
+  local ret = {} ---@type snacks.picker.Extmark[]
+  local col = offset
+  local parts = {} ---@type string[]
+  for _, text in ipairs(line) do
+    if type(text[1]) == "string" then
+      ---@cast text snacks.picker.Text
+      if text.virtual then
+        table.insert(ret, {
+          col = col,
+          virt_text = { { text[1], text[2] } },
+          virt_text_pos = "overlay",
+          hl_mode = "combine",
+        })
+        parts[#parts + 1] = string.rep(" ", vim.api.nvim_strwidth(text[1]))
+      else
+        table.insert(ret, {
+          col = col,
+          end_col = col + #text[1],
+          hl_group = text[2],
+          field = text.field,
+        })
+        parts[#parts + 1] = text[1]
+      end
+      col = col + #parts[#parts]
+    else
+      text = vim.deepcopy(text)
+      ---@cast text snacks.picker.Extmark
+      -- fix extmark col and end_col
+      text.col = text.col + offset
+      if text.end_col then
+        text.end_col = text.end_col + offset
+      end
+      table.insert(ret, text)
+    end
+  end
+  return table.concat(parts), ret
+end
+
 return M
