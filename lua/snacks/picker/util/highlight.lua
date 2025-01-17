@@ -42,11 +42,18 @@ function M.get_highlights(opts)
         local name = query.captures[capture]
         if name ~= "spell" then
           local range = { node:range() } ---@type number[]
+          local multi = range[1] ~= range[3]
+          local text = multi
+              and vim.split(vim.treesitter.get_node_text(node, source, metadata[capture]), "\n", { plain = true })
+            or {}
           for row = range[1] + 1, range[3] + 1 do
+            local first, last = row == range[1] + 1, row == range[3] + 1
+            local end_col = last and range[4] or #(text[row - range[1]] or "")
+            end_col = multi and first and end_col + range[2] or end_col
             ret[row] = ret[row] or {}
             table.insert(ret[row], {
-              col = range[2],
-              end_col = range[4],
+              col = first and range[2] or 0,
+              end_col = end_col,
               priority = (tonumber(metadata.priority or metadata[capture] and metadata[capture].priority) or 100),
               conceal = metadata.conceal or metadata[capture] and metadata[capture].conceal,
               hl_group = "@" .. name .. "." .. lang,

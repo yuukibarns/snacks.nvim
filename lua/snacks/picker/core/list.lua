@@ -394,7 +394,16 @@ function M:_render(item, row)
     extmark.col = nil
     extmark.row = nil
     extmark.field = nil
-    vim.api.nvim_buf_set_extmark(self.win.buf, ns, row - 1, col, extmark)
+    local ok, err = pcall(vim.api.nvim_buf_set_extmark, self.win.buf, ns, row - 1, col, extmark)
+    if not ok then
+      Snacks.notify.error(
+        "Failed to set extmark. This should not happen. Please report.\n"
+          .. err
+          .. "\n```lua\n"
+          .. vim.inspect(extmark)
+          .. "\n```"
+      )
+    end
   end
 end
 
