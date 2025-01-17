@@ -410,8 +410,8 @@ Snacks.picker.pick({source = "files", ...})
 ## 📚 Types
 
 ```lua
----@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number}
----@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean}
+---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
+---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
 ---@alias snacks.picker.format fun(item:snacks.picker.Item, picker:snacks.Picker):snacks.picker.Highlight[]
 ---@alias snacks.picker.preview fun(ctx: snacks.picker.preview.ctx):boolean?
