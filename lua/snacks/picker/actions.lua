@@ -145,7 +145,7 @@ local function setqflist(items, opts)
       col = item.pos and item.pos[2] or 1,
       end_lnum = item.end_pos and item.end_pos[1] or nil,
       end_col = item.end_pos and item.end_pos[2] or nil,
-      text = item.text,
+      text = item.line or item.comment or item.label or item.name or item.detail or item.text,
       pattern = item.search,
       valid = true,
     }
