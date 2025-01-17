@@ -9,6 +9,7 @@ local Async = require("snacks.picker.util.async")
 ---@field task snacks.picker.Async
 ---@field live? boolean
 ---@field score snacks.picker.Score
+---@field sorting? boolean
 local M = {}
 M.__index = M
 M.DEFAULT_SCORE = 1000
@@ -39,8 +40,9 @@ function M.new(opts)
   self.pattern = ""
   self.task = Async.nop()
   self.mods = {}
+  self.sorting = true
   self.tick = 0
-  self.score = require("snacks.picker.core.score").new()
+  self.score = require("snacks.picker.core.score").new(self.opts)
   return self
 end
 
@@ -61,9 +63,12 @@ end
 function M:run(picker, opts)
   opts = opts or {}
   self.task:abort()
+  picker.list:clear()
+
+  self.sorting = not self:empty() or picker.opts.matcher.sort_empty
 
   -- PERF: fast path for empty pattern
-  if self:empty() and not picker.finder.task:running() and not picker.finder.has_scores then
+  if not (self.sorting or picker.finder.task:running()) then
     picker.list.items = picker.finder.items
     picker:update()
     return
@@ -78,7 +83,7 @@ function M:run(picker, opts)
     ---@param item snacks.picker.Item
     local function check(item)
       if self:update(item) and item.score > 0 then
-        picker.list:add(item)
+        picker.list:add(item, self.sorting)
       end
       yield()
     end

@@ -221,17 +221,19 @@ function M:pause(ms)
   end, ms)
 end
 
-function M:add(item)
+---@param item snacks.picker.Item
+---@param sort? boolean
+function M:add(item, sort)
   local idx = #self.items + 1
   self.items[idx] = item
-  local added, prev = self.topk:add(item)
-  if added then
-    self.dirty = true
+  if sort ~= false then
+    local _added, prev = self.topk:add(item)
     if prev then
       -- replace with previous item, since new item is now in topk
       self.items[idx] = prev
     end
-  elseif not self.dirty then
+  end
+  if not self.dirty then
     self.dirty = idx >= self.top and idx <= self.top + (self.state.height or 50)
   end
 end
@@ -349,14 +351,24 @@ function M:format(item)
   end
 
   if self.picker.opts.debug.scores then
-    local score = item.score and ("%.2f "):format(item.score) or "nil"
-    parts[#parts + 1] = score
+    local score = item.score
+    if not self.picker.matcher.sorting then
+      score = self.picker.matcher.DEFAULT_SCORE
+      if item.score_add then
+        score = score + item.score_add
+      end
+      if item.score_mul then
+        score = score * item.score_mul
+      end
+    end
+    local score_str = ("%.2f "):format(score)
+    parts[#parts + 1] = score_str
     ret[#ret + 1] = {
       col = selw,
-      end_col = selw + vim.api.nvim_strwidth(score),
+      end_col = selw + vim.api.nvim_strwidth(score_str),
       hl_group = "Number",
     }
-    selw = selw + vim.api.nvim_strwidth(score)
+    selw = selw + vim.api.nvim_strwidth(score_str)
   end
 
   local col = selw
