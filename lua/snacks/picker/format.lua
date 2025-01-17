@@ -388,11 +388,18 @@ function M.buffer(item, picker)
 end
 
 function M.selected(item, picker)
-  local selected = picker.list:is_selected(item)
-  local icon = picker.opts.icons.ui.selected
-  local icon_width = vim.api.nvim_strwidth(icon)
+  local a = Snacks.picker.util.align
+  local selected = picker.opts.icons.ui.selected
+  local unselected = picker.opts.icons.ui.unselected
+  local width = math.max(vim.api.nvim_strwidth(selected), vim.api.nvim_strwidth(unselected))
   local ret = {} ---@type snacks.picker.Highlight[]
-  ret[#ret + 1] = { selected and icon or string.rep(" ", icon_width), "SnacksPickerSelected", virtual = true }
+  if picker.list:is_selected(item) then
+    ret[#ret + 1] = { a(selected, width), "SnacksPickerSelected", virtual = true }
+  elseif picker.opts.formatters.selected.unselected then
+    ret[#ret + 1] = { a(unselected, width), "SnacksPickerUnselected", virtual = true }
+  else
+    ret[#ret + 1] = { a("", width) }
+  end
   return ret
 end
 
