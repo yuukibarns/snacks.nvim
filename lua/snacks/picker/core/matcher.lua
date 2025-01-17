@@ -301,6 +301,7 @@ end
 ---@param mods snacks.picker.matcher.Mods
 ---@return number? score, number? from, number? to, string? str
 function M:_match(item, mods)
+  self.score.is_file = item.file ~= nil
   local str = item.text
   if mods.field then
     if item[mods.field] == nil then
