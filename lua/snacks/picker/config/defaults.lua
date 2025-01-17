@@ -101,6 +101,10 @@ local defaults = {
       return vim.o.columns >= 120 and "default" or "vertical"
     end,
   },
+  sort = {
+    -- default sort is by score, text length and index
+    fields = { "score:desc", "#text", "idx" },
+  },
   ui_select = true, -- replace `vim.ui.select` with the snacks picker
   ---@class snacks.picker.formatters.Config
   formatters = {
