@@ -317,6 +317,7 @@ M.lsp_declarations = {
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 
 -- LSP definitions
@@ -326,6 +327,7 @@ M.lsp_definitions = {
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 
 -- LSP implementations
@@ -335,6 +337,7 @@ M.lsp_implementations = {
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 
 -- LSP references
@@ -346,6 +349,7 @@ M.lsp_references = {
   include_declaration = true,
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 
 -- LSP document symbols
@@ -401,6 +405,7 @@ M.lsp_type_definitions = {
   format = "file",
   include_current = false,
   auto_confirm = true,
+  jump = { tagstack = true, reuse_win = true },
 }
 
 M.man = {
