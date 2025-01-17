@@ -89,7 +89,8 @@ function M.layout(opts)
   end
   local preset = M.resolve(layout.preset or "custom", opts.source)
   local ret = vim.deepcopy(opts.layouts and opts.layouts[preset] or layouts[preset] or {})
-  ret = Snacks.config.merge(ret, layout)
+  -- NOTE: use deep extend instead of merge to allow merging list-like tables
+  ret = vim.tbl_deep_extend("force", ret, layout)
   ret.preset = nil
   return ret
 end
