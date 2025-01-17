@@ -410,15 +410,6 @@ Snacks.picker.pick({source = "files", ...})
 ## 📚 Types
 
 ```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -486,6 +477,15 @@ It's a previewer that shows a preview based on the item data.
 ---@field preview? snacks.win.Config|{} preview window config
 ```
 
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
 ## 📦 Module
 
 ```lua
@@ -534,7 +534,6 @@ Implementation for `vim.ui.select`
 ---@type snacks.picker.ui_select
 Snacks.picker.select(...)
 ```
-
 ## 🔍 Sources
 
 ### `autocmds`
@@ -1438,6 +1437,7 @@ Open a project from zoxide
 }
 ```
 
+
 ## 📦 `snacks.picker.actions`
 
 ```lua
@@ -1713,6 +1713,8 @@ Snacks.picker.actions.toggle_maximize(picker)
 Snacks.picker.actions.toggle_preview(picker)
 ```
 
+
+
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -1869,5 +1871,3 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
-
-
