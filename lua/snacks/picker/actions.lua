@@ -6,6 +6,16 @@ local SCROLL_WHEEL_DOWN = Snacks.util.keycode("<ScrollWheelDown>")
 local SCROLL_WHEEL_UP = Snacks.util.keycode("<ScrollWheelUp>")
 
 function M.jump(picker)
+  -- if we're still in insert mode, stop it and schedule
+  -- it to prevent issues with cursor position
+  if vim.fn.mode():sub(1, 1) == "i" then
+    vim.cmd.stopinsert()
+    vim.schedule(function()
+      M.jump(picker)
+    end)
+    return
+  end
+
   picker:close()
   local win = vim.api.nvim_get_current_win()
 

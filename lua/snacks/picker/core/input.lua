@@ -29,12 +29,6 @@ function M.new(picker)
       self.win:focus()
       vim.cmd.startinsert()
       vim.api.nvim_win_set_cursor(self.win.win, { 1, #self:get() + 1 })
-      vim.fn.prompt_setcallback(self.win.buf, function()
-        vim.cmd.stopinsert()
-        vim.schedule(function()
-          self.win:execute("confirm")
-        end)
-      end)
     end,
     bo = {
       filetype = "snacks_picker_input",
