@@ -116,6 +116,7 @@ M.diagnostics_buffer = {
 ---@field ignored? boolean show ignored files
 ---@field dirs? string[] directories to search
 ---@field follow? boolean follow symlinks
+---@field exclude? string[] exclude patterns
 M.files = {
   finder = "files",
   format = "file",
@@ -198,6 +199,7 @@ M.git_diff = {
 ---@field regex? boolean use regex search pattern (defaults to `true`)
 ---@field buffers? boolean search in open buffers
 ---@field need_search? boolean require a search pattern
+---@field exclude? string[] exclude patterns
 M.grep = {
   finder = "grep",
   format = "file",
