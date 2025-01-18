@@ -424,6 +424,11 @@ Snacks.picker.pick({source = "files", ...})
 ## 📚 Types
 
 ```lua
+---@class snacks.picker.jump.Action: snacks.picker.Action
+---@field cmd? string
+```
+
+```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -1488,24 +1493,6 @@ Snacks.picker.actions.copy(_, item)
 Snacks.picker.actions.cycle_win(picker)
 ```
 
-### `Snacks.picker.actions.edit_split()`
-
-```lua
-Snacks.picker.actions.edit_split(picker)
-```
-
-### `Snacks.picker.actions.edit_tab()`
-
-```lua
-Snacks.picker.actions.edit_tab(picker)
-```
-
-### `Snacks.picker.actions.edit_vsplit()`
-
-```lua
-Snacks.picker.actions.edit_vsplit(picker)
-```
-
 ### `Snacks.picker.actions.focus_input()`
 
 ```lua
@@ -1557,7 +1544,7 @@ Snacks.picker.actions.inspect(picker, item)
 ### `Snacks.picker.actions.jump()`
 
 ```lua
-Snacks.picker.actions.jump(picker)
+Snacks.picker.actions.jump(picker, _, action)
 ```
 
 ### `Snacks.picker.actions.list_bottom()`
