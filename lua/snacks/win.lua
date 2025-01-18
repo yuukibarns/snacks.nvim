@@ -472,7 +472,7 @@ end
 
 function M:redraw()
   if vim.api.nvim__redraw then
-    vim.api.nvim__redraw({ win = self.win, valid = false, flush = true })
+    vim.api.nvim__redraw({ win = self.win, valid = false, flush = true, cursor = false })
   else
     vim.cmd("redraw")
   end
