@@ -260,8 +260,10 @@ Snacks.picker.pick({source = "files", ...})
     },
     ui = {
       live        = "󰐰 ",
+      hidden      = "h",
+      ignored     = "i",
       selected    = "● ",
-      unselected = "○ ",
+      unselected  = "○ ",
       -- selected = " ",
     },
     git = {
@@ -1306,12 +1308,11 @@ Open a project from zoxide
     {
       box = "vertical",
       border = "rounded",
-      title = "{source} {live}",
-      title_pos = "center",
+      title = "{source} {live} {flags}",
       { win = "input", height = 1, border = "bottom" },
       { win = "list", border = "none" },
     },
-    { win = "preview", border = "rounded", width = 0.5 },
+    { win = "preview", title = "{preview}", border = "rounded", width = 0.5 },
   },
 }
 ```
@@ -1328,11 +1329,11 @@ Open a project from zoxide
     height = 0.8,
     border = "none",
     box = "vertical",
-    { win = "preview", height = 0.4, border = "rounded" },
+    { win = "preview", title = "{preview}", height = 0.4, border = "rounded" },
     {
       box = "vertical",
       border = "rounded",
-      title = "{source} {live}",
+      title = "{source} {live} {flags}",
       title_pos = "center",
       { win = "input", height = 1, border = "bottom" },
       { win = "list", border = "none" },
@@ -1352,13 +1353,13 @@ Open a project from zoxide
     width = 0,
     height = 0.4,
     border = "top",
-    title = " {source} {live}",
+    title = " {source} {live} {flags}",
     title_pos = "left",
     { win = "input", height = 1, border = "bottom" },
     {
       box = "horizontal",
       { win = "list", border = "none" },
-      { win = "preview", width = 0.6, border = "left" },
+      { win = "preview", title = "{preview}", width = 0.6, border = "left" },
     },
   },
 }
@@ -1381,7 +1382,7 @@ Open a project from zoxide
     title_pos = "center",
     { win = "input", height = 1, border = "bottom" },
     { win = "list", border = "none" },
-    { win = "preview", height = 0.4, border = "top" },
+    { win = "preview", title = "{preview}", height = 0.4, border = "top" },
   },
 }
 ```
@@ -1400,13 +1401,13 @@ Open a project from zoxide
     {
       box = "vertical",
       { win = "list", title = " Results ", title_pos = "center", border = "rounded" },
-      { win = "input", height = 1, border = "rounded", title = "{source} {live}", title_pos = "center" },
+      { win = "input", height = 1, border = "rounded", title = "{source} {live} {flags}", title_pos = "center" },
     },
     {
       win = "preview",
+      title = "{preview:Preview}",
       width = 0.45,
       border = "rounded",
-      title = " Preview ",
       title_pos = "center",
     },
   },
@@ -1425,11 +1426,11 @@ Open a project from zoxide
     min_height = 30,
     box = "vertical",
     border = "rounded",
-    title = "{source} {live}",
+    title = "{source} {live} {flags}",
     title_pos = "center",
     { win = "input", height = 1, border = "bottom" },
     { win = "list", border = "none" },
-    { win = "preview", height = 0.4, border = "top" },
+    { win = "preview", title = "{preview}", height = 0.4, border = "top" },
   },
 }
 ```
@@ -1447,9 +1448,9 @@ Open a project from zoxide
     height = 0.4,
     border = "none",
     box = "vertical",
-    { win = "input", height = 1, border = "rounded", title = "{source} {live}", title_pos = "center" },
+    { win = "input", height = 1, border = "rounded", title = "{source} {live} {flags}", title_pos = "center" },
     { win = "list", border = "hpad" },
-    { win = "preview", border = "rounded" },
+    { win = "preview", title = "{preview}", border = "rounded" },
   },
 }
 ```
