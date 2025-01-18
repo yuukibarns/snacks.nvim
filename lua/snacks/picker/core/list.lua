@@ -413,7 +413,7 @@ function M:_render(item, row)
 end
 
 function M:update_cursorline()
-  if self.win.win and vim.api.nvim_win_is_valid(self.win.win) then
+  if self.win:win_valid() then
     Snacks.util.wo(self.win.win, { cursorline = self:count() > 0 })
   end
 end

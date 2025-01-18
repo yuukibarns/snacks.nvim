@@ -131,7 +131,9 @@ end
 
 ---@param wo vim.wo|{}
 function M:wo(wo)
-  Snacks.util.wo(self.win.win, wo)
+  if self.win:win_valid() then
+    Snacks.util.wo(self.win.win, wo)
+  end
 end
 
 ---@param buf? number
