@@ -392,6 +392,7 @@ end
 ---@param row number
 function M:_render(item, row)
   local text, extmarks = self:format(item)
+  text = text:gsub("\n", " ")
   vim.api.nvim_buf_set_lines(self.win.buf, row - 1, row, false, { text })
   for _, extmark in ipairs(extmarks) do
     local col = extmark.col
