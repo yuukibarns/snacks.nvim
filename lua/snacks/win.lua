@@ -542,23 +542,27 @@ function M:toggle()
   return self
 end
 
----@param title string
+---@param title string|{[1]:string, [2]:string}[]
 ---@param pos? "center"|"left"|"right"
 function M:set_title(title, pos)
   if not self:has_border() then
     return
   end
-  title = vim.trim(title)
-  if title ~= "" then
-    -- HACK: add extra space when last char is non word
-    -- like for icons etc
-    if not title:sub(-1):match("%w") then
-      title = title .. " "
+  if type(title) == "string" then
+    title = vim.trim(title)
+    if title ~= "" then
+      -- HACK: add extra space when last char is non word
+      -- like for icons etc
+      if not title:sub(-1):match("%w") then
+        title = title .. " "
+      end
+      title = " " .. title .. " "
     end
-    title = " " .. title .. " "
+  elseif #title == 0 then
+    title = ""
   end
   pos = pos or self.opts.title_pos or "center"
-  if self.opts.title == title and self.opts.title_pos == pos then
+  if vim.deep_equal(self.opts.title, title) and self.opts.title_pos == pos then
     return
   end
   self.opts.title = title
