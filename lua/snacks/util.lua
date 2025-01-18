@@ -286,7 +286,7 @@ function M.normkey(key)
     return key_cache[key]
   end
   local k = key
-  key = key:gsub("<[aAmMcC]%-.>", string.upper)
+  key = key:gsub("<[aAmMcC]%-.>", string.lower)
   if not key:match("^<[aAmMcC]%-.>$") then
     key = vim.fn.keytrans(M.keycode(key))
   end
