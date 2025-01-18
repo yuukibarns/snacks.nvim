@@ -271,7 +271,7 @@ function M.new(opts)
         spec[1], spec[2] = key, spec[1]
       end
       ---@cast spec snacks.win.Keys
-      local lhs = vim.fn.keytrans(Snacks.util.keycode(spec[1] or ""))
+      local lhs = Snacks.util.normkey(spec[1] or "")
       local mode = type(spec.mode) == "table" and spec.mode or { spec.mode or "n" }
       ---@cast mode string[]
       mode = #mode == 0 and { "n" } or mode
