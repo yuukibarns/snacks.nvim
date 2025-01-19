@@ -47,8 +47,6 @@ function M.new(picker)
     bo = { modifiable = false, filetype = "snacks_picker_list" },
     wo = {
       foldenable = false,
-      conceallevel = 3,
-      concealcursor = "nvc",
       cursorline = false,
       winhighlight = Snacks.picker.highlight.winhl("SnacksPickerList", { CursorLine = "Visual" }),
     },
