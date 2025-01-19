@@ -571,6 +571,13 @@ M.spelling = {
   confirm = "item_action",
 }
 
+M.undo = {
+  finder = "vim_undo",
+  format = "undo",
+  preview = "preview",
+  confirm = "item_action",
+}
+
 -- Open a project from zoxide
 M.zoxide = {
   finder = "files_zoxide",
