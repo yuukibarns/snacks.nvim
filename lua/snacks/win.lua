@@ -803,6 +803,16 @@ function M:show()
     end,
   })
 
+  self:map()
+  self:drop()
+
+  return self
+end
+
+function M:map()
+  if not self:buf_valid() then
+    return
+  end
   for _, spec in pairs(self.keys) do
     local opts = vim.deepcopy(spec)
     opts[1] = nil
@@ -828,10 +838,6 @@ function M:show()
     ---@cast spec snacks.win.Keys
     vim.keymap.set(spec.mode or "n", spec[1], rhs, opts)
   end
-
-  self:drop()
-
-  return self
 end
 
 ---@private

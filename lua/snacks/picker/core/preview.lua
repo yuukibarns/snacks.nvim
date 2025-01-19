@@ -179,6 +179,7 @@ function M:scratch()
   vim.bo[buf].filetype = "snacks_picker_preview"
   vim.o.eventignore = ei
   vim.api.nvim_win_set_buf(self.win.win, buf)
+  self.win:map()
   self:wo({ number = false, relativenumber = false, signcolumn = "no" })
   return buf
 end
