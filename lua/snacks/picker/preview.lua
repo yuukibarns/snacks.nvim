@@ -145,7 +145,7 @@ function M.cmd(cmd, ctx, opts)
     if opts.add then
       opts.add(text, l)
     else
-      vim.api.nvim_buf_set_lines(buf, -1, -1, false, { text })
+      vim.api.nvim_buf_set_lines(buf, l - 1, l, false, { text })
     end
     vim.bo[buf].modifiable = false
   end
