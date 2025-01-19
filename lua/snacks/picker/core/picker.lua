@@ -88,6 +88,7 @@ function M.new(opts)
   M._active[self] = true
 
   local layout = Snacks.picker.config.layout(self.opts)
+  self.resolved_layout = layout
   self.list = require("snacks.picker.core.list").new(self)
   self.input = require("snacks.picker.core.input").new(self)
   self.preview = require("snacks.picker.core.preview").new(self.opts, layout.preview == "main" and self.main or nil)
@@ -137,7 +138,7 @@ end
 function M:init_layout(layout)
   layout = layout or Snacks.picker.config.layout(self.opts)
   self.resolved_layout = vim.deepcopy(layout)
-  self.resolved_layout.cycle = nil -- not needed for applying layout
+  self.resolved_layout.cycle = self.resolved_layout.cycle == true
   local opts = layout --[[@as snacks.layout.Config]]
   local preview_main = layout.preview == "main"
   local preview_hidden = layout.preview == false or preview_main
@@ -182,7 +183,7 @@ function M:set_layout(layout)
   layout = layout or Snacks.picker.config.layout(self.opts)
   layout = type(layout) == "string" and Snacks.picker.config.layout(layout) or layout
   ---@cast layout snacks.picker.layout.Config
-  layout.cycle = nil -- not needed for applying layout
+  layout.cycle = layout.cycle == true
   if vim.deep_equal(layout, self.resolved_layout) then
     -- no need to update
     return
