@@ -236,6 +236,10 @@ Snacks.picker.pick({source = "files", ...})
         ["<a-w>"] = "cycle_win",
         ["<Esc>"] = "close",
       },
+      wo = {
+        conceallevel = 2,
+        concealcursor = "nvc",
+      },
     },
     -- preview window
     preview = {
