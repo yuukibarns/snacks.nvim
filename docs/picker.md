@@ -722,6 +722,26 @@ Neovim commands
 }
 ```
 
+### `git_branches`
+
+```lua
+{
+  finder = "git_branches",
+  format = "git_branch",
+  preview = "git_log",
+  confirm = "git_checkout",
+  on_show = function(picker)
+    for i, item in ipairs(picker:items()) do
+      if item.current then
+        picker.list:view(i)
+        Snacks.picker.actions.list_scroll_center(picker)
+        break
+      end
+    end
+  end,
+}
+```
+
 ### `git_diff`
 
 ```lua
@@ -1527,6 +1547,12 @@ Snacks.picker.actions.focus_list(picker)
 
 ```lua
 Snacks.picker.actions.focus_preview(picker)
+```
+
+### `Snacks.picker.actions.git_checkout()`
+
+```lua
+Snacks.picker.actions.git_checkout(picker, item)
 ```
 
 ### `Snacks.picker.actions.git_stage()`
