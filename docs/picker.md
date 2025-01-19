@@ -659,7 +659,7 @@ Neovim commands
 ```lua
 {
   finder = "vim_commands",
-  format = "text",
+  format = "command",
   preview = "preview",
   confirm = "cmd",
 }
