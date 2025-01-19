@@ -250,6 +250,7 @@ function M:notify(msg, level, opts)
     Snacks.notify(msg, { level = level })
     return
   end
+  self:reset()
   level = level or "info"
   local lines = vim.split(level .. ": " .. msg, "\n", { plain = true })
   local msg_len = #lines
