@@ -265,6 +265,9 @@ Snacks.picker.pick({source = "files", ...})
       middle = "├╴",
       last   = "└╴",
     },
+    undo = {
+      saved   = " ",
+    },
     ui = {
       live        = "󰐰 ",
       hidden      = "h",
@@ -488,6 +491,7 @@ It's a previewer that shows a preview based on the item data.
 ---@field end_pos? {[1]:number, [2]:number}
 ---@field highlights? snacks.picker.Highlight[][]
 ---@field preview? snacks.picker.Item.preview
+---@field resolve? fun(item:snacks.picker.Item)
 ```
 
 ```lua
@@ -1332,6 +1336,17 @@ Neovim search history
   finder = "vim_spelling",
   format = "text",
   layout = { preset = "vscode" },
+  confirm = "item_action",
+}
+```
+
+### `undo`
+
+```lua
+{
+  finder = "vim_undo",
+  format = "undo",
+  preview = "preview",
   confirm = "item_action",
 }
 ```
