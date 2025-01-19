@@ -183,7 +183,7 @@ end
 
 ---@param item snacks.picker.Item
 function M.resolve(item)
-  if item.resolve then
+  if item and item.resolve then
     item.resolve(item)
     item.resolve = nil
   end
