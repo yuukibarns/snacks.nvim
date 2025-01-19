@@ -196,6 +196,7 @@ Snacks.picker.pick({source = "files", ...})
         ["<c-q>"] = { "qflist", mode = { "i", "n" } },
         ["<a-i>"] = { "toggle_ignored", mode = { "i", "n" } },
         ["<a-h>"] = { "toggle_hidden", mode = { "i", "n" } },
+        ["<a-f>"] = { "toggle_follow", mode = { "i", "n" } },
       },
       b = {
         minipairs_disable = true,
@@ -267,6 +268,7 @@ Snacks.picker.pick({source = "files", ...})
       live        = "󰐰 ",
       hidden      = "h",
       ignored     = "i",
+      follow      = "f",
       selected    = "● ",
       unselected  = "○ ",
       -- selected = " ",
@@ -1699,6 +1701,12 @@ Snacks.picker.actions.select_and_prev(picker)
 
 ```lua
 Snacks.picker.actions.toggle_focus(picker)
+```
+
+### `Snacks.picker.actions.toggle_follow()`
+
+```lua
+Snacks.picker.actions.toggle_follow(picker)
 ```
 
 ### `Snacks.picker.actions.toggle_hidden()`
