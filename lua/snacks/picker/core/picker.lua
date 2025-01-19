@@ -219,6 +219,10 @@ function M:update_titles()
   }
   local opts = self.opts --[[@as snacks.picker.files.Config]]
   local flags = {} ---@type snacks.picker.Text[]
+  if opts.follow then
+    flags[#flags + 1] = { " " .. self.opts.icons.ui.follow .. " ", "SnacksPickerFlagFollow" }
+    flags[#flags + 1] = { " ", "FloatTitle" }
+  end
   if opts.hidden then
     flags[#flags + 1] = { " " .. self.opts.icons.ui.hidden .. " ", "SnacksPickerFlagHidden" }
     flags[#flags + 1] = { " ", "FloatTitle" }

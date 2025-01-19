@@ -13,6 +13,7 @@ Snacks.util.set_hl({
   Flag = "DiagnosticVirtualTextInfo",
   FlagHidden = "SnacksPickerFlag",
   FlagIgnored = "SnacksPickerFlag",
+  FlagFollow = "SnacksPickerFlag",
   Dir = "NonText",
   Dimmed = "Conceal",
   Row = "String",
