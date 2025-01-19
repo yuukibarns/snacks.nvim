@@ -252,7 +252,7 @@ function M.results_to_items(client, results, opts)
         depth = (parent.depth or 0) + 1,
         detail = result.detail,
         name = result.name,
-        text = table.concat({ M.symbol_kind(result.kind), result.name, result.detail }, " "),
+        text = table.concat({ M.symbol_kind(result.kind), result.name, result.detail or "", sym.filename or "" }, " "),
         file = sym.filename,
         buf = sym.bufnr,
         pos = { sym.lnum, sym.col - 1 },
@@ -281,8 +281,9 @@ function M.results_to_items(client, results, opts)
 end
 
 ---@param opts snacks.picker.lsp.symbols.Config
-function M.symbols(opts)
-  local buf = vim.api.nvim_get_current_buf()
+---@param filt snacks.picker.Filter
+function M.symbols(opts, filt)
+  local buf = filt.current_buf
   local ft = vim.bo[buf].filetype
   local filter = opts.filter[ft]
   if filter == nil then
@@ -294,14 +295,17 @@ function M.symbols(opts)
     return type(filter) == "boolean" or vim.tbl_contains(filter, kind)
   end
 
+  local method = opts.workspace and "workspace/symbol" or "textDocument/documentSymbol"
+  local p = opts.workspace and { query = filt.search } or { textDocument = vim.lsp.util.make_text_document_params(buf) }
+
   ---@async
   ---@param cb async fun(item: snacks.picker.finder.Item)
   return function(cb)
-    M.request(buf, "textDocument/documentSymbol", function()
-      return { textDocument = vim.lsp.util.make_text_document_params(buf) }
+    M.request(buf, method, function()
+      return p
     end, function(client, result, params)
       local items = M.results_to_items(client, result, {
-        default_uri = params.textDocument.uri,
+        default_uri = params.textDocument and params.textDocument.uri or nil,
         filter = function(item)
           return want(M.symbol_kind(item.kind))
         end,

@@ -90,11 +90,15 @@ function M.get_highlights(opts)
 end
 
 ---@param line snacks.picker.Highlight[]
-function M.offset(line)
+---@param opts? {char_idx?:boolean}
+function M.offset(line, opts)
+  opts = opts or {}
   local offset = 0
   for _, t in ipairs(line) do
     if type(t[1]) == "string" then
       if t.virtual then
+        offset = offset + vim.api.nvim_strwidth(t[1])
+      elseif opts.char_idx then
         offset = offset + vim.api.nvim_strwidth(t[1])
       else
         offset = offset + #t[1]

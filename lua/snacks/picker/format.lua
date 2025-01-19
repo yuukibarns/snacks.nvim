@@ -152,8 +152,9 @@ function M.git_branch(item, picker)
 end
 
 function M.lsp_symbol(item, picker)
+  local opts = picker.opts --[[@as snacks.picker.lsp.symbols.Config]]
   local ret = {} ---@type snacks.picker.Highlight[]
-  if item.hierarchy then
+  if item.hierarchy and not opts.workspace then
     local indents = picker.opts.icons.indent
     local indent = {} ---@type string[]
     local node = item
@@ -173,12 +174,15 @@ function M.lsp_symbol(item, picker)
   local kind_hl = "SnacksPickerIcon" .. kind
   ret[#ret + 1] = { picker.opts.icons.kinds[kind], kind_hl }
   ret[#ret + 1] = { " " }
-  -- ret[#ret + 1] = { kind:lower() .. string.rep(" ", 10 - #kind), kind_hl }
-  -- ret[#ret + 1] = { " " }
   local name = vim.trim(item.name:gsub("\r?\n", " "))
   name = name == "" and item.detail or name
   Snacks.picker.highlight.format(item, name, ret)
-  -- ret[#ret + 1] = { name }
+
+  if opts.workspace then
+    local offset = Snacks.picker.highlight.offset(ret, { char_idx = true })
+    ret[#ret + 1] = { Snacks.picker.util.align(" ", 40 - offset) }
+    vim.list_extend(ret, M.filename(item, picker))
+  end
   return ret
 end
 
