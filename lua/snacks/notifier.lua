@@ -580,9 +580,6 @@ function N:render(notif)
   for _, line in ipairs(lines) do
     width = math.max(width, vim.fn.strdisplaywidth(line) + pad)
   end
-  if win:has_border() then
-    width = width + 2
-  end
   width = dim(width, self.opts.width.min, self.opts.width.max, vim.o.columns)
 
   local height = #lines
