@@ -176,6 +176,7 @@ function M:init_layout(layout)
     on_update = function()
       self:update_titles()
       self:show_preview()
+      self.input:update()
     end,
     layout = {
       backdrop = backdrop,
