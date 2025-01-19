@@ -321,6 +321,12 @@ win:line(line)
 win:lines(from, to)
 ```
 
+### `win:map()`
+
+```lua
+win:map()
+```
+
 ### `win:on()`
 
 ```lua
