@@ -144,6 +144,21 @@ function M.git_stage(picker)
   end
 end
 
+function M.git_checkout(picker, item)
+  picker:close()
+  if item then
+    local what = item.branch or item.commit
+    if not what then
+      Snacks.notify.warn("No branch or commit found", { title = "Snacks Picker" })
+      return
+    end
+    local cmd = { "git", "checkout", what }
+    Snacks.picker.util.cmd(cmd, function()
+      Snacks.notify("Checkout " .. what, { title = "Snacks Picker" })
+    end, { cwd = item.cwd })
+  end
+end
+
 ---@param items snacks.picker.Item[]
 ---@param opts? {win?:number}
 local function setqflist(items, opts)

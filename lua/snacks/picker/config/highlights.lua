@@ -44,6 +44,8 @@ Snacks.util.set_hl({
   KeymapRhs = "NonText",
   GitCommit = "@variable.builtin",
   GitBreaking = "Error",
+  GitBranch = "Title",
+  GitBranchCurrent = "Number",
   GitDate = "Special",
   GitIssue = "Number",
   GitType = "Title", -- conventional commit type

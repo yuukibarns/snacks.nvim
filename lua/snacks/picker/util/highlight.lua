@@ -224,4 +224,44 @@ function M.to_text(line, opts)
   return table.concat(parts), ret
 end
 
+---@param hl snacks.picker.Highlight[]
+function M.fix_offset(hl, offset)
+  for _, t in ipairs(hl) do
+    if t.col then
+      t.col = t.col + offset
+    end
+    if t.end_col then
+      t.end_col = t.end_col + offset
+    end
+  end
+end
+
+---@param buf number
+---@param ns number
+---@param row number
+---@param hl snacks.picker.Highlight[]
+function M.set(buf, ns, row, hl)
+  while #hl > 0 and type(hl[#hl][1]) == "string" and hl[#hl][1]:find("^%s*$") do
+    table.remove(hl)
+  end
+  local line_text, extmarks = Snacks.picker.highlight.to_text(hl)
+  vim.api.nvim_buf_set_lines(buf, row - 1, row, false, { line_text })
+  for _, extmark in ipairs(extmarks) do
+    local col = extmark.col
+    extmark.col = nil
+    extmark.row = nil
+    extmark.field = nil
+    local ok, err = pcall(vim.api.nvim_buf_set_extmark, buf, ns, row - 1, col, extmark)
+    if not ok then
+      Snacks.notify.error(
+        "Failed to set extmark. This should not happen. Please report.\n"
+          .. err
+          .. "\n```lua\n"
+          .. vim.inspect(extmark)
+          .. "\n```"
+      )
+    end
+  end
+end
+
 return M

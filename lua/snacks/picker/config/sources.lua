@@ -126,6 +126,22 @@ M.files = {
   supports_live = true,
 }
 
+M.git_branches = {
+  finder = "git_branches",
+  format = "git_branch",
+  preview = "git_log",
+  confirm = "git_checkout",
+  on_show = function(picker)
+    for i, item in ipairs(picker:items()) do
+      if item.current then
+        picker.list:view(i)
+        Snacks.picker.actions.list_scroll_center(picker)
+        break
+      end
+    end
+  end,
+}
+
 -- Find git files
 ---@class snacks.picker.git.files.Config: snacks.picker.Config
 ---@field untracked? boolean show untracked files

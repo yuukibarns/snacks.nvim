@@ -98,8 +98,11 @@ function M.git_log(item, picker)
   local ret = {} ---@type snacks.picker.Highlight[]
   ret[#ret + 1] = { picker.opts.icons.git.commit, "SnacksPickerGitCommit" }
   ret[#ret + 1] = { item.commit, "SnacksPickerGitCommit" }
+
   ret[#ret + 1] = { " " }
-  ret[#ret + 1] = { a(item.date, 16), "SnacksPickerGitDate" }
+  if item.date then
+    ret[#ret + 1] = { a(item.date, 16), "SnacksPickerGitDate" }
+  end
 
   local msg = item.msg ---@type string
   local type, scope, breaking, body = msg:match("^(%S+)(%(.-%))(!?):%s*(.*)$")
@@ -127,6 +130,24 @@ function M.git_log(item, picker)
   Snacks.picker.highlight.highlight(ret, {
     ["#%d+"] = "SnacksPickerGitIssue",
   })
+  return ret
+end
+
+function M.git_branch(item, picker)
+  local a = Snacks.picker.util.align
+  local ret = {} ---@type snacks.picker.Highlight[]
+  if item.current then
+    ret[#ret + 1] = { a("", 2), "SnacksPickerGitBranchCurrent" }
+    ret[#ret + 1] = { a(item.branch, 30, { truncate = true }), "SnacksPickerGitBranch" }
+  else
+    ret[#ret + 1] = { a("", 2) }
+    ret[#ret + 1] = { a(item.branch, 30, { truncate = true }), "SnacksPickerGitBranch" }
+  end
+  ret[#ret + 1] = { " " }
+  local offset = Snacks.picker.highlight.offset(ret)
+  local log = M.git_log(item, picker)
+  Snacks.picker.highlight.fix_offset(log, offset)
+  vim.list_extend(ret, log)
   return ret
 end
 
