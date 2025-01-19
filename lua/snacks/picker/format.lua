@@ -26,7 +26,7 @@ function M.filename(item, picker)
     return ret
   end
   local path = Snacks.picker.util.path(item) or item.file
-  path = vim.fn.fnamemodify(path, ":~:.")
+  path = vim.fn.fnamemodify(path, ":~:."):gsub("\\", "/")
   local name, cat = path, "file"
   if item.buf and vim.api.nvim_buf_is_loaded(item.buf) then
     name = vim.bo[item.buf].filetype
