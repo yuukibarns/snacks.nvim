@@ -385,10 +385,10 @@ end
 
 --- Close the picker
 function M:close()
+  vim.cmd.stopinsert()
   if self.closed then
     return
   end
-  vim.cmd.stopinsert()
   self.closed = true
   M.last.selected = self:selected({ fallback = false })
   M.last.cursor = self.list.cursor
