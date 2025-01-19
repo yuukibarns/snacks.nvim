@@ -683,6 +683,7 @@ Neovim commands
       "lnum",
     },
   },
+  matcher = { sort_empty = true },
   -- only show diagnostics from the cwd by default
   filter = { cwd = true },
 }
@@ -698,6 +699,7 @@ Neovim commands
   sort = {
     fields = { "severity", "file", "lnum" },
   },
+  matcher = { sort_empty = true },
   filter = { buf = true },
 }
 ```
