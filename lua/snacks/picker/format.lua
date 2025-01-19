@@ -218,6 +218,16 @@ function M.text(item)
   }
 end
 
+function M.command(item)
+  local ret = {} ---@type snacks.picker.Highlight[]
+  ret[#ret + 1] = { item.cmd, "SnacksPickerCmd" .. (item.cmd:find("^[a-z]") and "Builtin" or "") }
+  if item.desc then
+    ret[#ret + 1] = { " " }
+    ret[#ret + 1] = { item.desc, "SnacksPickerDesc" }
+  end
+  return ret
+end
+
 function M.diagnostic(item, picker)
   local ret = {} ---@type snacks.picker.Highlight[]
   local diag = item.item ---@type vim.Diagnostic
