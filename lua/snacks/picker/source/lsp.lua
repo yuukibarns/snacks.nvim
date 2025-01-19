@@ -2,6 +2,8 @@ local Async = require("snacks.picker.util.async")
 
 local M = {}
 
+local islist = vim.islist or vim.tbl_islist
+
 ---@class snacks.picker
 ---@field lsp_definitions? fun(opts?: snacks.picker.lsp.Config):snacks.Picker
 ---@field lsp_implementations? fun(opts?: snacks.picker.lsp.Config):snacks.Picker
@@ -154,6 +156,10 @@ function M.get_locations(method, opts, filter)
       params.context = opts.context
       return params
     end, function(client, result)
+      result = result or {}
+      -- Result can be a single item or a list of items
+      result = vim.tbl_isempty(result) and {} or islist(result) and result or { result }
+
       local items = vim.lsp.util.locations_to_items(result or {}, client.offset_encoding)
       M.fix_locs(items)
 
