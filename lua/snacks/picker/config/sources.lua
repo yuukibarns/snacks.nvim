@@ -96,6 +96,7 @@ M.diagnostics = {
       "lnum",
     },
   },
+  matcher = { sort_empty = true },
   -- only show diagnostics from the cwd by default
   filter = { cwd = true },
 }
@@ -107,6 +108,7 @@ M.diagnostics_buffer = {
   sort = {
     fields = { "severity", "file", "lnum" },
   },
+  matcher = { sort_empty = true },
   filter = { buf = true },
 }
 
