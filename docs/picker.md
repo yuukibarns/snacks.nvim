@@ -330,6 +330,7 @@ Snacks.picker.pick({source = "files", ...})
   ---@class snacks.picker.debug
   debug = {
     scores = false, -- show scores in the list
+    leaks = false, -- show when pickers don't get garbage collected
   },
 }
 ```
@@ -509,6 +510,10 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
+```
+
+```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
 ```
 
 ```lua
@@ -1960,6 +1965,13 @@ and then`vim.schedule` the callback.
 ```lua
 ---@param cb fun()
 picker:norm(cb)
+```
+
+### `picker:ref()`
+
+```lua
+---@return snacks.Picker.ref
+picker:ref()
 ```
 
 ### `picker:resolve()`
