@@ -67,6 +67,8 @@ Snacks.config.style("input", {
     i_cr = { "<cr>", { "cmp_accept", "confirm" }, mode = "i", expr = true },
     i_tab = { "<tab>", { "cmp_select_next", "cmp" }, mode = "i", expr = true },
     i_ctrl_w = { "<c-w>", "<c-s-w>", mode = "i", expr = true },
+    i_up = { "<up>", { "hist_up" }, mode = { "i", "n" } },
+    i_down = { "<down>", { "hist_down" }, mode = { "i", "n" } },
     q = "cancel",
   },
 })
@@ -84,6 +86,8 @@ local ui_input = vim.ui.input
 ---@field win? snacks.win
 local ctx = {}
 
+local history = {} ---@type string[]
+
 ---@param opts? snacks.input.Opts
 ---@param on_confirm fun(value?: string)
 function M.input(opts, on_confirm)
@@ -92,7 +96,21 @@ function M.input(opts, on_confirm)
   local parent_win = vim.api.nvim_get_current_win()
   local mode = vim.fn.mode()
 
+  local hist_idx = #history + 1
+  local hist_cursor = hist_idx
+
+  local function record()
+    if not ctx.win then
+      return
+    end
+    local text = ctx.win:text()
+    if text and not text:find("^%s*$") then
+      history[hist_idx] = text
+    end
+  end
+
   local function confirm(value)
+    record()
     ctx.win = nil
     ctx.opts = nil
     vim.cmd.stopinsert()
@@ -130,6 +148,11 @@ function M.input(opts, on_confirm)
     table.insert(title, { " " })
   end
 
+  local function set(text)
+    vim.api.nvim_buf_set_lines(ctx.win.buf, 0, -1, false, { text })
+    vim.api.nvim_win_set_cursor(ctx.win.win, { 1, #text })
+  end
+
   opts.win = Snacks.win.resolve("input", opts.win, {
     enter = true,
     title = next(title) and title or nil,
@@ -152,6 +175,20 @@ function M.input(opts, on_confirm)
       confirm = function(self)
         confirm(self:text())
         self:close()
+      end,
+      hist_up = function(self)
+        if hist_idx == hist_cursor then
+          record()
+        end
+        hist_cursor = math.max(hist_cursor - 1, 1)
+        set(history[hist_cursor] or "")
+      end,
+      hist_down = function(self)
+        if hist_idx == hist_cursor then
+          record()
+        end
+        hist_cursor = math.min(hist_cursor + 1, hist_idx)
+        set(history[hist_cursor] or "")
       end,
       cmp = function()
         return vim.fn.pumvisible() == 0 and "<c-x><c-u>"
