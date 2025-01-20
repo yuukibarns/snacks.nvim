@@ -153,7 +153,7 @@ end
 ---@return string text, string[] args
 function M.parse(str)
   -- Format: this is a test -- -g=hello
-  local t, a = str:match("^(.-)%s*%-%-%s+(.+)$")
+  local t, a = str:match("^(.-)%s*%-%-%s*(.*)$")
   if not t then
     return str, {}
   end
