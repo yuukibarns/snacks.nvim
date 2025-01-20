@@ -1888,6 +1888,12 @@ Get the current item at the cursor
 picker:current(opts)
 ```
 
+### `picker:cwd()`
+
+```lua
+picker:cwd()
+```
+
 ### `picker:empty()`
 
 Check if the picker is empty
@@ -1992,6 +1998,12 @@ If `fallback=true` and there is no selection, return the current item.
 ---@param opts? {fallback?: boolean} default is `false`
 ---@return snacks.picker.Item[]
 picker:selected(opts)
+```
+
+### `picker:set_cwd()`
+
+```lua
+picker:set_cwd(cwd)
 ```
 
 ### `picker:set_layout()`
