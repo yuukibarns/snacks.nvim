@@ -132,9 +132,8 @@ function M:count()
 end
 
 function M:close()
-  self.win:close()
-  self.items = {}
-  self.topk:clear()
+  -- nothing todo. Keep all items so actions can be performed on them,
+  -- even when the picker closed
 end
 
 function M:scrolloff()

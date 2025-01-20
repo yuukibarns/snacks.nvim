@@ -4,6 +4,8 @@ local Finder = require("snacks.picker.core.finder")
 local uv = vim.uv or vim.loop
 Async.BUDGET = 10
 
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+
 ---@class snacks.Picker
 ---@field opts snacks.picker.Config
 ---@field finder snacks.picker.Finder
@@ -134,8 +136,12 @@ function M.new(opts)
     end)
   end)
 
+  local ref = self:ref()
   self._throttled_preview = Snacks.util.throttle(function()
-    self._show_preview(self)
+    local this = ref()
+    if this then
+      this:_show_preview()
+    end
   end, { ms = 60, name = "preview" })
 
   self:find()
@@ -412,6 +418,11 @@ function M:empty()
   return self:count() == 0
 end
 
+---@return snacks.Picker.ref
+function M:ref()
+  return Snacks.util.ref(self)
+end
+
 --- Close the picker
 function M:close()
   vim.cmd.stopinsert()
@@ -428,15 +439,14 @@ function M:close()
   if is_picker_win and vim.api.nvim_win_is_valid(self.main) then
     vim.api.nvim_set_current_win(self.main)
   end
-  self.preview.win:close()
   self.layout:close()
   self.updater:stop()
   M._active[self] = nil
   vim.schedule(function()
-    self.list:clear()
-    self.finder.items = {}
     self.matcher:abort()
     self.finder:abort()
+    self.input:close()
+    self.preview:close()
   end)
 end
 
