@@ -71,7 +71,6 @@ local function get_cmd(opts, filter)
 
   -- search pattern
   local pattern, pargs = Snacks.picker.util.parse(filter.search)
-  dd(pattern, pargs)
   vim.list_extend(args, pargs)
 
   args[#args + 1] = "--"
