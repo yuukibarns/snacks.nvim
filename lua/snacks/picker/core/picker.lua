@@ -334,6 +334,16 @@ function M:show()
   end
 end
 
+---@param item snacks.picker.Item?
+function M:resolve(item)
+  if not item then
+    return
+  end
+  Snacks.picker.util.resolve(item)
+  Snacks.picker.util.resolve_loc(item)
+  return item
+end
+
 --- Returns an iterator over the filtered items in the picker.
 --- Items will be in sorted order.
 ---@return fun():snacks.picker.Item?
@@ -343,7 +353,7 @@ function M:iter()
   return function()
     i = i + 1
     if i <= n then
-      return self.list:get(i)
+      return self:resolve(self.list:get(i))
     end
   end
 end
@@ -358,20 +368,29 @@ function M:items()
 end
 
 --- Get the current item at the cursor
-function M:current()
-  return self.list:current()
+---@param opts? {resolve?: boolean} default is `true`
+function M:current(opts)
+  opts = opts or {}
+  local ret = self.list:current()
+  if ret and opts.resolve ~= false then
+    ret = self:resolve(ret)
+  end
+  return ret
 end
 
 --- Get the selected items.
 --- If `fallback=true` and there is no selection, return the current item.
 ---@param opts? {fallback?: boolean} default is `false`
+---@return snacks.picker.Item[]
 function M:selected(opts)
   opts = opts or {}
   local ret = vim.deepcopy(self.list.selected)
   if #ret == 0 and opts.fallback then
-    return { self:current() }
+    ret = { self:current() }
   end
-  return ret
+  return vim.tbl_map(function(item)
+    return self:resolve(item)
+  end, ret)
 end
 
 --- Total number of items in the picker

@@ -93,7 +93,7 @@ end
 
 ---@param picker snacks.Picker
 function M:show(picker)
-  local item, prev = picker:current(), self.item
+  local item, prev = picker:current({ resolve = false }), self.item
   if self.item == item then
     return
   end
@@ -210,7 +210,10 @@ function M:loc()
   if not self.item then
     return
   end
+
   local line_count = vim.api.nvim_buf_line_count(self.win.buf)
+  Snacks.picker.util.resolve_loc(self.item, self.win.buf)
+
   if self.item.pos and self.item.pos[1] > 0 and self.item.pos[1] <= line_count then
     vim.api.nvim_win_set_cursor(self.win.win, { self.item.pos[1], 0 })
     vim.api.nvim_win_call(self.win.win, function()

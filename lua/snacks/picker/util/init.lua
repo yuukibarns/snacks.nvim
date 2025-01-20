@@ -181,12 +181,38 @@ function M.parse(str)
   return t, args
 end
 
+--- Resolves the item if it has a resolve function
 ---@param item snacks.picker.Item
 function M.resolve(item)
   if item and item.resolve then
     item.resolve(item)
     item.resolve = nil
   end
+  return item
+end
+
+--- Resolves the location of an item to byte positions
+---@param item snacks.picker.Item
+---@param buf? number
+function M.resolve_loc(item, buf)
+  if not item or not item.loc or item.loc.resolved then
+    return item
+  end
+
+  local lines = {} ---@type string[]
+  if buf and vim.api.nvim_buf_is_valid(buf) then
+    lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  else
+    lines = vim.fn.readfile(item.file)
+  end
+
+  ---@param pos lsp.Position?
+  local function resolve(pos)
+    return pos and { pos.line + 1, vim.str_byteindex(lines[pos.line + 1], item.loc.encoding, pos.character) } or nil
+  end
+  item.pos = resolve(item.loc.range["start"])
+  item.end_pos = resolve(item.loc.range["end"]) or item.end_pos
+  item.loc.resolved = true
   return item
 end
 
