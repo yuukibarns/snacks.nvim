@@ -182,7 +182,7 @@ function M.parse(str)
 end
 
 --- Resolves the item if it has a resolve function
----@param item snacks.picker.Item
+---@param item snacks.picker.Item?
 function M.resolve(item)
   if item and item.resolve then
     item.resolve(item)

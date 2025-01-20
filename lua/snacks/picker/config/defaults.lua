@@ -109,6 +109,7 @@ local defaults = {
     ignorecase = true, -- use ignorecase
     sort_empty = false, -- sort results when the search string is empty
     filename_bonus = true, -- give bonus for matching file names (last part of the path)
+    file_pos = true, -- support patterns like `file:line:col` and `file:line`
   },
   sort = {
     -- default sort is by score, text length and index

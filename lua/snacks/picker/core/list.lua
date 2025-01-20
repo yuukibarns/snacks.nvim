@@ -205,6 +205,7 @@ function M:clear()
   self.topk:clear()
   self.top, self.cursor = 1, 1
   self.items = {}
+  self._current = nil
   self.dirty = true
   if next(self.items) == nil then
     return

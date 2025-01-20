@@ -1,5 +1,6 @@
 ---@class snacks.picker.Preview
 ---@field item? snacks.picker.Item
+---@field pos? snacks.picker.Pos
 ---@field win snacks.win
 ---@field preview snacks.picker.preview
 ---@field state table<string, any>
@@ -101,11 +102,12 @@ end
 ---@param picker snacks.Picker
 function M:show(picker)
   local item, prev = picker:current({ resolve = false }), self.item
-  if self.item == item then
+  if self.item == item and self.pos == (item and item.pos or nil) then
     return
   end
   Snacks.picker.util.resolve(item)
   self.item = item
+  self.pos = item and item.pos or nil
   if item then
     local buf = self.win.buf
     local ok, err = pcall(
