@@ -58,11 +58,33 @@ function M.new(opts)
     return M.resume()
   end
 
+  local picker_count = vim.tbl_count(M._pickers)
+  if picker_count > 0 then
+    -- clear items from previous pickers for garbage collection
+    for picker, _ in pairs(M._pickers) do
+      picker.list.items = {}
+      picker.list.topk:clear()
+      picker.finder.items = {}
+      picker.list.picker = nil
+    end
+  end
+
   if self.opts.debug.leaks then
     collectgarbage("collect")
-    local picker_count = vim.tbl_count(M._pickers)
+    picker_count = vim.tbl_count(M._pickers)
     if picker_count > 0 then
-      Snacks.notify.error("` " .. picker_count .. " ` active pickers.", { title = "Snacks Picker" })
+      local lines = { ("# ` %d ` active pickers:"):format(picker_count) }
+      for picker, _ in pairs(M._pickers) do
+        lines[#lines + 1] = ("- [%s]: **pattern**=%q, **search**=%q"):format(
+          picker.opts.source or "custom",
+          picker.input.filter.pattern,
+          picker.input.filter.search
+        )
+      end
+      Snacks.notify.error(lines, { title = "Snacks Picker", id = "snacks_picker_leaks" })
+      Snacks.debug.metrics()
+    else
+      Snacks.notifier.hide("snacks_picker_leaks")
     end
   end
 
