@@ -440,12 +440,22 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
 ---@alias snacks.picker.format fun(item:snacks.picker.Item, picker:snacks.Picker):snacks.picker.Highlight[]
 ---@alias snacks.picker.preview fun(ctx: snacks.picker.preview.ctx):boolean?
 ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
+---@alias snacks.picker.Pos {[1]:number, [2]:number}
 ```
 
 Generic filter used by finders to pre-filter items
@@ -477,9 +487,11 @@ It's a previewer that shows a preview based on the item data.
 ---@field score_add? number
 ---@field score_mul? number
 ---@field match_tick? number
+---@field file? string
 ---@field text string
----@field pos? {[1]:number, [2]:number}
----@field end_pos? {[1]:number, [2]:number}
+---@field pos? snacks.picker.Pos
+---@field loc? snacks.picker.lsp.Loc
+---@field end_pos? snacks.picker.Pos
 ---@field highlights? snacks.picker.Highlight[][]
 ---@field preview? snacks.picker.Item.preview
 ---@field resolve? fun(item:snacks.picker.Item)
@@ -506,15 +518,6 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
 ```
 
 ## 📦 Module
@@ -1816,8 +1819,6 @@ Snacks.picker.actions.toggle_maximize(picker)
 Snacks.picker.actions.toggle_preview(picker)
 ```
 
-
-
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -1874,7 +1875,8 @@ picker:count()
 Get the current item at the cursor
 
 ```lua
-picker:current()
+---@param opts? {resolve?: boolean} default is `true`
+picker:current(opts)
 ```
 
 ### `picker:empty()`
@@ -1958,6 +1960,13 @@ and then`vim.schedule` the callback.
 picker:norm(cb)
 ```
 
+### `picker:resolve()`
+
+```lua
+---@param item snacks.picker.Item?
+picker:resolve(item)
+```
+
 ### `picker:selected()`
 
 Get the selected items.
@@ -1965,6 +1974,7 @@ If `fallback=true` and there is no selection, return the current item.
 
 ```lua
 ---@param opts? {fallback?: boolean} default is `false`
+---@return snacks.picker.Item[]
 picker:selected(opts)
 ```
 
@@ -1994,3 +2004,5 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
+
+
