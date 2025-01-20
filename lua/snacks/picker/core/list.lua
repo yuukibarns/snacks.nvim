@@ -270,24 +270,41 @@ function M:update()
 end
 
 -- Toggle selection of current item
-function M:select()
-  local item = self:current()
+---@param item? snacks.picker.Item
+function M:select(item)
+  item = item or self:current()
+  if not item then
+    return
+  end
+  if self:unselect(item) then
+    return
+  end
+  local key = self:select_key(item)
+  self.selected_map[key] = item
+  table.insert(self.selected, item)
+  self.picker.input:update()
+  self.dirty = true
+  self:render()
+end
+
+---@param item? snacks.picker.Item
+function M:unselect(item)
+  item = item or self:current()
   if not item then
     return
   end
   local key = self:select_key(item)
-  if self.selected_map[key] then
-    self.selected_map[key] = nil
-    self.selected = vim.tbl_filter(function(v)
-      return self:select_key(v) ~= key
-    end, self.selected)
-  else
-    self.selected_map[key] = item
-    table.insert(self.selected, item)
+  if not self.selected_map[key] then
+    return
   end
+  self.selected_map[key] = nil
+  self.selected = vim.tbl_filter(function(v)
+    return self:select_key(v) ~= key
+  end, self.selected)
   self.picker.input:update()
   self.dirty = true
   self:render()
+  return true
 end
 
 function M:select_all()
