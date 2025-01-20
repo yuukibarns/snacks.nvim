@@ -33,7 +33,7 @@ end
 
 ---@param opts snacks.picker.git.log.Config
 ---@type snacks.picker.finder
-function M.log(opts)
+function M.log(opts, filter)
   local args = {
     "log",
     "--pretty=format:%h %s (%ch)",
@@ -44,20 +44,22 @@ function M.log(opts)
     "--no-show-signature",
     "--no-patch",
   }
-
-  if opts.follow and not opts.current_line then
-    args[#args + 1] = "--follow"
+  if opts.follow and not opts.current_file then
+    opts.follow = nil
   end
 
   local file ---@type string?
   if opts.current_line then
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    file = vim.api.nvim_buf_get_name(0)
+    local cursor = vim.api.nvim_win_get_cursor(filter.current_win)
+    file = vim.api.nvim_buf_get_name(filter.current_buf)
     local line = cursor[1]
     args[#args + 1] = "-L"
     args[#args + 1] = line .. ",+1:" .. file
   elseif opts.current_file then
-    file = vim.api.nvim_buf_get_name(0)
+    file = vim.api.nvim_buf_get_name(filter.current_buf)
+    if opts.follow then
+      args[#args + 1] = "--follow"
+    end
     args[#args + 1] = "--"
     args[#args + 1] = file
   end
