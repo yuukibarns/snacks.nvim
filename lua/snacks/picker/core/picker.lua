@@ -55,6 +55,15 @@ function M.new(opts)
   if self.opts.source == "resume" then
     return M.resume()
   end
+
+  if self.opts.debug.leaks then
+    collectgarbage("collect")
+    local picker_count = vim.tbl_count(M._pickers)
+    if picker_count > 0 then
+      Snacks.notify.error("` " .. picker_count .. " ` active pickers.", { title = "Snacks Picker" })
+    end
+  end
+
   self.visual = Snacks.picker.util.visual()
   self.start_time = uv.hrtime()
   Snacks.picker.current = self

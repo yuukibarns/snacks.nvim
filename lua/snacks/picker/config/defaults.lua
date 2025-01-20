@@ -322,6 +322,7 @@ local defaults = {
   ---@class snacks.picker.debug
   debug = {
     scores = false, -- show scores in the list
+    leaks = false, -- show when pickers don't get garbage collected
   },
 }
 
