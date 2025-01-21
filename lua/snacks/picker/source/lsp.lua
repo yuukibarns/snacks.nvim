@@ -164,8 +164,8 @@ end
 ---@param opts snacks.picker.lsp.Config|{context?:lsp.ReferenceContext}
 ---@param filter snacks.picker.Filter
 function M.get_locations(method, opts, filter)
-  local win = vim.api.nvim_get_current_win()
-  local buf = vim.api.nvim_get_current_buf()
+  local win = filter.current_win
+  local buf = filter.current_buf
   local fname = vim.api.nvim_buf_get_name(buf)
   fname = vim.fs.normalize(fname)
   local cursor = vim.api.nvim_win_get_cursor(win)
