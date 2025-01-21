@@ -71,6 +71,7 @@ M.command_history = {
     preset = "vscode",
   },
   confirm = "cmd",
+  formatters = { text = { ft = "vim" } },
 }
 
 -- Neovim commands
@@ -549,10 +550,9 @@ M.search_history = {
   name = "search",
   format = "text",
   preview = "none",
-  layout = {
-    preset = "vscode",
-  },
+  layout = { preset = "vscode" },
   confirm = "search",
+  formatters = { text = { ft = "regex" } },
 }
 
 ---@class snacks.picker.smart.Config: snacks.picker.Config

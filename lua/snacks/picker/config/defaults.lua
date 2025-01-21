@@ -118,6 +118,9 @@ local defaults = {
   ui_select = true, -- replace `vim.ui.select` with the snacks picker
   ---@class snacks.picker.formatters.Config
   formatters = {
+    text = {
+      ft = nil, ---@type string? filetype for highlighting
+    },
     file = {
       filename_first = false, -- display filename before the file path
     },
