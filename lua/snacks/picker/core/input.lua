@@ -23,11 +23,10 @@ function M.new(picker)
     height = 1,
     text = picker.opts.live and self.filter.search or self.filter.pattern,
     ft = "regex",
-      vim.cmd.startinsert()
-      vim.api.nvim_win_set_cursor(self.win.win, { 1, #self:get() + 1 })
     on_win = function(win)
       vim.fn.prompt_setprompt(win.buf, "")
       win:focus()
+      vim.cmd("startinsert!")
     end,
     bo = {
       filetype = "snacks_picker_input",
