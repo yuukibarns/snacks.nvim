@@ -470,10 +470,11 @@ function M:close()
   end
   self.layout:close()
   self.updater:stop()
+  self.finder:abort()
+  self.matcher:abort()
   M._active[self] = nil
   vim.schedule(function()
-    self.matcher:abort()
-    self.finder:abort()
+    -- order matters!
     self.input:close()
     self.preview:close()
   end)
