@@ -261,7 +261,12 @@ function M.resolve_loc(item, buf)
 
   ---@param pos lsp.Position?
   local function resolve(pos)
-    return pos and { pos.line + 1, M.str_byteindex(lines[pos.line + 1], pos.character, item.loc.encoding) } or nil
+    if not pos then
+      return
+    end
+    local line = lines[pos.line + 1]
+    local col = line and M.str_byteindex(line, pos.character, item.loc.encoding) or pos.character
+    return { pos.line + 1, col }
   end
   item.pos = resolve(item.loc.range["start"])
   item.end_pos = resolve(item.loc.range["end"]) or item.end_pos
