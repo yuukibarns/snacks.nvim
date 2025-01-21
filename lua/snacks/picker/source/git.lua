@@ -168,7 +168,7 @@ function M.branches(opts)
   local patterns = {
     -- stylua: ignore start
     --- e.g. "* (HEAD detached at f65a2c8) f65a2c8 chore(build): auto-generate docs"
-    "^(.)%s(%(HEAD detached at " .. pattern_hash .. "%))%s+(" .. pattern_hash .. ")%s*(.*)$",
+    "^(.)%s(%b())%s+(" .. pattern_hash .. ")%s*(.*)$",
     --- e.g. "  main                       d2b2b7b [origin/main: behind 276] chore(build): auto-generate docs"
     "^(.)%s(%S+)%s+(".. pattern_hash .. ")%s*(.*)$",
     -- stylua: ignore end
