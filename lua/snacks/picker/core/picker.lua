@@ -128,11 +128,7 @@ function M.new(opts)
     return self.opts.items or {}
   end)
 
-  local format = type(self.opts.format) == "string" and Snacks.picker.format[self.opts.format]
-    or self.opts.format
-    or Snacks.picker.format.file
-  ---@cast format snacks.picker.format
-  self.format = format
+  self.format = Snacks.picker.config.format(self.opts)
 
   M._pickers[self] = true
   M._active[self] = true

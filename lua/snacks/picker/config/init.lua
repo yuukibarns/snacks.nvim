@@ -77,6 +77,21 @@ function M.get(opts)
 
   -- Merge the configs
   return Snacks.config.merge(unpack(todo))
+---@param opts snacks.picker.Config
+function M.format(opts)
+  local ret = type(opts.format) == "string" and Snacks.picker.format[opts.format]
+    or opts.format
+    or Snacks.picker.format.file
+  ---@cast ret snacks.picker.format
+  return ret
+end
+
+---@param opts snacks.picker.Config
+function M.preview(opts)
+  local preview = opts.preview or Snacks.picker.preview.file
+  preview = type(preview) == "string" and Snacks.picker.preview[preview] or preview
+  ---@cast preview snacks.picker.preview
+  return preview
 end
 
 --- Resolve the layout configuration
