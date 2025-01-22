@@ -112,13 +112,18 @@ function M.request(buf, method, params, cb)
   local async = Async.running()
   local cancel = {} ---@type fun()[]
 
-  async:on("abort", function()
-    for _, c in ipairs(cancel) do
-      c()
-    end
-  end)
+  async:on(
+    "abort",
+    vim.schedule_wrap(function()
+      vim.tbl_map(pcall, cancel)
+      cancel = {}
+    end)
+  )
   vim.schedule(function()
     local clients = M.get_clients(buf, method)
+    if vim.tbl_isempty(clients) then
+      return async:resume()
+    end
     local remaining = #clients
     for _, client in ipairs(clients) do
       local p = params(client)
