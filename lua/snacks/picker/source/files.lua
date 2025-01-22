@@ -102,9 +102,9 @@ end
 
 ---@param opts snacks.picker.files.Config
 ---@type snacks.picker.finder
-function M.files(opts, filter)
+function M.files(opts, ctx)
   local cwd = not (opts.dirs and #opts.dirs > 0) and vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
-  local cmd, args = get_cmd(opts, filter)
+  local cmd, args = get_cmd(opts, ctx.filter)
   return require("snacks.picker.source.proc").proc(vim.tbl_deep_extend("force", {
     cmd = cmd,
     args = args,

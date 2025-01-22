@@ -100,13 +100,13 @@ end
 
 ---@param opts snacks.picker.grep.Config
 ---@type snacks.picker.finder
-function M.grep(opts, filter)
-  if opts.need_search ~= false and filter.search == "" then
+function M.grep(opts, ctx)
+  if opts.need_search ~= false and ctx.filter.search == "" then
     return function() end
   end
   local absolute = (opts.dirs and #opts.dirs > 0) or opts.buffers
   local cwd = not absolute and vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
-  local cmd, args = get_cmd(opts, filter)
+  local cmd, args = get_cmd(opts, ctx.filter)
   return require("snacks.picker.source.proc").proc(vim.tbl_deep_extend("force", {
     notify = not opts.live,
     cmd = cmd,
