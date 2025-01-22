@@ -66,6 +66,7 @@ Snacks.picker.pick({source = "files", ...})
 
 ```lua
 ---@class snacks.picker.Config
+---@field multi? (string|snacks.picker.Config)[]
 ---@field source? string source name and config to use
 ---@field pattern? string|fun(picker:snacks.Picker):string pattern used to filter items by the matcher
 ---@field search? string|fun(picker:snacks.Picker):string search string used by finders
@@ -80,6 +81,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@field preview? snacks.picker.preview|string preview function or preset
 ---@field matcher? snacks.picker.matcher.Config matcher config
 ---@field sort? snacks.picker.sort|snacks.picker.sort.Config sort function or config
+---@field transform? string|snacks.picker.transform transform/filter function
 --- UI
 ---@field win? snacks.picker.win.Config
 ---@field layout? snacks.picker.layout.Config|string|{}|fun(source:string):(snacks.picker.layout.Config|string)
@@ -119,6 +121,10 @@ Snacks.picker.pick({source = "files", ...})
     sort_empty = false, -- sort results when the search string is empty
     filename_bonus = true, -- give bonus for matching file names (last part of the path)
     file_pos = true, -- support patterns like `file:line:col` and `file:line`
+    -- the bonusses below, possibly require string concatenation and path normalization,
+    -- so this can have a performance impact for large lists and increase memory usage
+    cwd_bonus = false, -- give bonus for matching files in the cwd
+    frecency = false, -- frecency bonus
   },
   sort = {
     -- default sort is by score, text length and index
@@ -127,6 +133,9 @@ Snacks.picker.pick({source = "files", ...})
   ui_select = true, -- replace `vim.ui.select` with the snacks picker
   ---@class snacks.picker.formatters.Config
   formatters = {
+    text = {
+      ft = nil, ---@type string? filetype for highlighting
+    },
     file = {
       filename_first = false, -- display filename before the file path
     },
@@ -448,6 +457,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@alias snacks.picker.format fun(item:snacks.picker.Item, picker:snacks.Picker):snacks.picker.Highlight[]
 ---@alias snacks.picker.preview fun(ctx: snacks.picker.preview.ctx):boolean?
 ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
+---@alias snacks.picker.transform fun(item:snacks.picker.finder.Item, ctx:snacks.picker.finder.ctx):(boolean|snacks.picker.finder.Item|nil)
 ---@alias snacks.picker.Pos {[1]:number, [2]:number}
 ```
 
@@ -458,7 +468,8 @@ Generic filter used by finders to pre-filter items
 ---@field cwd? boolean|string only show files for the given cwd
 ---@field buf? boolean|number only show items for the current or given buffer
 ---@field paths? table<string, boolean> only show items that include or exclude the given paths
----@field filter? fun(item:snacks.picker.finder.Item):boolean custom filter function
+---@field filter? fun(item:snacks.picker.finder.Item, filter:snacks.picker.Filter):boolean? custom filter function
+---@field transform? fun(picker:snacks.Picker, filter:snacks.picker.Filter):boolean? filter transform. Return `true` to force refresh
 ```
 
 This is only used when using `opts.preview = "preview"`.
@@ -477,6 +488,7 @@ It's a previewer that shows a preview based on the item data.
 ---@field [string] any
 ---@field idx number
 ---@field score number
+---@field frecency? number
 ---@field score_add? number
 ---@field score_mul? number
 ---@field match_tick? number
@@ -667,6 +679,7 @@ Neovim command history
     preset = "vscode",
   },
   confirm = "cmd",
+  formatters = { text = { ft = "vim" } },
 }
 ```
 
@@ -1322,10 +1335,9 @@ Neovim search history
   name = "search",
   format = "text",
   preview = "none",
-  layout = {
-    preset = "vscode",
-  },
+  layout = { preset = "vscode" },
   confirm = "search",
+  formatters = { text = { ft = "regex" } },
 }
 ```
 
@@ -1336,11 +1348,13 @@ Neovim search history
 ---@field finders? string[] list of finders to use
 ---@field filter? snacks.picker.filter.Config
 {
-  finder = "smart",
-  finders = { "buffers", "recent", "files" },
-  format = "file",
-  -- sort the results even when the filter is empty (frecency)
-  matcher = { sort_empty = true },
+  multi = { "buffers", "recent", "files" },
+  format = "file", -- use `file` format for all sources
+  matcher = {
+    cwd_bonus = true, -- boost cwd matches
+    frecency = true, -- use frecency boosting
+    sort_empty = true, -- sort even when the filter is empty
+  },
   win = {
     input = {
       keys = {
@@ -1350,6 +1364,7 @@ Neovim search history
     },
     list = { keys = { ["dd"] = "bufdelete" } },
   },
+  transform = "unique_file",
 }
 ```
 
@@ -1924,10 +1939,11 @@ picker:filter()
 
 ### `picker:find()`
 
-Clear the list and run the finder and matcher
+Check if the finder and/or matcher need to run,
+based on the current pattern and search string.
 
 ```lua
----@param opts? {on_done?: fun()} Callback when done
+---@param opts? { on_done?: fun(), refresh?: boolean }
 picker:find(opts)
 ```
 
@@ -1964,16 +1980,6 @@ Items will be in sorted order.
 ```lua
 ---@return fun():snacks.picker.Item?
 picker:iter()
-```
-
-### `picker:match()`
-
-Run the matcher with the current pattern.
-May also trigger a new find if the search string has changed,
-like during live searches.
-
-```lua
-picker:match()
 ```
 
 ### `picker:norm()`
