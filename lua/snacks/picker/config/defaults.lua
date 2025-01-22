@@ -73,6 +73,7 @@ local M = {}
 ---@field preview? snacks.picker.preview|string preview function or preset
 ---@field matcher? snacks.picker.matcher.Config matcher config
 ---@field sort? snacks.picker.sort|snacks.picker.sort.Config sort function or config
+---@field transform? string|snacks.picker.transform transform/filter function
 --- UI
 ---@field win? snacks.picker.win.Config
 ---@field layout? snacks.picker.layout.Config|string|{}|fun(source:string):(snacks.picker.layout.Config|string)

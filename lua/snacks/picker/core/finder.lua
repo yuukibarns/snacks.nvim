@@ -12,6 +12,7 @@ M.__index = M
 ---@field picker snacks.Picker
 ---@field filter snacks.picker.Filter
 ---@field async snacks.picker.Async
+---@field meta table<string, any>
 
 ---@alias snacks.picker.finder.async fun(cb:async fun(item:snacks.picker.finder.Item))
 ---@alias snacks.picker.finder.result snacks.picker.finder.Item[] | snacks.picker.finder.async
@@ -64,6 +65,7 @@ function M:ctx(picker)
       end,
     }),
     filter = self.filter,
+    meta = {},
   }
   setmetatable(ret, { __index = M:deprecated(self.filter) })
   return ret
@@ -117,6 +119,19 @@ function M:run(picker)
   local function add(item)
     item.idx, item.score = #self.items + 1, default_score
     self.items[item.idx] = item
+  end
+
+  if picker.opts.transform then
+    local transform = Snacks.picker.config.transform(picker.opts)
+    ---@param item snacks.picker.finder.Item
+    function add(item)
+      local t = transform(item, ctx)
+      item = type(t) == "table" and t or item
+      if t ~= false then
+        item.idx, item.score = #self.items + 1, default_score
+        self.items[item.idx] = item
+      end
+    end
   end
 
   -- PERF: if finder is a table, we can skip the async part
