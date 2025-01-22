@@ -116,18 +116,21 @@ function M:run(picker, opts)
   end)
 end
 
----@param opts? {pattern?: string}
-function M:init(opts)
-  opts = opts or {}
+---@param pattern string
+---@return boolean changed
+function M:init(pattern)
+  pattern = vim.trim(pattern)
+  if pattern == self.pattern then
+    return false
+  end
   self.tick = self.tick + 1
   self.file = nil
-  local pattern = vim.trim(opts.pattern or self.pattern)
   self.mods = {}
   self.pattern = pattern
   self:abort()
   self.one = nil
   if pattern == "" then
-    return
+    return true
   end
   local is_or = false
   for _, p in ipairs(vim.split(pattern, " +")) do
@@ -158,6 +161,7 @@ function M:init(opts)
   if #self.mods == 1 and #self.mods[1] == 1 then
     self.one = self.mods[1][1]
   end
+  return true
 end
 
 ---@param pattern string
