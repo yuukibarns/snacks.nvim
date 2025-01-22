@@ -9,7 +9,7 @@
 ---@field opts snacks.picker.filter.Config
 ---@field current_buf number
 ---@field current_win number
----@field fid? number
+---@field source_id? number
 ---@field meta table<string, any>
 local M = {}
 M.__index = M

@@ -117,14 +117,14 @@ function M.multi(opts)
 
   opts.finder = opts.finder or Finder.multi(finders)
   opts.format = opts.format or function(item, picker)
-    return formats[item.fid](item, picker)
+    return formats[item.source_id](item, picker)
   end
   opts.preview = opts.preview or function(ctx)
-    return previews[ctx.item.fid](ctx)
+    return previews[ctx.item.source_id](ctx)
   end
   opts.confirm = opts.confirm
     or function(picker, item, action)
-      return confirms[item.fid](picker, item, action)
+      return confirms[item.source_id](picker, item, action)
     end
 end
 

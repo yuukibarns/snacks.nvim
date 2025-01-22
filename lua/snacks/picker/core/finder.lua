@@ -74,7 +74,7 @@ end
 ---@param filter snacks.picker.Filter
 ---@return boolean changed
 function M:init(filter)
-  if self.filter and (self.filter.search == filter.search and self.filter.fid == filter.fid) then
+  if self.filter and (self.filter.search == filter.search and self.filter.source_id == filter.source_id) then
     return false
   end
   self.filter = filter
@@ -175,8 +175,8 @@ function M.multi(finders)
     ---@type snacks.picker.finder.result[]
     local results = {}
     local need_async = false
-    for fid, finder in ipairs(finders) do
-      if filter.fid == nil or filter.fid == fid then
+    for source_id, finder in ipairs(finders) do
+      if filter.source_id == nil or filter.source_id == source_id then
         results[#results + 1] = finder(opts, ctx) or {}
       else
         results[#results + 1] = {}
@@ -187,16 +187,16 @@ function M.multi(finders)
     ---@async
     ---@type snacks.picker.finder.async
     local function collect(cb)
-      for fid, find in ipairs(results) do
+      for source_id, find in ipairs(results) do
         if type(find) == "table" then
           for _, item in ipairs(find) do
-            item.fid = fid
+            item.source_id = source_id
             cb(item)
           end
         else
           ---@async
           find(function(item)
-            item.fid = fid
+            item.source_id = source_id
             cb(item)
           end)
         end
