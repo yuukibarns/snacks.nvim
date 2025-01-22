@@ -559,11 +559,13 @@ M.search_history = {
 ---@field finders? string[] list of finders to use
 ---@field filter? snacks.picker.filter.Config
 M.smart = {
-  finder = "smart",
-  finders = { "buffers", "recent", "files" },
-  format = "file",
-  -- sort the results even when the filter is empty (frecency)
-  matcher = { sort_empty = true },
+  multi = { "buffers", "recent", "files" },
+  format = "file", -- use `file` format for all sources
+  matcher = {
+    cwd_bonus = true, -- boost cwd matches
+    frecency = true, -- use frecency boosting
+    sort_empty = true, -- sort even when the filter is empty
+  },
   win = {
     input = {
       keys = {
@@ -573,6 +575,7 @@ M.smart = {
     },
     list = { keys = { ["dd"] = "bufdelete" } },
   },
+  transform = "unique_file",
 }
 
 M.spelling = {
