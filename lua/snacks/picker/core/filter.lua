@@ -71,7 +71,7 @@ function M:match(item)
   if self.all then
     return true
   end
-  if self.opts.filter and not self.opts.filter(item) then
+  if self.opts.filter and not self.opts.filter(item, self) then
     return false
   end
   if self.buf and (item.buf ~= self.buf) and (item.file ~= self.file) then

@@ -14,7 +14,7 @@ local M = {}
 ---@field cwd? boolean|string only show files for the given cwd
 ---@field buf? boolean|number only show items for the current or given buffer
 ---@field paths? table<string, boolean> only show items that include or exclude the given paths
----@field filter? fun(item:snacks.picker.finder.Item):boolean custom filter function
+---@field filter? fun(item:snacks.picker.finder.Item, filter:snacks.picker.Filter):boolean? custom filter function
 
 --- This is only used when using `opts.preview = "preview"`.
 --- It's a previewer that shows a preview based on the item data.
