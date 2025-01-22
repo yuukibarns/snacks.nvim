@@ -1,3 +1,4 @@
+---@diagnostic disable: await-in-sync
 local Async = require("snacks.picker.util.async")
 
 ---@module 'uv'
@@ -336,8 +337,8 @@ function M.symbols(opts, ctx)
     vim.defer_fn(function()
       vim.api.nvim_del_autocmd(id)
     end, 10000)
-    return function(_, async)
-      async:sleep(2000)
+    return function()
+      ctx.async:sleep(2000)
     end
   end
 

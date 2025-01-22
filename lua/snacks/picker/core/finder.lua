@@ -216,30 +216,4 @@ function M.multi(finders)
   end
 end
 
----@param finder snacks.picker.finder
----@param transform snacks.picker.transform
----@return snacks.picker.finder
-function M.wrap(finder, transform)
-  return function(opts, filter, picker)
-    local find = finder(opts, filter, picker)
-    return function(cb, task)
-      ---@param item snacks.picker.finder.Item
-      local function add(item)
-        local t = transform(item)
-        if t ~= false then
-          cb(type(t) == "table" and t or item)
-        end
-      end
-      if type(find) == "table" then
-        ---@cast find snacks.picker.finder.Item[]
-        for _, item in ipairs(find) do
-          add(item)
-        end
-        return
-      end
-      find(add, task)
-    end
-  end
-end
-
 return M
