@@ -105,29 +105,35 @@ end
 function M.files(opts, ctx)
   local cwd = not (opts.dirs and #opts.dirs > 0) and vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
   local cmd, args = get_cmd(opts, ctx.filter)
-  return require("snacks.picker.source.proc").proc(vim.tbl_deep_extend("force", {
-    cmd = cmd,
-    args = args,
-    notify = not opts.live,
-    ---@param item snacks.picker.finder.Item
-    transform = function(item)
-      item.cwd = cwd
-      item.file = item.text
-    end,
-  }, opts or {}))
+  return require("snacks.picker.source.proc").proc({
+    opts,
+    {
+      cmd = cmd,
+      args = args,
+      notify = not opts.live,
+      ---@param item snacks.picker.finder.Item
+      transform = function(item)
+        item.cwd = cwd
+        item.file = item.text
+      end,
+    },
+  })
 end
 
----@param opts snacks.picker.Config
+---@param opts snacks.picker.proc.Config
 ---@type snacks.picker.finder
 function M.zoxide(opts)
-  return require("snacks.picker.source.proc").proc(vim.tbl_deep_extend("force", {
-    cmd = "zoxide",
-    args = { "query", "--list" },
-    ---@param item snacks.picker.finder.Item
-    transform = function(item)
-      item.file = item.text
-    end,
-  }, opts or {}))
+  return require("snacks.picker.source.proc").proc({
+    opts,
+    {
+      cmd = "zoxide",
+      args = { "query", "--list" },
+      ---@param item snacks.picker.finder.Item
+      transform = function(item)
+        item.file = item.text
+      end,
+    },
+  })
 end
 
 return M

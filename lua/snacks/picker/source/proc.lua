@@ -1,11 +1,11 @@
+---@diagnostic disable: await-in-sync
 local Async = require("snacks.picker.util.async")
 
 local M = {}
 
 local uv = vim.uv or vim.loop
 M.USE_QUEUE = true
-
----@alias snacks.picker.transform fun(item:snacks.picker.finder.Item):(false|snacks.picker.finder.Item?)
+local islist = vim.islist or vim.tbl_islist
 
 ---@class snacks.picker.proc.Config: snacks.picker.Config
 ---@field cmd string
@@ -15,9 +15,13 @@ M.USE_QUEUE = true
 ---@field notify? boolean Notify on failure
 ---@field transform? snacks.picker.transform
 
----@param opts snacks.picker.proc.Config
+---@param opts snacks.picker.proc.Config|{[1]: snacks.picker.Config, [2]: snacks.picker.proc.Config}
 ---@return fun(cb:async fun(item:snacks.picker.finder.Item))
 function M.proc(opts)
+  if islist(opts) then
+    opts = Snacks.config.merge(unpack(vim.deepcopy(opts))) --[[@as snacks.picker.proc.Config]]
+    opts.transform = opts[2].transform
+  end
   assert(opts.cmd, "`opts.cmd` is required")
   ---@async
   return function(cb)
@@ -34,14 +38,20 @@ function M.proc(opts)
 
     local aborted = false
     local stdout = assert(uv.new_pipe())
-    opts = vim.tbl_deep_extend("force", {}, opts or {}, {
-      stdio = { nil, stdout, nil },
-      cwd = opts.cwd and vim.fs.normalize(opts.cwd) or nil,
-    }) --[[@as snacks.picker.proc.Config]]
+
     local self = Async.running()
 
+    local spawn_opts = {
+      args = opts.args,
+      stdio = { nil, stdout, nil },
+      cwd = opts.cwd and vim.fs.normalize(opts.cwd) or nil,
+      env = opts.env,
+      hide = true,
+    }
+
     local handle ---@type uv.uv_process_t
-    handle = uv.spawn(opts.cmd, opts, function(code, _signal)
+    ---@diagnostic disable-next-line: missing-fields
+    handle = uv.spawn(opts.cmd, spawn_opts, function(code, _signal)
       if not aborted and code ~= 0 and opts.notify ~= false then
         local full = { opts.cmd or "" }
         vim.list_extend(full, opts.args or {})
