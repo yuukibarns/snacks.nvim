@@ -566,15 +566,6 @@ M.smart = {
     frecency = true, -- use frecency boosting
     sort_empty = true, -- sort even when the filter is empty
   },
-  win = {
-    input = {
-      keys = {
-        ["dd"] = "bufdelete",
-        ["<c-x>"] = { "bufdelete", mode = { "n", "i" } },
-      },
-    },
-    list = { keys = { ["dd"] = "bufdelete" } },
-  },
   transform = "unique_file",
 }
 
