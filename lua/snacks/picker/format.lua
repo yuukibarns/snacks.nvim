@@ -281,7 +281,7 @@ function M.text(item, picker)
   if ft then
     Snacks.picker.highlight.format(item, item.text, ret, { lang = ft })
   else
-    ret[#ret + 1] = { item.text }
+    ret[#ret + 1] = { item.text, item.text_hl }
   end
   return ret
 end
