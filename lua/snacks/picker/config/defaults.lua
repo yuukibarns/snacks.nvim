@@ -27,6 +27,7 @@ local M = {}
 ---@field [string] any
 ---@field idx number
 ---@field score number
+---@field frecency? number
 ---@field score_add? number
 ---@field score_mul? number
 ---@field match_tick? number
@@ -110,6 +111,10 @@ local defaults = {
     sort_empty = false, -- sort results when the search string is empty
     filename_bonus = true, -- give bonus for matching file names (last part of the path)
     file_pos = true, -- support patterns like `file:line:col` and `file:line`
+    -- the bonusses below, possibly require string concatenation and path normalization,
+    -- so this can have a performance impact for large lists and increase memory usage
+    cwd_bonus = false, -- give bonus for matching files in the cwd
+    frecency = false, -- frecency bonus
   },
   sort = {
     -- default sort is by score, text length and index
