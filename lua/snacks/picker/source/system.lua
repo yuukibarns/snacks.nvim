@@ -6,7 +6,7 @@ local M = {}
 
 ---@param opts snacks.picker.proc.Config
 ---@type snacks.picker.finder
-function M.cliphist(opts)
+function M.cliphist(opts, ctx)
   return require("snacks.picker.source.proc").proc({
     opts,
     {
@@ -39,12 +39,12 @@ function M.cliphist(opts)
         end
       end,
     },
-  })
+  }, ctx)
 end
 
 ---@param opts snacks.picker.proc.Config
 ---@type snacks.picker.finder
-function M.man(opts)
+function M.man(opts, ctx)
   return require("snacks.picker.source.proc").proc({
     opts,
     {
@@ -64,7 +64,7 @@ function M.man(opts)
         end
       end,
     },
-  })
+  }, ctx)
 end
 
 return M

@@ -129,7 +129,7 @@ function M.grep(opts, ctx)
         end
       end,
     },
-  })
+  }, ctx)
 end
 
 return M

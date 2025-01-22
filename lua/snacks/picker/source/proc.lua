@@ -16,11 +16,12 @@ local islist = vim.islist or vim.tbl_islist
 ---@field transform? snacks.picker.transform
 
 ---@param opts snacks.picker.proc.Config|{[1]: snacks.picker.Config, [2]: snacks.picker.proc.Config}
----@return fun(cb:async fun(item:snacks.picker.finder.Item))
-function M.proc(opts)
+---@type snacks.picker.finder
+function M.proc(opts, ctx)
   if islist(opts) then
+    local transform = opts[2].transform
     opts = Snacks.config.merge(unpack(vim.deepcopy(opts))) --[[@as snacks.picker.proc.Config]]
-    opts.transform = opts[2].transform
+    opts.transform = transform
   end
   assert(opts.cmd, "`opts.cmd` is required")
   ---@async
@@ -28,7 +29,7 @@ function M.proc(opts)
     if opts.transform then
       local _cb = cb
       cb = function(item)
-        local t = opts.transform(item)
+        local t = opts.transform(item, ctx)
         item = type(t) == "table" and t or item
         if t ~= false then
           _cb(item)

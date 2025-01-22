@@ -6,7 +6,7 @@ local M = {}
 ---@alias snacks.picker.format fun(item:snacks.picker.Item, picker:snacks.Picker):snacks.picker.Highlight[]
 ---@alias snacks.picker.preview fun(ctx: snacks.picker.preview.ctx):boolean?
 ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
----@alias snacks.picker.transform fun(item:snacks.picker.finder.Item):(boolean|snacks.picker.finder.Item|nil)
+---@alias snacks.picker.transform fun(item:snacks.picker.finder.Item, ctx:snacks.picker.finder.ctx):(boolean|snacks.picker.finder.Item|nil)
 ---@alias snacks.picker.Pos {[1]:number, [2]:number}
 
 --- Generic filter used by finders to pre-filter items

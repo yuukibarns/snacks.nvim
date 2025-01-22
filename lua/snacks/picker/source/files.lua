@@ -117,12 +117,12 @@ function M.files(opts, ctx)
         item.file = item.text
       end,
     },
-  })
+  }, ctx)
 end
 
 ---@param opts snacks.picker.proc.Config
 ---@type snacks.picker.finder
-function M.zoxide(opts)
+function M.zoxide(opts, ctx)
   return require("snacks.picker.source.proc").proc({
     opts,
     {
@@ -133,7 +133,7 @@ function M.zoxide(opts)
         item.file = item.text
       end,
     },
-  })
+  }, ctx)
 end
 
 return M

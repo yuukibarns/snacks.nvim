@@ -12,7 +12,7 @@ local uv = vim.uv or vim.loop
 
 ---@param opts snacks.picker.git.files.Config
 ---@type snacks.picker.finder
-function M.files(opts)
+function M.files(opts, ctx)
   local args = { "-c", "core.quotepath=false", "ls-files", "--exclude-standard", "--cached" }
   if opts.untracked then
     table.insert(args, "--others")
@@ -31,7 +31,7 @@ function M.files(opts)
         item.file = item.text
       end,
     },
-  })
+  }, ctx)
 end
 
 ---@param opts snacks.picker.git.log.Config
@@ -87,12 +87,12 @@ function M.log(opts, ctx)
         item.file = file
       end,
     },
-  })
+  }, ctx)
 end
 
 ---@param opts snacks.picker.Config
 ---@type snacks.picker.finder
-function M.status(opts)
+function M.status(opts, ctx)
   local args = {
     "--no-pager",
     "status",
@@ -116,19 +116,19 @@ function M.status(opts)
         item.file = file
       end,
     },
-  })
+  }, ctx)
 end
 
 ---@param opts snacks.picker.Config
 ---@type snacks.picker.finder
-function M.diff(opts)
+function M.diff(opts, ctx)
   local args = { "--no-pager", "diff", "--no-color", "--no-ext-diff" }
   local file, line ---@type string?, number?
   local header, hunk = {}, {} ---@type string[], string[]
   local finder = require("snacks.picker.source.proc").proc({
     opts,
     { cmd = "git", args = args },
-  })
+  }, ctx)
   return function(cb)
     local function add()
       if file and line and #hunk > 0 then
@@ -168,7 +168,7 @@ end
 
 ---@param opts snacks.picker.Config
 ---@type snacks.picker.finder
-function M.branches(opts)
+function M.branches(opts, ctx)
   local args = { "--no-pager", "branch", "--no-color", "-vvl" }
   local cwd = vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
   cwd = Snacks.git.get_root(cwd)
@@ -208,7 +208,7 @@ function M.branches(opts)
         return false -- skip items we could not parse
       end,
     },
-  })
+  }, ctx)
 end
 
 return M
