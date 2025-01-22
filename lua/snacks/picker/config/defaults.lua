@@ -15,6 +15,7 @@ local M = {}
 ---@field buf? boolean|number only show items for the current or given buffer
 ---@field paths? table<string, boolean> only show items that include or exclude the given paths
 ---@field filter? fun(item:snacks.picker.finder.Item, filter:snacks.picker.Filter):boolean? custom filter function
+---@field transform? fun(picker:snacks.Picker, filter:snacks.picker.Filter):boolean? filter transform. Return `true` to force refresh
 
 --- This is only used when using `opts.preview = "preview"`.
 --- It's a previewer that shows a preview based on the item data.
@@ -59,6 +60,7 @@ local M = {}
 ---@field preview? snacks.win.Config|{} preview window config
 
 ---@class snacks.picker.Config
+---@field multi? (string|snacks.picker.Config)[]
 ---@field source? string source name and config to use
 ---@field pattern? string|fun(picker:snacks.Picker):string pattern used to filter items by the matcher
 ---@field search? string|fun(picker:snacks.Picker):string search string used by finders
