@@ -644,6 +644,7 @@ function M:find(opts)
   local finding = false
   if self.finder:init(filter) or refresh then
     finding = true
+    self:update_titles()
     if self:count() > 0 then
       -- pause rapid list updates to prevent flickering
       self.list:pause(60)
