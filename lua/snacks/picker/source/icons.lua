@@ -20,7 +20,7 @@ local NERDFONTS_SETS = {
 M.sources = {
   nerd_fonts = {
     url = "https://github.com/ryanoasis/nerd-fonts/raw/refs/heads/master/glyphnames.json",
-    v = 3,
+    v = 4,
     build = function(data)
       ---@cast data table<string, {char:string, code:string}>
       local ret = {} ---@type snacks.picker.Icon[]
@@ -79,7 +79,7 @@ local function load(source_name)
     return vim.json.decode(data) ---@type snacks.picker.Icon[]
   end
 
-  Snacks.notify("Fetching `" .. source_name .. "` icons …")
+  Snacks.notify("Fetching `" .. source_name .. "` icons")
   if vim.fn.executable("curl") == 0 then
     Snacks.notify.error("`curl` is required to fetch icons")
     return {}
