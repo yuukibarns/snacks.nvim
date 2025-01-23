@@ -347,10 +347,13 @@ end
 --- Actual preview code
 ---@hide
 function M:_show_preview()
+  if self.closed then
+    return
+  end
   if self.opts.on_change then
     self.opts.on_change(self, self:current())
   end
-  if not self.preview.win:valid() then
+  if not (self.preview and self.preview.win:valid()) then
     return
   end
   self.preview:show(self)
