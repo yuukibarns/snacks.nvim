@@ -791,6 +791,7 @@ Neovim commands
 ---@field follow? boolean follow symlinks
 ---@field exclude? string[] exclude patterns
 ---@field args? string[] additional arguments
+---@field rtp? boolean search in runtimepath
 {
   finder = "files",
   format = "file",
@@ -957,6 +958,7 @@ Git log
 ---@field need_search? boolean require a search pattern
 ---@field exclude? string[] exclude patterns
 ---@field args? string[] additional arguments
+---@field rtp? boolean search in runtimepath
 {
   finder = "grep",
   format = "file",
@@ -1117,6 +1119,22 @@ Neovim help tags
       },
     },
   },
+}
+```
+
+### `lazy`
+
+```vim
+:lua Snacks.picker.lazy(opts?)
+```
+
+Search for a lazy.nvim plugin spec
+
+```lua
+{
+  finder = "lazy_spec",
+  live = true,
+  search = "'",
 }
 ```
 
