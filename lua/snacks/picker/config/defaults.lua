@@ -133,6 +133,7 @@ local defaults = {
     },
     file = {
       filename_first = false, -- display filename before the file path
+      truncate = 40, -- truncate the file path to (roughly) this length
     },
     selected = {
       show_always = false, -- only show the selected column when there are multiple selections

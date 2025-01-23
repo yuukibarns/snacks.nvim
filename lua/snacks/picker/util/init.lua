@@ -13,6 +13,52 @@ function M.path(item)
   return item._path
 end
 
+---@param path string
+---@param len? number
+---@param opts? {cwd?: string}
+function M.truncpath(path, len, opts)
+  local cwd = vim.fs.normalize(opts and opts.cwd or vim.fn.getcwd(), { _fast = true, expand_env = false })
+  local home = vim.fs.normalize("~")
+  path = vim.fs.normalize(path, { _fast = true, expand_env = false })
+
+  if path:find(cwd, 1, true) == 1 then
+    path = path:sub(#cwd + 2)
+  else
+    local root = Snacks.git.get_root(path)
+    if root and root ~= "" and path:find(root, 1, true) == 1 then
+      local tail = vim.fn.fnamemodify(root, ":t")
+      path = "⋮" .. tail .. "/" .. path:sub(#root + 2)
+    elseif path:find(home, 1, true) == 1 then
+      path = "~" .. path:sub(#home + 1)
+    end
+  end
+
+  if vim.api.nvim_strwidth(path) <= len then
+    return path
+  end
+
+  local parts = vim.split(path, "/")
+  if #parts < 2 then
+    return path
+  end
+  local ret = table.remove(parts)
+  local first = table.remove(parts, 1)
+  if first == "~" and #parts > 0 then
+    first = "~/" .. table.remove(parts, 1)
+  end
+  local width = vim.api.nvim_strwidth(ret) + vim.api.nvim_strwidth(first) + 3
+  while width < len and #parts > 0 do
+    local part = table.remove(parts) .. "/"
+    local w = vim.api.nvim_strwidth(part)
+    if width + w > len then
+      break
+    end
+    ret = part .. ret
+    width = width + w
+  end
+  return first .. "/…/" .. ret
+end
+
 ---@param cmd string|string[]
 ---@param cb fun(output: string[], code: number)
 ---@param opts? {env?: table<string, string>, cwd?: string}
