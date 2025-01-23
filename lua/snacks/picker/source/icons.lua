@@ -100,7 +100,7 @@ end
 ---@type snacks.picker.finder
 function M.icons(opts)
   local ret = {} ---@type snacks.picker.Icon[]
-  for _, source in ipairs(opts.icons or { "nerd_fonts", "emoji" }) do
+  for _, source in ipairs(opts.icon_sources or { "nerd_fonts", "emoji" }) do
     vim.list_extend(ret, load(source))
   end
   for _, icon in ipairs(ret) do
