@@ -164,6 +164,9 @@ function M.git_checkout(picker, item)
       return
     end
     local cmd = { "git", "checkout", what }
+    if item.file then
+      vim.list_extend(cmd, { "--", item.file })
+    end
     Snacks.picker.util.cmd(cmd, function()
       Snacks.notify("Checkout " .. what, { title = "Snacks Picker" })
     end, { cwd = item.cwd })
