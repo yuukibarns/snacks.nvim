@@ -39,6 +39,7 @@ Snacks.util.set_hl({
   Register = "Number",
   KeymapMode = "Number",
   KeymapLhs = "Special",
+  KeymapNowait = "@variable.builtin",
   BufNr = "Number",
   BufFlags = "NonText",
   KeymapRhs = "NonText",

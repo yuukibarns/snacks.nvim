@@ -280,12 +280,14 @@ M.jumps = {
 ---@class snacks.picker.keymaps.Config: snacks.picker.Config
 ---@field global? boolean show global keymaps
 ---@field local? boolean show buffer keymaps
+---@field plugs? boolean show plugin keymaps
 ---@field modes? string[]
 M.keymaps = {
   finder = "vim_keymaps",
   format = "keymap",
   preview = "preview",
   global = true,
+  plugs = false,
   ["local"] = true,
   modes = { "n", "v", "x", "s", "o", "i", "c", "t" },
   confirm = function(picker, item)

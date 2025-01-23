@@ -237,11 +237,16 @@ function M.keymaps(opts)
   local done = {} ---@type table<string, boolean>
   for _, km in ipairs(maps) do
     local key = Snacks.picker.util.text(km, { "mode", "lhs", "buffer" })
-    if not done[key] then
+    local keep = true
+    if opts.plugs == false and km.lhs:match("^<Plug>") then
+      keep = false
+    end
+    if keep and not done[key] then
       done[key] = true
       local item = {
         mode = km.mode,
         item = km,
+        key = km.lhs,
         preview = {
           text = vim.inspect(km),
           ft = "lua",

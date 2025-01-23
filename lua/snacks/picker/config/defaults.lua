@@ -270,6 +270,9 @@ local defaults = {
     files = {
       enabled = true, -- show file icons
     },
+    keymaps = {
+      nowait = "󰓅 "
+    },
     indent = {
       vertical    = "│ ",
       middle = "├╴",
