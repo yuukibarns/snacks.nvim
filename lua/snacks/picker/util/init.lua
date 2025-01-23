@@ -198,6 +198,16 @@ function M.title(str)
   )
 end
 
+function M.rtp()
+  local ret = {} ---@type string[]
+  vim.list_extend(ret, vim.api.nvim_get_runtime_file("", true))
+  if package.loaded.lazy then
+    local extra = require("lazy.core.util").get_unloaded_rtp("")
+    vim.list_extend(ret, extra)
+  end
+  return ret
+end
+
 ---@param str string
 ---@return string text, string[] args
 function M.parse(str)

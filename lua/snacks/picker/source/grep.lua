@@ -85,8 +85,10 @@ local function get_cmd(opts, filter)
         paths[#paths + 1] = name
       end
     end
-  elseif opts.dirs and #opts.dirs > 0 then
-    paths = opts.dirs or {}
+  end
+  vim.list_extend(paths, opts.dirs or {})
+  if opts.rtp then
+    vim.list_extend(paths, Snacks.picker.util.rtp())
   end
 
   -- dirs
@@ -104,7 +106,7 @@ function M.grep(opts, ctx)
   if opts.need_search ~= false and ctx.filter.search == "" then
     return function() end
   end
-  local absolute = (opts.dirs and #opts.dirs > 0) or opts.buffers
+  local absolute = (opts.dirs and #opts.dirs > 0) or opts.buffers or opts.rtp
   local cwd = not absolute and vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
   local cmd, args = get_cmd(opts, ctx.filter)
   return require("snacks.picker.source.proc").proc({
