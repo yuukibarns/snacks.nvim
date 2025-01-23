@@ -54,7 +54,7 @@ function M.filename(item, picker)
   else
     ret[#ret + 1] = { path, "SnacksPickerFile", field = "file" }
   end
-  if item.pos then
+  if item.pos and item.pos[1] > 0 then
     ret[#ret + 1] = { ":", "SnacksPickerDelim" }
     ret[#ret + 1] = { tostring(item.pos[1]), "SnacksPickerRow" }
     if item.pos[2] > 0 then
