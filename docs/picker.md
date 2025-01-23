@@ -1467,7 +1467,9 @@ List all available sources
   confirm = function(picker, item)
     picker:close()
     if item then
-      Snacks.picker(item.text)
+      vim.schedule(function()
+        Snacks.picker(item.text)
+      end)
     end
   end,
 }
