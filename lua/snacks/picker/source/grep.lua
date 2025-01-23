@@ -110,7 +110,7 @@ function M.grep(opts, ctx)
   return require("snacks.picker.source.proc").proc({
     opts,
     {
-      notify = not opts.live,
+      notify = false, -- never notify on grep errors, since it's impossible to know if the error is due to the search pattern
       cmd = cmd,
       args = args,
       ---@param item snacks.picker.finder.Item

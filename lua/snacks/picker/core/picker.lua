@@ -331,6 +331,7 @@ function M.resume()
   last.opts.pattern = last.filter.pattern
   last.opts.search = last.filter.search
   local ret = M.new(last.opts)
+  ret:show()
   ret.list:set_selected(last.selected)
   ret.list:update()
   ret.input:update()
@@ -478,6 +479,8 @@ function M:close()
   M.last.selected = self:selected({ fallback = false })
   M.last.cursor = self.list.cursor
   M.last.topline = self.list.top
+  M.last.opts = M.last.opts or {}
+  M.last.opts.live = self.opts.live
   Snacks.picker.current = nil
   local current = vim.api.nvim_get_current_win()
   local is_picker_win = vim.tbl_contains({ self.input.win.win, self.list.win.win, self.preview.win.win }, current)
