@@ -469,14 +469,6 @@ function M:close()
     return
   end
 
-  -- FIXME: lsp definitions picker can't be gc-ed without the below,
-  -- which makes no sense. Need to further investigate.
-
-  -- if not self.shown then
-  --   self.input.win.opts.relative = "editor"
-  --   self.input.win:show()
-  -- end
-
   self:hist_record(true)
   self.closed = true
   M.last.selected = self:selected({ fallback = false })
@@ -491,6 +483,9 @@ function M:close()
     vim.api.nvim_set_current_win(self.main)
   end
   self.updater:stop()
+  if not self.updater:is_closing() then
+    self.updater:close()
+  end
   self.finder:abort()
   self.matcher:abort()
   M._active[self] = nil
@@ -638,6 +633,9 @@ end
 --- based on the current pattern and search string.
 ---@param opts? { on_done?: fun(), refresh?: boolean }
 function M:find(opts)
+  if self.closed then
+    return
+  end
   opts = opts or {}
   local filter = self.input.filter:clone({ trim = true })
   local refresh = opts.refresh ~= false
