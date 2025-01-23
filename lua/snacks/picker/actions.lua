@@ -169,6 +169,7 @@ function M.git_checkout(picker, item)
     end
     Snacks.picker.util.cmd(cmd, function()
       Snacks.notify("Checkout " .. what, { title = "Snacks Picker" })
+      vim.cmd.checktime()
     end, { cwd = item.cwd })
   end
 end
