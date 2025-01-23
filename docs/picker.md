@@ -877,7 +877,7 @@ Git log
   finder = "git_log",
   format = "git_log",
   preview = "git_show",
-  confirm = "close",
+  confirm = "git_checkout",
 }
 ```
 
@@ -895,7 +895,7 @@ Git log
   preview = "git_show",
   current_file = true,
   follow = true,
-  confirm = "close",
+  confirm = "git_checkout",
 }
 ```
 
@@ -913,7 +913,7 @@ Git log
   preview = "git_show",
   current_line = true,
   follow = true,
-  confirm = "close",
+  confirm = "git_checkout",
 }
 ```
 
