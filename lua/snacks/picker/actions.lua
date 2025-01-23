@@ -218,9 +218,17 @@ function M.loclist(picker)
   setqflist(items, { win = picker.main })
 end
 
-function M.copy(_, item)
+function M.yank(_, item)
   if item then
     vim.fn.setreg("+", item.data or item.text)
+  end
+end
+M.copy = M.yank
+
+function M.put(picker, item)
+  picker:close()
+  if item then
+    vim.api.nvim_put({ item.data or item.text }, "c", true, true)
   end
 end
 

@@ -66,6 +66,11 @@ Snacks.util.set_hl({
   GitStatusUntracked = "SnacksPickerGitStatus",
   ManSection = "Number",
   ManPage = "Special",
+  -- Icons
+  Icon = "Special",
+  IconSource = "@constant",
+  IconName = "@keyword",
+  IconCategory = "@module",
   -- LSP Symbol Kinds
   IconArray = "@punctuation.bracket",
   IconBoolean = "@boolean",

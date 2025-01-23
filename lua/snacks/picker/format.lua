@@ -514,4 +514,19 @@ function M.debug(item, picker)
   return ret
 end
 
+function M.icon(item, picker)
+  local a = Snacks.picker.util.align
+  ---@cast item snacks.picker.Icon
+  local ret = {} ---@type snacks.picker.Highlight[]
+
+  ret[#ret + 1] = { a(item.icon, 2), "SnacksPickerIcon" }
+  ret[#ret + 1] = { " " }
+  ret[#ret + 1] = { a(item.source, 10), "SnacksPickerIconSource" }
+  ret[#ret + 1] = { " " }
+  ret[#ret + 1] = { a(item.name, 30), "SnacksPickerIconName" }
+  ret[#ret + 1] = { " " }
+  ret[#ret + 1] = { a(item.category, 8), "SnacksPickerIconCategory" }
+  return ret
+end
+
 return M

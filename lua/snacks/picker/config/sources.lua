@@ -272,6 +272,16 @@ M.highlights = {
   preview = "preview",
 }
 
+---@class snacks.picker.icons.Config: snacks.picker.Config
+---@field icons? string[]
+M.icons = {
+  icons = { "nerd_fonts", "emoji" },
+  finder = "icons",
+  format = "icon",
+  layout = { preset = "vscode" },
+  confirm = "put",
+}
+
 M.jumps = {
   finder = "vim_jumps",
   format = "file",

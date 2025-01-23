@@ -64,10 +64,11 @@ function M.text(item, keys)
   return buffer:get()
 end
 
----@param text string
+---@param text? string
 ---@param width number
 ---@param opts? {align?: "left" | "right" | "center", truncate?: boolean}
 function M.align(text, width, opts)
+  text = text or ""
   opts = opts or {}
   opts.align = opts.align or "left"
   local tw = vim.api.nvim_strwidth(text)
