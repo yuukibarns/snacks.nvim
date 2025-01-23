@@ -50,9 +50,13 @@ function M.setup()
       end
     end,
   })
-  vim.api.nvim_create_autocmd("BufReadPost", {
+  vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
     group = group,
     callback = function(ev)
+      local current_win = vim.api.nvim_get_current_win()
+      if vim.api.nvim_win_get_config(current_win).relative ~= "" then
+        return
+      end
       M.visit_buf(ev.buf)
     end,
   })
