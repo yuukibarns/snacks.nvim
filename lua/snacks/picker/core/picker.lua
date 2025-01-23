@@ -519,7 +519,12 @@ function M:progress(ms)
   if self.updater:is_active() or self.closed then
     return
   end
+  local ref = self:ref()
   self.updater = vim.defer_fn(function()
+    local self = ref()
+    if not self then
+      return
+    end
     self:update()
     if not self.closed and self:is_active() then
       -- slower progress when we filled topk
