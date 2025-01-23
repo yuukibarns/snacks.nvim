@@ -79,7 +79,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@field format? string|snacks.picker.format|string format function or preset
 ---@field finder? string|snacks.picker.finder|snacks.picker.finder.multi finder function or preset
 ---@field preview? snacks.picker.preview|string preview function or preset
----@field matcher? snacks.picker.matcher.Config matcher config
+---@field matcher? snacks.picker.matcher.Config|{} matcher config
 ---@field sort? snacks.picker.sort|snacks.picker.sort.Config sort function or config
 ---@field transform? string|snacks.picker.transform transform/filter function
 --- UI
@@ -139,6 +139,7 @@ Snacks.picker.pick({source = "files", ...})
     file = {
       filename_first = false, -- display filename before the file path
       truncate = 40, -- truncate the file path to (roughly) this length
+      filename_only = false, -- only show the filename
     },
     selected = {
       show_always = false, -- only show the selected column when there are multiple selections
