@@ -2,6 +2,7 @@
 ---@field item? snacks.picker.Item
 ---@field pos? snacks.picker.Pos
 ---@field win snacks.win
+---@field filter? snacks.picker.Filter
 ---@field preview snacks.picker.preview
 ---@field state table<string, any>
 ---@field main? number
@@ -104,6 +105,7 @@ function M:show(picker)
   end
   Snacks.picker.util.resolve(item)
   self.item = item
+  self.filter = picker:filter()
   self.pos = item and item.pos or nil
   if item then
     local buf = self.win.buf
@@ -232,6 +234,18 @@ function M:loc()
         end_col = self.item.end_pos[2],
         hl_group = "SnacksPickerSearch",
       })
+    elseif self.filter and vim.trim(self.filter.search) ~= "" then
+      local ok, re = pcall(vim.regex, vim.trim(self.filter.search))
+      if ok and re then
+        local start = self.item.pos[2]
+        local from, to = re:match_line(self.win.buf, self.item.pos[1] - 1, start)
+        if from and to then
+          vim.api.nvim_buf_set_extmark(self.win.buf, ns_loc, self.item.pos[1] - 1, start + from, {
+            end_col = start + to,
+            hl_group = "SnacksPickerSearch",
+          })
+        end
+      end
     end
   elseif self.item.search then
     vim.api.nvim_win_call(self.win.win, function()
