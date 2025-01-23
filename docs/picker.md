@@ -195,6 +195,8 @@ Snacks.picker.pick({source = "files", ...})
         ["<c-k>"] = { "list_up", mode = { "i", "n" } },
         ["<c-n>"] = { "list_down", mode = { "i", "n" } },
         ["<c-p>"] = { "list_up", mode = { "i", "n" } },
+        ["<c-l>"] = { "preview_scroll_left", mode = { "i", "n" } },
+        ["<c-h>"] = { "preview_scroll_right", mode = { "i", "n" } },
         ["<c-b>"] = { "preview_scroll_up", mode = { "i", "n" } },
         ["<c-d>"] = { "list_scroll_down", mode = { "i", "n" } },
         ["<c-f>"] = { "preview_scroll_down", mode = { "i", "n" } },
@@ -239,6 +241,8 @@ Snacks.picker.pick({source = "files", ...})
         ["<c-a>"] = "select_all",
         ["<c-f>"] = "preview_scroll_down",
         ["<c-b>"] = "preview_scroll_up",
+        ["<c-l>"] = "preview_scroll_right",
+        ["<c-h>"] = "preview_scroll_left",
         ["<c-v>"] = "edit_vsplit",
         ["<c-s>"] = "edit_split",
         ["<c-j>"] = "list_down",
@@ -269,6 +273,9 @@ Snacks.picker.pick({source = "files", ...})
   icons = {
     files = {
       enabled = true, -- show file icons
+    },
+    keymaps = {
+      nowait = "󰓅 "
     },
     indent = {
       vertical    = "│ ",
@@ -1057,12 +1064,14 @@ Neovim help tags
 ---@class snacks.picker.keymaps.Config: snacks.picker.Config
 ---@field global? boolean show global keymaps
 ---@field local? boolean show buffer keymaps
+---@field plugs? boolean show plugin keymaps
 ---@field modes? string[]
 {
   finder = "vim_keymaps",
   format = "keymap",
   preview = "preview",
   global = true,
+  plugs = false,
   ["local"] = true,
   modes = { "n", "v", "x", "s", "o", "i", "c", "t" },
   confirm = function(picker, item)
@@ -1942,6 +1951,18 @@ Snacks.picker.actions.loclist(picker)
 
 ```lua
 Snacks.picker.actions.preview_scroll_down(picker)
+```
+
+### `Snacks.picker.actions.preview_scroll_left()`
+
+```lua
+Snacks.picker.actions.preview_scroll_left(picker)
+```
+
+### `Snacks.picker.actions.preview_scroll_right()`
+
+```lua
+Snacks.picker.actions.preview_scroll_right(picker)
 ```
 
 ### `Snacks.picker.actions.preview_scroll_up()`
