@@ -1052,9 +1052,9 @@ Neovim help tags
 
 ```lua
 ---@class snacks.picker.icons.Config: snacks.picker.Config
----@field icons? string[]
+---@field icon_sources? string[]
 {
-  icons = { "nerd_fonts", "emoji" },
+  icon_sources = { "nerd_fonts", "emoji" },
   finder = "icons",
   format = "icon",
   layout = { preset = "vscode" },
