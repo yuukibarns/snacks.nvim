@@ -233,17 +233,20 @@ function M.stash(opts, ctx)
       args = args,
       ---@param item snacks.picker.finder.Item
       transform = function(item)
-        item.cwd = cwd
-        local stash, branch, msg = item.text:gsub(": On main:", ": WIP on main:"):match("^(%S+): WIP on (%S+): (.*)$")
+        if item.text:find("autostash", 1, true) then
+          return false
+        end
+        local stash, branch, msg = item.text:gsub(": On (%S+):", ": WIP on %1:"):match("^(%S+): WIP on (%S+): (.*)$")
         if stash then
           local commit, m = msg:match("^(" .. commit_pat .. ") (.*)")
+          item.cwd = cwd
           item.stash = stash
           item.branch = branch
           item.commit = commit
           item.msg = m or msg
           return
         end
-        -- Snacks.notify.warn("failed to parse stash:\n```git\n" .. item.text .. "\n```")
+        Snacks.notify.warn("failed to parse stash:\n```git\n" .. item.text .. "\n```")
         return false -- skip items we could not parse
       end,
     },
