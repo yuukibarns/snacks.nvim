@@ -21,6 +21,10 @@ function M.files(opts, ctx)
   elseif opts.submodules then
     table.insert(args, "--recurse-submodules")
   end
+  if not opts.cwd then
+    opts.cwd = Snacks.git.get_root()
+    ctx.picker:set_cwd(opts.cwd)
+  end
   local cwd = vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
   return require("snacks.picker.source.proc").proc({
     opts,
