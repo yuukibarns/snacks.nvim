@@ -267,11 +267,7 @@ M.help = {
   previewers = {
     file = { ft = "help" },
   },
-  win = {
-    preview = {
-      minimal = true,
-    },
-  },
+  win = { preview = { minimal = true } },
   confirm = "help",
 }
 
