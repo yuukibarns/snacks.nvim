@@ -237,7 +237,7 @@ function M.stash(opts, ctx)
           item.msg = m or msg
           return
         end
-        Snacks.notify.warn("failed to parse stash:\n```git\n" .. item.text .. "\n```")
+        -- Snacks.notify.warn("failed to parse stash:\n```git\n" .. item.text .. "\n```")
         return false -- skip items we could not parse
       end,
     },
