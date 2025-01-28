@@ -263,9 +263,10 @@ function D:init()
     end,
   })
   vim.api.nvim_create_autocmd("WinEnter", {
+    group = self.augroup,
     callback = function(ev)
-      if ev.buf == self.buf then
-        self.win = vim.api.nvim_get_current_win()
+      if ev.buf == self.buf and not vim.api.nvim_win_is_valid(self.win) then
+        self.win = vim.fn.bufwinid(self.buf)
         self:update()
       end
     end,
