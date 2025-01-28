@@ -32,7 +32,6 @@ local M = {}
 ---@field frecency? number
 ---@field score_add? number
 ---@field score_mul? number
----@field match_tick? number
 ---@field source_id? number
 ---@field file? string
 ---@field text string
