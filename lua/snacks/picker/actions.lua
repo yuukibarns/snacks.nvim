@@ -117,6 +117,42 @@ function M.toggle_preview(picker)
   picker:show_preview()
 end
 
+function M.edit_win(picker, item, action)
+  local overlays = {} ---@type snacks.win[]
+  picker.layout:hide()
+  local chars = "asdfghjkl"
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_get_config(win).relative == "" then
+      local c = chars:sub(1, 1)
+      chars = chars:sub(2)
+      overlays[c] = Snacks.win({
+        backdrop = false,
+        win = win,
+        focusable = false,
+        enter = false,
+        relative = "win",
+        width = 7,
+        height = 3,
+        text = ("       \n   %s   \n       "):format(c),
+        wo = {
+          winhighlight = "NormalFloat:SnacksPickerEditWin",
+        },
+      })
+    end
+  end
+  vim.cmd([[redraw!]])
+  local char = vim.fn.getcharstr()
+  for _, overlay in pairs(overlays) do
+    overlay:close()
+  end
+  picker.layout:unhide()
+  local win = overlays[char]
+  if win then
+    picker.main = win.opts.win
+    M.jump(picker, item, action)
+  end
+end
+
 function M.bufdelete(picker)
   local non_buf_delete_requested = false
   for _, item in ipairs(picker:selected({ fallback = true })) do
