@@ -262,6 +262,14 @@ function D:init()
       vim.api.nvim_del_augroup_by_id(self.augroup)
     end,
   })
+  vim.api.nvim_create_autocmd("WinEnter", {
+    callback = function(ev)
+      if ev.buf == self.buf then
+        self.win = vim.api.nvim_get_current_win()
+        self:update()
+      end
+    end,
+  })
   self.on("Update", function()
     self:update()
   end, self.augroup)
