@@ -191,6 +191,7 @@ Snacks.picker.pick({source = "files", ...})
         ["<a-p>"] = { "toggle_preview", mode = { "i", "n" } },
         ["<a-w>"] = { "cycle_win", mode = { "i", "n" } },
         ["<C-w>"] = { "<c-s-w>", mode = { "i" }, expr = true, desc = "delete word" },
+        ["<S-CR>"] = { "edit_win", mode = { "n", "i" } },
         ["<C-Up>"] = { "history_back", mode = { "i", "n" } },
         ["<C-Down>"] = { "history_forward", mode = { "i", "n" } },
         ["<Tab>"] = { "select_and_next", mode = { "i", "n" } },
@@ -1880,6 +1881,12 @@ Snacks.picker.actions.cmd(picker, item)
 
 ```lua
 Snacks.picker.actions.cycle_win(picker)
+```
+
+### `Snacks.picker.actions.edit_win()`
+
+```lua
+Snacks.picker.actions.edit_win(picker, item, action)
 ```
 
 ### `Snacks.picker.actions.focus_input()`
