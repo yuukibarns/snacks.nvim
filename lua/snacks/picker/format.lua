@@ -13,8 +13,14 @@ function M.severity(item, picker)
   local lower = severity:lower()
   local cap = severity:sub(1, 1):upper() .. lower:sub(2)
 
-  ret[#ret + 1] = { picker.opts.icons.diagnostics[cap], "Diagnostic" .. cap, virtual = true }
-  ret[#ret + 1] = { " ", virtual = true }
+  if picker.opts.formatters.severity.icons then
+    ret[#ret + 1] = { picker.opts.icons.diagnostics[cap], "Diagnostic" .. cap, virtual = true }
+    ret[#ret + 1] = { " ", virtual = true }
+  end
+  if picker.opts.formatters.severity.level then
+    ret[#ret + 1] = { lower:upper(), "Diagnostic" .. cap, virtual = true }
+    ret[#ret + 1] = { " ", virtual = true }
+  end
   return ret
 end
 
@@ -545,6 +551,24 @@ function M.icon(item, picker)
   ret[#ret + 1] = { a(item.name, 30), "SnacksPickerIconName" }
   ret[#ret + 1] = { " " }
   ret[#ret + 1] = { a(item.category, 8), "SnacksPickerIconCategory" }
+  return ret
+end
+
+function M.notification(item, picker)
+  local a = Snacks.picker.util.align
+  local ret = {} ---@type snacks.picker.Highlight[]
+  local notif = item.item ---@type snacks.notifier.Notif
+  ret[#ret + 1] = { a(os.date("%R", notif.added), 5), "SnacksPickerTime" }
+  ret[#ret + 1] = { " " }
+  if item.severity then
+    vim.list_extend(ret, M.severity(item, picker))
+  end
+  ret[#ret + 1] = { " " }
+  ret[#ret + 1] = { a(notif.title or "", 15), "SnacksNotifierHistoryTitle" }
+  ret[#ret + 1] = { " " }
+  ret[#ret + 1] = { notif.msg, "SnacksPickerNotificationMessage" }
+  Snacks.picker.highlight.markdown(ret)
+  -- ret[#ret + 1] = { " " }
   return ret
 end
 

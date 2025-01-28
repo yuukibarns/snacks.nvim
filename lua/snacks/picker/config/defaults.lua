@@ -140,6 +140,10 @@ local defaults = {
       show_always = false, -- only show the selected column when there are multiple selections
       unselected = true, -- use the unselected icon for unselected items
     },
+    severity = {
+      icons = true, -- show severity icons
+      level = false, -- show severity level
+    },
   },
   ---@class snacks.picker.previewers.Config
   previewers = {

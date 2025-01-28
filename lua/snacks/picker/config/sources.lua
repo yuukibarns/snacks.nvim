@@ -508,6 +508,15 @@ M.marks = {
   ["local"] = true,
 }
 
+---@class snacks.picker.notifications.Config: snacks.picker.Config
+---@field filter? snacks.notifier.level|fun(notif: snacks.notifier.Notif): boolean
+M.notifications = {
+  finder = "snacks_notifier",
+  format = "notification",
+  preview = "preview",
+  formatters = { severity = { level = true } },
+}
+
 -- List all available sources
 M.pickers = {
   finder = "meta_pickers",
