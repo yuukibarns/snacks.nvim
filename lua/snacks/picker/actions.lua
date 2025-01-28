@@ -117,7 +117,7 @@ function M.toggle_preview(picker)
   picker:show_preview()
 end
 
-function M.edit_win(picker, item, action)
+function M.pick_win(picker, item, action)
   local overlays = {} ---@type snacks.win[]
   picker.layout:hide()
   local chars = "asdfghjkl"
@@ -135,7 +135,7 @@ function M.edit_win(picker, item, action)
         height = 3,
         text = ("       \n   %s   \n       "):format(c),
         wo = {
-          winhighlight = "NormalFloat:SnacksPickerEditWin",
+          winhighlight = "NormalFloat:SnacksPickerPickWin",
         },
       })
     end
@@ -149,7 +149,6 @@ function M.edit_win(picker, item, action)
   local win = overlays[char]
   if win then
     picker.main = win.opts.win
-    M.jump(picker, item, action)
   end
 end
 

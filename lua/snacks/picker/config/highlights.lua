@@ -65,7 +65,7 @@ Snacks.util.set_hl({
   GitStatusCopied = "SnacksPickerGitStatus",
   GitStatusUntracked = "SnacksPickerGitStatus",
   ManSection = "Number",
-  EditWin = "DiagnosticVirtualTextError",
+  PickWin = "DiagnosticVirtualTextError",
   ManPage = "Special",
   -- Icons
   Icon = "Special",
