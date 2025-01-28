@@ -101,7 +101,8 @@ function M.git_log(item, picker)
   local a = Snacks.picker.util.align
   local ret = {} ---@type snacks.picker.Highlight[]
   ret[#ret + 1] = { picker.opts.icons.git.commit, "SnacksPickerGitCommit" }
-  ret[#ret + 1] = { item.commit, "SnacksPickerGitCommit" }
+  local c = item.commit or item.branch or "HEAD"
+  ret[#ret + 1] = { a(c, 7, { truncate = true }), "SnacksPickerGitCommit" }
 
   ret[#ret + 1] = { " " }
   if item.date then
@@ -150,6 +151,20 @@ function M.git_branch(item, picker)
   else
     ret[#ret + 1] = { a(item.branch, 30, { truncate = true }), "SnacksPickerGitBranch" }
   end
+  ret[#ret + 1] = { " " }
+  local offset = Snacks.picker.highlight.offset(ret)
+  local log = M.git_log(item, picker)
+  Snacks.picker.highlight.fix_offset(log, offset)
+  vim.list_extend(ret, log)
+  return ret
+end
+
+function M.git_stash(item, picker)
+  local a = Snacks.picker.util.align
+  local ret = {} ---@type snacks.picker.Highlight[]
+  ret[#ret + 1] = { a(item.stash, 10), "SnacksPickerIdx" }
+  ret[#ret + 1] = { " " }
+  ret[#ret + 1] = { a(item.branch, 10, { truncate = true }), "SnacksPickerGitBranch" }
   ret[#ret + 1] = { " " }
   local offset = Snacks.picker.highlight.offset(ret)
   local log = M.git_log(item, picker)

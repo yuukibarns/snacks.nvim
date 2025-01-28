@@ -308,6 +308,24 @@ function M.git_diff(ctx)
 end
 
 ---@param ctx snacks.picker.preview.ctx
+function M.git_stash(ctx)
+  local native = ctx.picker.opts.previewers.git.native
+  local cmd = {
+    "git",
+    "-c",
+    "delta." .. vim.o.background .. "=true",
+    "stash",
+    "show",
+    "--patch",
+    ctx.item.stash,
+  }
+  if not native then
+    table.insert(cmd, 2, "--no-pager")
+  end
+  M.cmd(cmd, ctx, { ft = not native and "diff" or nil })
+end
+
+---@param ctx snacks.picker.preview.ctx
 function M.git_status(ctx)
   local ss = ctx.item.status
   if ss:find("^[A?]") then

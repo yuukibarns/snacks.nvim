@@ -190,6 +190,13 @@ M.git_log_line = {
   confirm = "git_checkout",
 }
 
+M.git_stash = {
+  finder = "git_stash",
+  format = "git_stash",
+  preview = "git_stash",
+  confirm = "git_stash_apply",
+}
+
 M.git_status = {
   finder = "git_status",
   format = "git_status",

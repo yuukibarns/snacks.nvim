@@ -2,6 +2,8 @@ local M = {}
 
 local uv = vim.uv or vim.loop
 
+local commit_pat = ("[a-z0-9]"):rep(7)
+
 ---@class snacks.picker
 ---@field git_files fun(opts?: snacks.picker.git.files.Config): snacks.Picker
 ---@field git_log fun(opts?: snacks.picker.git.log.Config): snacks.Picker
@@ -173,13 +175,12 @@ function M.branches(opts, ctx)
   local cwd = vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
   cwd = Snacks.git.get_root(cwd)
 
-  local pattern_hash = "[a-zA-Z0-9]+"
   local patterns = {
     -- stylua: ignore start
     --- e.g. "* (HEAD detached at f65a2c8) f65a2c8 chore(build): auto-generate docs"
-    "^(.)%s(%b())%s+(" .. pattern_hash .. ")%s*(.*)$",
+    "^(.)%s(%b())%s+(" .. commit_pat .. ")%s*(.*)$",
     --- e.g. "  main                       d2b2b7b [origin/main: behind 276] chore(build): auto-generate docs"
-    "^(.)%s(%S+)%s+(".. pattern_hash .. ")%s*(.*)$",
+    "^(.)%s(%S+)%s+(".. commit_pat .. ")%s*(.*)$",
     -- stylua: ignore end
   } ---@type string[]
 
@@ -205,6 +206,38 @@ function M.branches(opts, ctx)
           end
         end
         Snacks.notify.warn("failed to parse branch: " .. item.text)
+        return false -- skip items we could not parse
+      end,
+    },
+  }, ctx)
+end
+
+---@param opts snacks.picker.Config
+---@type snacks.picker.finder
+function M.stash(opts, ctx)
+  local args = { "--no-pager", "stash", "list" }
+  local cwd = vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
+  cwd = Snacks.git.get_root(cwd)
+
+  return require("snacks.picker.source.proc").proc({
+    opts,
+    {
+      cwd = cwd,
+      cmd = "git",
+      args = args,
+      ---@param item snacks.picker.finder.Item
+      transform = function(item)
+        item.cwd = cwd
+        local stash, branch, msg = item.text:gsub(": On main:", ": WIP on main:"):match("^(%S+): WIP on (%S+): (.*)$")
+        if stash then
+          local commit, m = msg:match("^(" .. commit_pat .. ") (.*)")
+          item.stash = stash
+          item.branch = branch
+          item.commit = commit
+          item.msg = m or msg
+          return
+        end
+        Snacks.notify.warn("failed to parse stash:\n```git\n" .. item.text .. "\n```")
         return false -- skip items we could not parse
       end,
     },

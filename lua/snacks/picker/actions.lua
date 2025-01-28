@@ -155,6 +155,16 @@ function M.git_stage(picker)
   end
 end
 
+function M.git_stash_apply(_, item)
+  if not item then
+    return
+  end
+  local cmd = { "git", "stash", "apply", item.stash }
+  Snacks.picker.util.cmd(cmd, function()
+    Snacks.notify("Stash applied: `" .. item.stash .. "`", { title = "Snacks Picker" })
+  end, { cwd = item.cwd })
+end
+
 function M.git_checkout(picker, item)
   picker:close()
   if item then
