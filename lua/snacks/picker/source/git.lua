@@ -11,6 +11,8 @@ local commit_pat = ("[a-z0-9]"):rep(7)
 ---@field git_log_line fun(opts?: snacks.picker.git.log.Config): snacks.Picker
 ---@field git_status fun(opts?: snacks.picker.Config): snacks.Picker
 ---@field git_diff fun(opts?: snacks.picker.Config): snacks.Picker
+---@field git_branches fun(opts?: snacks.picker.Config): snacks.Picker
+---@field git_stash fun(opts?: snacks.picker.Config): snacks.Picker
 
 ---@param opts snacks.picker.git.files.Config
 ---@type snacks.picker.finder
