@@ -84,7 +84,7 @@ function M:match(item)
   if not path then
     return false
   end
-  if self.opts.cwd and path:sub(1, #self.cwd) ~= self.cwd then
+  if self.opts.cwd and path ~= self.cwd and not path:find(self.cwd .. "/", 1, true) then
     return false
   end
   if self.opts.paths then
