@@ -1621,6 +1621,23 @@ Neovim search history
 }
 ```
 
+### `select`
+
+```vim
+:lua Snacks.picker.select(opts?)
+```
+
+Config used by `vim.ui.select`.
+Not meant to be used directly.
+
+```lua
+{
+  items = {}, -- these are set dynamically
+  main = { current = true },
+  layout = { preset = "select" },
+}
+```
+
 ### `smart`
 
 ```vim
@@ -1779,7 +1796,7 @@ Open a project from zoxide
     min_height = 10,
     box = "vertical",
     border = "rounded",
-    title = " Select ",
+    title = "{title}",
     title_pos = "center",
     { win = "input", height = 1, border = "bottom" },
     { win = "list", border = "none" },
