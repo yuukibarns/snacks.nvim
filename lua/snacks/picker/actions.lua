@@ -145,7 +145,7 @@ function M.pick_win(picker, item, action)
   for _, overlay in pairs(overlays) do
     overlay:close()
   end
-  local win = Snacks.util.keycode("<cr>") or overlays[char]
+  local win = (char == Snacks.util.keycode("<cr>")) or overlays[char]
   if win then
     if type(win) == "table" then
       picker.main = win.opts.win
