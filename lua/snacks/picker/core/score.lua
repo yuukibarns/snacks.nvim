@@ -149,6 +149,11 @@ function M:update(pos)
   local b = self.str:byte(pos)
   local class = CHAR_CLASS[b] or CHAR_NONWORD
 
+  -- Fix prev_class for gaps
+  if self.prev and self.prev < pos - 1 then
+    self.prev_class = CHAR_CLASS[self.str:byte(pos - 1)] or CHAR_NONWORD
+  end
+
   -- Calculate boundary bonus for transitioning from prevClass->currClass
   local bonus = BONUS_MATRIX[self.prev_class][class] or 0
 
