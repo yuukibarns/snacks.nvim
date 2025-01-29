@@ -145,10 +145,17 @@ function M.pick_win(picker, item, action)
   for _, overlay in pairs(overlays) do
     overlay:close()
   end
-  picker.layout:unhide()
   local win = overlays[char]
   if win then
     picker.main = win.opts.win
+    vim.defer_fn(function()
+      if not picker.closed then
+        picker.layout:unhide()
+      end
+    end, 100)
+  else
+    picker.layout:unhide()
+    return true
   end
 end
 
