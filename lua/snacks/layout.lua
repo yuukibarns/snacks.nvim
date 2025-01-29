@@ -77,6 +77,7 @@ function M.new(opts)
         self.box_wins[box.id] = Snacks.win(Snacks.win.resolve(box, {
           relative = is_root and (box.relative or "editor") or "win",
           focusable = false,
+          fixbuf = false,
           enter = false,
           show = false,
           resize = false,

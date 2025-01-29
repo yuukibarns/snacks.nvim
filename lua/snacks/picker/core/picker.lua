@@ -157,6 +157,9 @@ function M.new(opts)
   -- close if we enter a window that is not part of the picker
   local on_focus ---@type fun()?
   self.input.win:on("WinEnter", function()
+    if not self.layout:valid() then
+      return
+    end
     if self:is_focused() then
       if on_focus then
         on_focus()
@@ -199,7 +202,10 @@ end
 
 function M:is_focused()
   local current = vim.api.nvim_get_current_win()
-  return vim.tbl_contains({ self.input.win.win, self.list.win.win, self.preview.win.win }, current)
+  return vim.tbl_contains(
+    { self.input.win.win, self.list.win.win, self.preview.win.win, self.layout.root.win },
+    current
+  )
 end
 
 --- Execute the callback in normal mode.
