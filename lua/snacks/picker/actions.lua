@@ -361,6 +361,14 @@ function M.help(picker)
   end
 end
 
+function M.toggle_help_input(picker)
+  picker.input.win:toggle_help()
+end
+
+function M.toggle_help_list(picker)
+  picker.list.win:toggle_help()
+end
+
 function M.preview_scroll_down(picker)
   if picker.preview.win:valid() then
     picker.preview.win:scroll()
