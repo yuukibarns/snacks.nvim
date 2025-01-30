@@ -171,6 +171,7 @@ Snacks.picker.pick({source = "files", ...})
     jumplist = true, -- save the current position in the jumplist
     tagstack = false, -- save the current position in the tagstack
     reuse_win = false, -- reuse an existing window if the buffer is already open
+    close = true, -- close the picker when jumping/editing to a location (defaults to true)
   },
   ---@type table<string, string|false|snacks.picker.toggle>
   toggles = {
@@ -814,6 +815,7 @@ Neovim commands
   follow_file = true,
   focus = "list",
   auto_close = false,
+  jump = { close = false },
   layout = { preset = "sidebar", preview = false },
   formatters = { file = { filename_only = true } },
   matcher = { sort_empty = true },
