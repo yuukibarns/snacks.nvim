@@ -1999,6 +1999,12 @@ local M = {}
 Snacks.picker.actions.bufdelete(picker)
 ```
 
+### `Snacks.picker.actions.close()`
+
+```lua
+Snacks.picker.actions.close(picker)
+```
+
 ### `Snacks.picker.actions.cmd()`
 
 ```lua
