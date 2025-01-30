@@ -296,6 +296,19 @@ end
 -- Toggle selection of current item
 ---@param item? snacks.picker.Item
 function M:select(item)
+  if item == nil and vim.fn.mode():find("^[vV]") and vim.api.nvim_get_current_buf() == self.win.buf then
+    -- stop visual mode
+    vim.cmd("normal! " .. vim.fn.mode():sub(1, 1))
+    local from = vim.api.nvim_buf_get_mark(0, "<")
+    local to = vim.api.nvim_buf_get_mark(0, ">")
+    for i = math.min(from[1], to[1]), math.max(from[1], to[1]) do
+      local it = self:get(self:row2idx(i))
+      if it then
+        self:select(it)
+      end
+    end
+    return
+  end
   item = item or self:current()
   if not item then
     return
