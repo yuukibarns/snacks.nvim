@@ -9,6 +9,9 @@ local uv = vim.uv or vim.loop
 ---@field dir? boolean
 ---@field parent? snacks.picker.explorer.Item
 ---@field open? boolean
+---@field last? boolean
+---@field sort? string
+---@field internal? boolean internal parent directories not part of fd output
 
 ---@class snacks.picker.explorer.State
 ---@field cwd string
@@ -180,7 +183,21 @@ function State:setup(opts, ctx)
   opts.cwd = self.cwd
   opts.args = { "--type", "d", "--path-separator", "/", "--absolute-path" }
   self.all = #ctx.filter.search > 0
-  if not self.all then
+  if self.all then
+    local picker = self.picker()
+    if not picker then
+      return
+    end
+    picker.list:set_target()
+    self.on_find = function()
+      for item, idx in picker:iter() do
+        if not item.internal then
+          picker.list:view(idx)
+          return
+        end
+      end
+    end
+  else
     opts.dirs = self:expand_dirs()
     vim.list_extend(opts.args, { "--max-depth", "1" })
   end
@@ -389,8 +406,8 @@ function M.explorer(opts, ctx)
     dir = true,
     open = true,
     text = "",
-    hello = "world",
     sort = "",
+    internal = true,
   }
   local cwd = state.cwd
   dirs[cwd] = root
@@ -437,6 +454,7 @@ function M.explorer(opts, ctx)
         item.dir = true
         item.file = item.file:sub(1, -2)
         if dirs[item.file] then
+          dirs[item.file].internal = false
           return
         end
         item.open = state:is_open(item.file)
@@ -459,6 +477,7 @@ function M.explorer(opts, ctx)
               file = dir,
               dir = true,
               open = state:is_open(dir),
+              internal = true,
             }
             add(dirs[dir])
           end
