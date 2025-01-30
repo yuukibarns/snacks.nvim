@@ -831,6 +831,7 @@ Neovim commands
         ["d"] = "explorer_del",
         ["r"] = "explorer_rename",
         ["c"] = "explorer_copy",
+        ["m"] = "explorer_move",
         ["y"] = "explorer_yank",
         ["<c-c>"] = "explorer_cd",
         ["."] = "explorer_focus",
