@@ -248,10 +248,10 @@ function M:update()
       win:close()
     end
   end
+  vim.o.lazyredraw = false
   if self.opts.on_update then
     self.opts.on_update(self)
   end
-  vim.o.lazyredraw = false
 end
 
 ---@param box snacks.layout.Box

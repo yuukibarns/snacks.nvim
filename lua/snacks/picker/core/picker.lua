@@ -249,7 +249,7 @@ function M:init_layout(layout)
     hidden = { preview_hidden and "preview" or nil },
     on_update = function()
       self:update_titles()
-      self:show_preview()
+      self.preview:refresh(self)
       self.input:update()
       self.list:update_cursorline()
     end,
