@@ -5,6 +5,10 @@ M.meta = {
   hide = true,
 }
 
+if false then
+  dd("foo")
+end
+
 local query = vim.treesitter.query.parse(
   "lua",
   [[
