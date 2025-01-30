@@ -89,6 +89,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@field prompt? string prompt text / icon
 ---@field title? string defaults to a capitalized source name
 ---@field auto_close? boolean automatically close the picker when focusing another window (defaults to true)
+---@field focus? "input"|"list"|false where to focus when the picker is opened (defaults to "input")
 --- Preset options
 ---@field previewers? snacks.picker.previewers.Config|{}
 ---@field formatters? snacks.picker.formatters.Config|{}
@@ -103,10 +104,12 @@ Snacks.picker.pick({source = "files", ...})
 ---@field on_show? fun(picker:snacks.Picker) called when the picker is shown
 ---@field jump? snacks.picker.jump.Config|{}
 --- Other
+---@field config? fun(opts:snacks.picker.Config):snacks.picker.Config? custom config function
 ---@field debug? snacks.picker.debug|{}
 {
   prompt = " ",
   sources = {},
+  focus = "input",
   layout = {
     cycle = true,
     --- Use the default layout or vertical if the window is too narrow
@@ -168,6 +171,14 @@ Snacks.picker.pick({source = "files", ...})
     jumplist = true, -- save the current position in the jumplist
     tagstack = false, -- save the current position in the tagstack
     reuse_win = false, -- reuse an existing window if the buffer is already open
+  },
+  ---@type table<string, string|false|snacks.picker.toggle>
+  toggles = {
+    follow = "f",
+    hidden = "h",
+    ignored = "i",
+    modified = "m",
+    regex = { icon = "R", value = false },
   },
   win = {
     -- input window
@@ -247,6 +258,8 @@ Snacks.picker.pick({source = "files", ...})
         ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
         ["<ScrollWheelUp>"] = "list_scroll_wheel_up",
         ["<c-a>"] = "select_all",
+        ["<a-m>"] = { "toggle_maximize" },
+        ["<a-p>"] = { "toggle_preview" },
         ["<c-f>"] = "preview_scroll_down",
         ["<c-b>"] = "preview_scroll_up",
         ["<c-l>"] = "preview_scroll_right",
@@ -259,6 +272,9 @@ Snacks.picker.pick({source = "files", ...})
         ["<c-p>"] = "list_up",
         ["<a-w>"] = "cycle_win",
         ["<Esc>"] = "close",
+        ["<a-i>"] = "toggle_ignored",
+        ["<a-h>"] = "toggle_hidden",
+        ["<a-f>"] = "toggle_follow",
       },
       wo = {
         conceallevel = 2,
@@ -285,7 +301,7 @@ Snacks.picker.pick({source = "files", ...})
     keymaps = {
       nowait = "󰓅 "
     },
-    indent = {
+    tree = {
       vertical    = "│ ",
       middle = "├╴",
       last   = "└╴",
@@ -466,23 +482,6 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
----@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts? snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
----@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
-```
-
-```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -491,6 +490,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@alias snacks.picker.sort fun(a:snacks.picker.Item, b:snacks.picker.Item):boolean
 ---@alias snacks.picker.transform fun(item:snacks.picker.finder.Item, ctx:snacks.picker.finder.ctx):(boolean|snacks.picker.finder.Item|nil)
 ---@alias snacks.picker.Pos {[1]:number, [2]:number}
+---@alias snacks.picker.toggle {icon?:string, enabled?:boolean, value?:boolean}
 ```
 
 Generic filter used by finders to pre-filter items
@@ -555,6 +555,23 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
+```
+
+```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts? snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
+---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
 ```
 
 ## 📦 Module
@@ -633,6 +650,7 @@ Snacks.picker.select(...)
 ---@field unloaded? boolean show loaded buffers
 ---@field current? boolean show current buffer
 ---@field nofile? boolean show `buftype=nofile` buffers
+---@field modified? boolean show only modified buffers
 ---@field sort_lastused? boolean sort by last used
 ---@field filter? snacks.picker.filter.Config
 {
@@ -782,6 +800,46 @@ Neovim commands
 }
 ```
 
+### `explorer`
+
+```vim
+:lua Snacks.picker.explorer(opts?)
+```
+
+```lua
+---@class snacks.picker.explorer.Config: snacks.picker.files.Config
+---@field follow_file? boolean follow the file from the current buffer
+---@field tree? boolean show the file tree (default: true)
+{
+  finder = "explorer",
+  sort = { fields = { "sort" } },
+  tree = true,
+  follow_file = true,
+  focus = "list",
+  auto_close = false,
+  layout = { preset = "sidebar", preview = false },
+  formatters = { file = { filename_only = true } },
+  matcher = { sort_empty = true },
+  config = function(opts)
+    return require("snacks.picker.source.explorer").setup(opts)
+  end,
+  win = {
+    list = {
+      keys = {
+        ["<BS>"] = "explorer_up",
+        ["a"] = "explorer_add",
+        ["d"] = "explorer_del",
+        ["r"] = "explorer_rename",
+        ["c"] = "explorer_copy",
+        ["y"] = "explorer_yank",
+        ["<c-c>"] = "explorer_cd",
+        ["."] = "explorer_focus",
+      },
+    },
+  },
+}
+```
+
 ### `files`
 
 ```vim
@@ -790,7 +848,7 @@ Neovim commands
 
 ```lua
 ---@class snacks.picker.files.Config: snacks.picker.proc.Config
----@field cmd? string
+---@field cmd? "fd"| "rg"| "find" command to use. Leave empty to auto-detect
 ---@field hidden? boolean show hidden files
 ---@field ignored? boolean show ignored files
 ---@field dirs? string[] directories to search
@@ -982,6 +1040,7 @@ Git log
 ---@field rtp? boolean search in runtimepath
 {
   finder = "grep",
+  regex = true,
   format = "file",
   live = true, -- live grep by default
   supports_live = true,
@@ -1291,13 +1350,13 @@ LSP document symbols
 
 ```lua
 ---@class snacks.picker.lsp.symbols.Config: snacks.picker.Config
----@field hierarchy? boolean show symbol hierarchy
+---@field tree? boolean show symbol tree
 ---@field filter table<string, string[]|boolean>? symbol kind filter
 ---@field workspace? boolean show workspace symbols
 {
   finder = "lsp_symbols",
   format = "lsp_symbol",
-  hierarchy = true,
+  tree = true,
   filter = {
     default = {
       "Class",
@@ -1366,7 +1425,7 @@ LSP type definitions
 ---@type snacks.picker.lsp.symbols.Config
 vim.tbl_extend("force", {}, M.lsp_symbols, {
   workspace = true,
-  hierarchy = false,
+  tree = false,
   supports_live = true,
   live = true, -- live by default
 })
@@ -2190,28 +2249,22 @@ and moves the cursor to the prev item.
 Snacks.picker.actions.select_and_prev(picker)
 ```
 
+### `Snacks.picker.actions.split()`
+
+```lua
+Snacks.picker.actions.split()
+```
+
+### `Snacks.picker.actions.tab()`
+
+```lua
+Snacks.picker.actions.tab()
+```
+
 ### `Snacks.picker.actions.toggle_focus()`
 
 ```lua
 Snacks.picker.actions.toggle_focus(picker)
-```
-
-### `Snacks.picker.actions.toggle_follow()`
-
-```lua
-Snacks.picker.actions.toggle_follow(picker)
-```
-
-### `Snacks.picker.actions.toggle_hidden()`
-
-```lua
-Snacks.picker.actions.toggle_hidden(picker)
-```
-
-### `Snacks.picker.actions.toggle_ignored()`
-
-```lua
-Snacks.picker.actions.toggle_ignored(picker)
 ```
 
 ### `Snacks.picker.actions.toggle_live()`
@@ -2232,11 +2285,19 @@ Snacks.picker.actions.toggle_maximize(picker)
 Snacks.picker.actions.toggle_preview(picker)
 ```
 
+### `Snacks.picker.actions.vsplit()`
+
+```lua
+Snacks.picker.actions.vsplit()
+```
+
 ### `Snacks.picker.actions.yank()`
 
 ```lua
 Snacks.picker.actions.yank(_, item)
 ```
+
+
 
 ## 📦 `snacks.picker.core.picker`
 
@@ -2367,7 +2428,7 @@ Returns an iterator over the filtered items in the picker.
 Items will be in sorted order.
 
 ```lua
----@return fun():snacks.picker.Item?
+---@return fun():(snacks.picker.Item?, number?)
 picker:iter()
 ```
 
@@ -2446,5 +2507,3 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
-
-
