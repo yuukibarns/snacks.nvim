@@ -246,7 +246,6 @@ end
 ---@type table<string, snacks.picker.Action.spec>
 M.actions = {
   explorer_up = function(picker)
-    dd("explorer_up")
     M.get_state(picker):up()
   end,
   explorer_add = function(picker)

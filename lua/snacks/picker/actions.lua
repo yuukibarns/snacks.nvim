@@ -373,7 +373,6 @@ function M.load_session(picker)
 end
 
 function M.help(picker)
-  dd("help")
   local item = picker:current()
   if item then
     picker:close()
