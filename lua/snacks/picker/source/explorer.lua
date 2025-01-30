@@ -448,6 +448,7 @@ function M.explorer(opts, ctx)
 
     files(function(item)
       ---@cast item snacks.picker.explorer.Item
+      item.cwd = nil -- we use absolute paths
 
       -- Directories
       if item.file:sub(-1) == "/" then
