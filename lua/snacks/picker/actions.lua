@@ -129,58 +129,18 @@ function M.toggle_preview(picker)
 end
 
 function M.pick_win(picker, item, action)
-  local overlays = {} ---@type snacks.win[]
   picker.layout:hide()
-  local chars = "asdfghjkl"
-  local wins = {} ---@type number[]
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_win_get_config(win).relative == "" then
-      wins[#wins + 1] = win
-    end
-  end
-  if #wins == 1 then
-    picker.main = wins[1]
-    return
-  elseif #wins == 0 then
-    Snacks.notify.warn("No windows to pick from", { title = "Snacks Picker" })
-    return
-  end
-  for _, win in ipairs(wins) do
-    local c = chars:sub(1, 1)
-    chars = chars:sub(2)
-    overlays[c] = Snacks.win({
-      backdrop = false,
-      win = win,
-      focusable = false,
-      enter = false,
-      relative = "win",
-      width = 7,
-      height = 3,
-      text = ("       \n   %s   \n       "):format(c),
-      wo = {
-        winhighlight = "NormalFloat:SnacksPickerPickWin" .. (win == picker.main and "Current" or ""),
-      },
-    })
-  end
-  vim.cmd([[redraw!]])
-  local char = vim.fn.getcharstr()
-  for _, overlay in pairs(overlays) do
-    overlay:close()
-  end
-  local win = (char == Snacks.util.keycode("<cr>")) or overlays[char]
-  if win then
-    if type(win) == "table" then
-      picker.main = win.opts.win
-    end
-    vim.defer_fn(function()
-      if not picker.closed then
-        picker.layout:unhide()
-      end
-    end, 100)
-  else
+  local win = Snacks.picker.util.pick_win({ main = picker.main })
+  if not win then
     picker.layout:unhide()
     return true
   end
+  picker.main = win
+  vim.defer_fn(function()
+    if not picker.closed then
+      picker.layout:unhide()
+    end
+  end, 100)
 end
 
 function M.bufdelete(picker)
