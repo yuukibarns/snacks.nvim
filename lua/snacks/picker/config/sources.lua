@@ -48,6 +48,7 @@ M.explorer = {
   follow_file = true,
   focus = "list",
   auto_close = false,
+  jump = { close = false },
   layout = { preset = "sidebar", preview = false },
   formatters = { file = { filename_only = true } },
   matcher = { sort_empty = true },

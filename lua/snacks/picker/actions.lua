@@ -20,7 +20,13 @@ function M.jump(picker, _, action)
     return
   end
 
-  picker:close()
+  if picker.opts.jump.close then
+    picker:close()
+  else
+    if vim.api.nvim_win_is_valid(picker.main) then
+      vim.api.nvim_set_current_win(picker.main)
+    end
+  end
 
   if action.cmd then
     vim.cmd(action.cmd)
