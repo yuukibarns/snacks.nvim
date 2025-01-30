@@ -382,19 +382,27 @@ function M.help(picker)
 end
 
 function M.preview_scroll_down(picker)
-  picker.preview.win:scroll()
+  if picker.preview.win:valid() then
+    picker.preview.win:scroll()
+  end
 end
 
 function M.preview_scroll_up(picker)
-  picker.preview.win:scroll(true)
+  if picker.preview.win:valid() then
+    picker.preview.win:scroll(true)
+  end
 end
 
 function M.preview_scroll_left(picker)
-  picker.preview.win:hscroll(true)
+  if picker.preview.win:valid() then
+    picker.preview.win:hscroll(true)
+  end
 end
 
 function M.preview_scroll_right(picker)
-  picker.preview.win:hscroll()
+  if picker.preview.win:valid() then
+    picker.preview.win:hscroll()
+  end
 end
 
 function M.inspect(picker, item)
