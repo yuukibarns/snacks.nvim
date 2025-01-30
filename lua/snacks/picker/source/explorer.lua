@@ -103,7 +103,7 @@ end
 
 ---@param dir string
 function State:is_open(dir)
-  return self.expanded[dir]
+  return self.all or self.expanded[dir]
 end
 
 function State:in_cwd(path)
@@ -173,11 +173,13 @@ function State:expand_dirs()
 end
 
 ---@param opts snacks.picker.explorer.Config
-function State:setup(opts)
+---@param ctx snacks.picker.finder.ctx
+function State:setup(opts, ctx)
   opts = Snacks.picker.util.shallow_copy(opts)
   opts.cmd = "fd"
   opts.cwd = self.cwd
-  opts.args = { "--type", "d", "--path-separator", "/" }
+  opts.args = { "--type", "d", "--path-separator", "/", "--absolute-path" }
+  self.all = #ctx.filter.search > 0
   if not self.all then
     opts.dirs = self:expand_dirs()
     vim.list_extend(opts.args, { "--max-depth", "1" })
@@ -231,6 +233,7 @@ end
 ---@param opts snacks.picker.explorer.Config
 function M.setup(opts)
   return Snacks.config.merge(opts, {
+    live = true,
     actions = M.actions,
     formatters = {
       file = {
@@ -375,7 +378,7 @@ end
 ---@type snacks.picker.finder
 function M.explorer(opts, ctx)
   local state = M.get_state(ctx.picker)
-  opts = state:setup(opts)
+  opts = state:setup(opts, ctx)
 
   local files = require("snacks.picker.source.files").files(opts, ctx)
   local dirs = {} ---@type table<string, snacks.picker.explorer.Item>
@@ -390,23 +393,17 @@ function M.explorer(opts, ctx)
     hello = "world",
     sort = "",
   }
+  local cwd = state.cwd
+  dirs[cwd] = root
 
   return function(cb)
     if state.on_find then
       ctx.picker.matcher.task:on("done", vim.schedule_wrap(state.on_find))
     end
     cb(root)
-    files(function(item)
-      ---@cast item snacks.picker.explorer.Item
 
-      -- Directories
-      if item.file:sub(-1) == "/" then
-        item.dir = true
-        item.file = item.file:sub(1, -2)
-        item.open = state:is_open(item.file)
-        dirs[item.file] = item
-      end
-
+    ---@param item snacks.picker.explorer.Item
+    local function add(item)
       local dirname, basename = item.file:match("(.*)/(.*)")
       dirname, basename = dirname or "", basename or item.file
       local parent = dirs[dirname] ~= item and dirs[dirname] or root
@@ -429,9 +426,47 @@ function M.explorer(opts, ctx)
           last[parent] = item
         end
       end
-
       -- add to picker
       cb(item)
+    end
+
+    files(function(item)
+      ---@cast item snacks.picker.explorer.Item
+
+      -- Directories
+      if item.file:sub(-1) == "/" then
+        item.dir = true
+        item.file = item.file:sub(1, -2)
+        if dirs[item.file] then
+          return
+        end
+        item.open = state:is_open(item.file)
+        dirs[item.file] = item
+      end
+
+      -- Add parents when needed
+      if item.file:sub(1, #cwd) == cwd and #item.file > #cwd then
+        local path = item.file
+        local to = #cwd + 1 ---@type number?
+        while to do
+          to = path:find("/", to + 1, true)
+          if not to then
+            break
+          end
+          local dir = path:sub(1, to - 1)
+          if not dirs[dir] then
+            dirs[dir] = {
+              text = dir,
+              file = dir,
+              dir = true,
+              open = state:is_open(dir),
+            }
+            add(dirs[dir])
+          end
+        end
+      end
+
+      add(item)
     end)
   end
 end

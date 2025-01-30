@@ -44,6 +44,7 @@ M.explorer = {
   finder = "explorer",
   sort = { fields = { "sort" } },
   tree = true,
+  supports_live = true,
   follow_file = true,
   focus = "list",
   auto_close = false,
