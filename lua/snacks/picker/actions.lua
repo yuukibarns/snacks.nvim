@@ -132,24 +132,35 @@ function M.pick_win(picker, item, action)
   local overlays = {} ---@type snacks.win[]
   picker.layout:hide()
   local chars = "asdfghjkl"
+  local wins = {} ---@type number[]
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     if vim.api.nvim_win_get_config(win).relative == "" then
-      local c = chars:sub(1, 1)
-      chars = chars:sub(2)
-      overlays[c] = Snacks.win({
-        backdrop = false,
-        win = win,
-        focusable = false,
-        enter = false,
-        relative = "win",
-        width = 7,
-        height = 3,
-        text = ("       \n   %s   \n       "):format(c),
-        wo = {
-          winhighlight = "NormalFloat:SnacksPickerPickWin" .. (win == picker.main and "Current" or ""),
-        },
-      })
+      wins[#wins + 1] = win
     end
+  end
+  if #wins == 1 then
+    picker.main = wins[1]
+    return
+  elseif #wins == 0 then
+    Snacks.notify.warn("No windows to pick from", { title = "Snacks Picker" })
+    return
+  end
+  for _, win in ipairs(wins) do
+    local c = chars:sub(1, 1)
+    chars = chars:sub(2)
+    overlays[c] = Snacks.win({
+      backdrop = false,
+      win = win,
+      focusable = false,
+      enter = false,
+      relative = "win",
+      width = 7,
+      height = 3,
+      text = ("       \n   %s   \n       "):format(c),
+      wo = {
+        winhighlight = "NormalFloat:SnacksPickerPickWin" .. (win == picker.main and "Current" or ""),
+      },
+    })
   end
   vim.cmd([[redraw!]])
   local char = vim.fn.getcharstr()

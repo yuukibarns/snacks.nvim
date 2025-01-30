@@ -186,7 +186,7 @@ function State:setup(opts, ctx)
   if self.all then
     local picker = self.picker()
     if not picker then
-      return
+      return {}
     end
     picker.list:set_target()
     self.on_find = function()
