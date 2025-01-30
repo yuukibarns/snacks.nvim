@@ -107,6 +107,10 @@ function M.jump(picker, _, action)
   end
 end
 
+function M.close(picker)
+  picker:close()
+end
+
 M.cancel = "close"
 M.edit = M.jump
 M.confirm = M.jump
