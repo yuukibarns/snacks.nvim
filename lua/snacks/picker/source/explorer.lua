@@ -381,14 +381,14 @@ M.actions = {
     local state = M.get_state(picker)
     state:set_cwd(state:dir())
   end,
-  explorer_yank = function(picker, item)
+  explorer_yank = function(_, item)
     if not item then
       return
     end
     vim.fn.setreg("+", item.file)
     Snacks.notify.info("Yanked `" .. item.file .. "`")
   end,
-  explorer_cd = function(picker, item)
+  explorer_cd = function(picker)
     local state = M.get_state(picker)
     vim.fn.chdir(state:dir())
     state:set_cwd(vim.fn.getcwd())
@@ -399,6 +399,11 @@ M.actions = {
     if not item then
       return
     elseif item.dir then
+      if state.all then
+        picker.input:set("", "")
+        state:set_cwd(item.file)
+        return
+      end
       state:toggle(item)
     else
       picker:action("jump")
