@@ -294,6 +294,12 @@ M.actions = {
   explorer_up = function(picker)
     M.get_state(picker):up()
   end,
+  explorer_close = function(picker)
+    local state = M.get_state(picker)
+    local dir = state:dir()
+    state.expanded[dir] = false
+    state:update()
+  end,
   explorer_add = function(picker)
     local state = M.get_state(picker)
     Snacks.input({
