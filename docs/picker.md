@@ -807,7 +807,7 @@ Neovim commands
 ```
 
 ```lua
----@class snacks.picker.explorer.Config: snacks.picker.files.Config
+---@class snacks.picker.explorer.Config: snacks.picker.files.Config|{}
 ---@field follow_file? boolean follow the file from the current buffer
 ---@field tree? boolean show the file tree (default: true)
 {
