@@ -23,8 +23,6 @@ function M.setup(event)
   local opts = Snacks.config.get("explorer", defaults)
   if opts.replace_netrw then
     -- Disable netrw
-    vim.g.loaded_netrw = 1
-    vim.g.loaded_netrwPlugin = 1
     pcall(vim.api.nvim_del_augroup_by_name, "FileExplorer")
 
     local group = vim.api.nvim_create_augroup("snacks.explorer", { clear = true })
