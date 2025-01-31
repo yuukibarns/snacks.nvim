@@ -823,11 +823,13 @@ Neovim commands
 ---@field follow_file? boolean follow the file from the current buffer
 ---@field tree? boolean show the file tree (default: true)
 ---@field git_status? boolean show git status (default: true)
+---@field git_status_open? boolean show recursive git status for open directories
 {
   finder = "explorer",
   sort = { fields = { "sort" } },
   tree = true,
   git_status = true,
+  git_status_open = true,
   supports_live = true,
   follow_file = true,
   focus = "list",
