@@ -388,6 +388,7 @@ M.lines = {
     preview = "main",
     preset = "ivy",
   },
+  jump = { match = true },
   -- allow any window to be used as the main window
   main = { current = true },
   ---@param picker snacks.Picker

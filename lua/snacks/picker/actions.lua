@@ -83,8 +83,12 @@ function M.jump(picker, _, action)
     vim.api.nvim_win_set_buf(win, buf)
 
     -- set the cursor
-    if item.pos and item.pos[1] > 0 then
-      vim.api.nvim_win_set_cursor(win, { item.pos[1], item.pos[2] })
+    local pos = item.pos
+    if picker.opts.jump.match then
+      pos = picker.matcher:bufpos(buf, item) or pos
+    end
+    if pos and pos[1] > 0 then
+      vim.api.nvim_win_set_cursor(win, { pos[1], pos[2] })
     elseif item.search then
       vim.cmd(item.search)
       vim.cmd("noh")
