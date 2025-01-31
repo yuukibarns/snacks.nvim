@@ -305,6 +305,33 @@ M.actions = {
       end,
     })
   end,
+  explorer_move = function(picker)
+    local state = M.get_state(picker)
+    ---@type string[]
+    local paths = vim.tbl_map(Snacks.picker.util.path, picker:selected())
+    if #paths == 0 then
+      Snacks.notify.warn("No files selected to move")
+      return
+    end
+    local target = state:dir()
+    local what = #paths == 1 and vim.fn.fnamemodify(paths[1], ":p:~:.") or #paths .. " files"
+    local t = vim.fn.fnamemodify(target, ":p:~:.")
+
+    Snacks.picker.select({ "Yes", "No" }, { prompt = "Move " .. what .. " to " .. t .. "?" }, function(_, idx)
+      if idx == 1 then
+        for _, from in ipairs(paths) do
+          local to = target .. "/" .. vim.fn.fnamemodify(from, ":t")
+          Snacks.rename.on_rename_file(from, to, function()
+            local ok, err = pcall(vim.fn.rename, from, to)
+            if not ok then
+              Snacks.notify.error("Failed to move `" .. from .. "`:\n- " .. err)
+            end
+          end)
+        end
+        state:update()
+      end
+    end)
+  end,
   explorer_copy = function(picker, item)
     if not item then
       return
@@ -350,30 +377,6 @@ M.actions = {
           local ok, err = pcall(vim.fn.delete, path, "rf")
           if not ok then
             Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
-          end
-        end
-        state:update()
-      end
-    end)
-  end,
-  explorer_move = function(picker)
-    local state = M.get_state(picker)
-    ---@type string[]
-    local paths = vim.tbl_map(Snacks.picker.util.path, picker:selected())
-    if #paths == 0 then
-      Snacks.notify.warn("No files selected to move")
-      return
-    end
-    local to = state:dir()
-    local what = #paths == 1 and vim.fn.fnamemodify(paths[1], ":p:~:.") or #paths .. " files"
-    local t = vim.fn.fnamemodify(to, ":p:~:.")
-
-    Snacks.picker.select({ "Yes", "No" }, { prompt = "Move " .. what .. " to " .. t .. "?" }, function(_, idx)
-      if idx == 1 then
-        for _, path in ipairs(paths) do
-          local ok, err = pcall(vim.fn.rename, path, to .. "/" .. vim.fn.fnamemodify(path, ":t"))
-          if not ok then
-            Snacks.notify.error("Failed to move `" .. path .. "`:\n- " .. err)
           end
         end
         state:update()
