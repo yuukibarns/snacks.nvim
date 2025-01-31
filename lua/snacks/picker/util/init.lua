@@ -372,7 +372,8 @@ function M.pick_win(opts)
   local chars = "asdfghjkl"
   local wins = {} ---@type number[]
   for _, win in ipairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_win_get_config(win).relative == "" then
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.api.nvim_win_get_config(win).relative == "" and not vim.bo[buf].filetype:find("^snacks") then
       wins[#wins + 1] = win
     end
   end
