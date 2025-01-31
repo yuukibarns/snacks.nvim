@@ -32,11 +32,11 @@ function M.setup(event)
     local function handle(ev)
       if ev.file ~= "" and vim.fn.isdirectory(ev.file) == 1 then
         local picker = M.open({ cwd = ev.file })
-        local ref = picker:ref()
-        if vim.v.vim_did_enter == 0 then
+        if picker and vim.v.vim_did_enter == 0 then
           -- clear bufname so we don't try loading this one again
           vim.api.nvim_buf_set_name(ev.buf, "")
           picker:show()
+          local ref = picker:ref()
           -- focus on UIEnter, since focusing before doesn't work
           vim.api.nvim_create_autocmd("UIEnter", {
             once = true,

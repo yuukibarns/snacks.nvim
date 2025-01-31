@@ -184,7 +184,14 @@ function State:setup(opts, ctx)
   opts = Snacks.picker.util.shallow_copy(opts)
   opts.cmd = "fd"
   opts.cwd = self.cwd
-  opts.args = { "--type", "d", "--path-separator", "/", "--absolute-path" }
+  opts.args = {
+    "--type",
+    "d", -- include directories
+    "--path-separator", -- same everywhere
+    "/",
+    "--absolute-path", -- easier to work with
+    "--follow", -- always needed to make sure we see symlinked dirs as dirs
+  }
   self.all = #ctx.filter.search > 0
   if self.all then
     local picker = self.picker()
