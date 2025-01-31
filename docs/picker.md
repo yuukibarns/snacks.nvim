@@ -1215,8 +1215,8 @@ Search for a lazy.nvim plugin spec
 ```lua
 {
   finder = "lazy_spec",
-  live = true,
-  search = "'",
+  live = false,
+  pattern = "'",
 }
 ```
 
