@@ -268,6 +268,7 @@ function State:dir()
 end
 
 function State:set_cwd(cwd)
+  cwd = vim.fs.normalize(cwd)
   self.cwd = cwd
   self.expanded[cwd] = true
   for k in pairs(self.expanded) do
@@ -435,7 +436,6 @@ M.actions = {
   explorer_cd = function(picker)
     local state = M.get_state(picker)
     vim.fn.chdir(state:dir())
-    state:set_cwd(vim.fn.getcwd())
   end,
   confirm = function(picker)
     local state = M.get_state(picker)
