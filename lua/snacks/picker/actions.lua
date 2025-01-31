@@ -118,16 +118,25 @@ M.edit_split = { "split", "confirm" }
 M.edit_vsplit = { "vsplit", "confirm" }
 M.edit_tab = { "tab", "confirm" }
 
-function M.split()
-  vim.cmd("split")
+local function wincmd(picker, cmd)
+  if vim.api.nvim_win_is_valid(picker.main) then
+    vim.api.nvim_win_call(picker.main, function()
+      vim.cmd(cmd)
+      picker.main = vim.api.nvim_get_current_win()
+    end)
+  end
 end
 
-function M.vsplit()
-  vim.cmd("vsplit")
+function M.split(picker)
+  wincmd(picker, "split")
 end
 
-function M.tab()
-  vim.cmd("tabnew")
+function M.vsplit(picker)
+  wincmd(picker, "vsplit")
+end
+
+function M.tab(picker)
+  wincmd(picker, "tab")
 end
 
 function M.toggle_maximize(picker)
