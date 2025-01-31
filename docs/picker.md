@@ -2342,7 +2342,6 @@ Snacks.picker.actions.yank(_, item)
 ---@field closed? boolean
 ---@field history snacks.picker.History
 ---@field visual? snacks.picker.Visual
----@field jumping? boolean
 local M = {}
 ```
 
