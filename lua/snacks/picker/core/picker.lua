@@ -163,6 +163,9 @@ function M.new(opts)
     if not self.layout:valid() then
       return
     end
+    if vim.api.nvim_win_get_config(0).relative ~= "" then
+      return
+    end
     if self:is_focused() then
       if on_focus then
         on_focus()
