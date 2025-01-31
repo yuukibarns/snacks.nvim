@@ -253,6 +253,7 @@ local defaults = {
         ["/"] = "toggle_focus",
         ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
         ["<ScrollWheelUp>"] = "list_scroll_wheel_up",
+        ["<2-LeftMouse>"] = "confirm",
         ["<c-a>"] = "select_all",
         ["<a-m>"] = { "toggle_maximize" },
         ["<a-p>"] = { "toggle_preview" },
