@@ -244,6 +244,7 @@ Snacks.picker.pick({source = "files", ...})
         ["<CR>"] = "confirm",
         ["<Down>"] = "list_down",
         ["<Esc>"] = "close",
+        ["<S-CR>"] = { { "pick_win", "jump" } },
         ["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
         ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
         ["<ScrollWheelUp>"] = "list_scroll_wheel_up",
