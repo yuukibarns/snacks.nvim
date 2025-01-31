@@ -411,4 +411,19 @@ function M.pick_win(opts)
   end
 end
 
+---@param path string
+---@param cwd? string
+---@return fun(): string?
+function M.parents(path, cwd)
+  cwd = cwd or uv.cwd()
+  if not (cwd and path:sub(1, #cwd) == cwd and #path > #cwd) then
+    return function() end
+  end
+  local to = #cwd + 1 ---@type number?
+  return function()
+    to = path:find("/", to + 1, true)
+    return to and path:sub(1, to - 1) or nil
+  end
+end
+
 return M

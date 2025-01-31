@@ -40,10 +40,12 @@ M.buffers = {
 ---@class snacks.picker.explorer.Config: snacks.picker.files.Config|{}
 ---@field follow_file? boolean follow the file from the current buffer
 ---@field tree? boolean show the file tree (default: true)
+---@field git_status? boolean show git status (default: true)
 M.explorer = {
   finder = "explorer",
   sort = { fields = { "sort" } },
   tree = true,
+  git_status = true,
   supports_live = true,
   follow_file = true,
   focus = "list",

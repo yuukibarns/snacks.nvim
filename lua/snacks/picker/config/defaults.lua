@@ -299,9 +299,9 @@ local defaults = {
       nowait = "󰓅 "
     },
     tree = {
-      vertical    = "│ ",
-      middle = "├╴",
-      last   = "└╴",
+      vertical = "│ ",
+      middle   = "├╴",
+      last     = "└╴",
     },
     undo = {
       saved   = " ",
@@ -316,7 +316,16 @@ local defaults = {
       -- selected = " ",
     },
     git = {
-      commit = "󰜘 ",
+      enabled   = true, -- show git icons
+      commit    = "󰜘 ", -- used by git log
+      staged    = "●", -- staged changes. always overrides the type icons
+      added     = "",
+      deleted   = "",
+      ignored   = " ",
+      modified  = "○",
+      renamed   = "",
+      unmerged  = " ",
+      untracked = "?",
     },
     diagnostics = {
       Error = " ",
