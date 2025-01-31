@@ -6,6 +6,7 @@ local M = {}
 ---@type table<snacks.Picker, snacks.picker.explorer.State>
 M._state = setmetatable({}, { __mode = "k" })
 local uv = vim.uv or vim.loop
+local expanded = {} ---@type table<string, boolean>
 
 ---@class snacks.picker.explorer.Item: snacks.picker.finder.Item
 ---@field file string
@@ -32,7 +33,8 @@ function State.new(picker)
   self.picker = picker:ref()
   local filter = picker:filter()
   self.cwd = filter.cwd
-  self.expanded = { [self.cwd] = true }
+  self.expanded = expanded
+  self.expanded[self.cwd] = true
   local buf = vim.api.nvim_win_get_buf(picker.main)
   local buf_file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
   if uv.fs_stat(buf_file) then
