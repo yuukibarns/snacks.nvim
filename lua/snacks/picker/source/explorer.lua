@@ -47,6 +47,11 @@ function State.new(picker)
   picker.list.win:on("TermClose", function()
     self:update()
   end, { pattern = "*lazygit" })
+  picker.list.win:on("BufWritePost", function(_, ev)
+    if self:is_visible(ev.file) then
+      self:update()
+    end
+  end)
   -- schedule initial follow
   if self.opts.follow_file then
     self.on_find = function()
@@ -98,6 +103,7 @@ end
 
 ---@param path string
 function State:is_visible(path)
+  path = vim.fs.normalize(path)
   local dir = vim.fn.isdirectory(path) == 1 and path or vim.fs.dirname(path)
   if not self:in_cwd(dir) then
     return false
