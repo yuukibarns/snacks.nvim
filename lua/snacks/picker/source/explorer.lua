@@ -86,6 +86,10 @@ function State:show(path)
     return
   end
   local function show()
+    local picker = self.picker()
+    if not picker or picker.closed then
+      return
+    end
     for item, idx in picker:iter() do
       if item.file == path then
         picker.list:view(idx)
