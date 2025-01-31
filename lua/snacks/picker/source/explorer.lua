@@ -577,6 +577,9 @@ function M.explorer(opts, ctx)
     end
 
     local function add_git_status(path, status)
+      if not opts.git_status_open and state.expanded[path] then
+        return
+      end
       local item = items[path]
       if item then
         if item.status then
