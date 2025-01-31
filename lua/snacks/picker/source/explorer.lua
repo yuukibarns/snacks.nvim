@@ -73,6 +73,10 @@ function State:follow()
   if not picker or picker:is_focused() or picker.closed then
     return
   end
+  local win = vim.api.nvim_get_current_win()
+  if vim.api.nvim_win_get_config(win).relative ~= "" then
+    return
+  end
   local buf = vim.api.nvim_get_current_buf()
   local file = vim.api.nvim_buf_get_name(buf)
   self:show(file)
