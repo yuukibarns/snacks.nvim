@@ -374,8 +374,8 @@ M.keymaps = {
 --- Search for a lazy.nvim plugin spec
 M.lazy = {
   finder = "lazy_spec",
-  live = true,
-  search = "'",
+  live = false,
+  pattern = "'",
 }
 
 -- Search lines in the current buffer
