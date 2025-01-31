@@ -58,7 +58,6 @@ function State.new(picker)
   -- schedule initial follow
   if self.opts.follow_file then
     self.on_find = function()
-      self.on_find = nil
       self:show(buf_file)
     end
   end
@@ -496,6 +495,7 @@ function M.explorer(opts, ctx)
   return function(cb)
     if state.on_find then
       ctx.picker.matcher.task:on("done", vim.schedule_wrap(state.on_find))
+      state.on_find = nil
     end
     items[cwd] = root
     cb(root)
