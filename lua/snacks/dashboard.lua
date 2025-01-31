@@ -245,12 +245,11 @@ function D:init()
     vim.keymap.set("n", "<esc>", "<cmd>bd<cr>", { silent = true, buffer = self.buf })
   end
   vim.keymap.set("n", "q", "<cmd>bd<cr>", { silent = true, buffer = self.buf })
-  vim.api.nvim_create_autocmd("WinResized", {
+  vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
     group = self.augroup,
-    buffer = self.buf,
-    callback = function(ev)
-      -- only re-render if the same window and size has changed
-      if tonumber(ev.match) == self.win and not vim.deep_equal(self._size, self:size()) then
+    callback = function()
+      -- only re-render if the size has changed
+      if not vim.deep_equal(self._size, self:size()) then
         self:update()
       end
     end,
