@@ -54,7 +54,6 @@ function M.new(opts)
       local winc = vim.api.nvim_win_get_config(win)
       if winc.zindex and winc.zindex >= zindex then
         zindex = winc.zindex + 1
-        dd("other")
       end
     end
   end
