@@ -639,7 +639,7 @@ function M:update()
     if self.opts.live then
       self:show()
     elseif not self:is_active() then
-      if count == 0 then
+      if count == 0 and not self.opts.show_empty then
         -- no results found
         local msg = "No results"
         if self.opts.source then
