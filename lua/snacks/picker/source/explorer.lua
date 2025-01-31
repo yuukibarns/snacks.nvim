@@ -52,6 +52,9 @@ function State.new(picker)
       self:update()
     end
   end)
+  picker.list.win:on("DirChanged", function(_, ev)
+    self:set_cwd(vim.fs.normalize(ev.file))
+  end)
   -- schedule initial follow
   if self.opts.follow_file then
     self.on_find = function()
