@@ -485,9 +485,9 @@ function M.explorer(opts, ctx)
 
       -- hierarchical sorting
       if item.dir then
-        item.sort = parent.sort .. "/0" .. basename
+        item.sort = parent.sort .. "!" .. basename .. " "
       else
-        item.sort = parent.sort .. "/1" .. basename
+        item.sort = parent.sort .. "#" .. basename .. " "
       end
 
       if opts.tree then
