@@ -47,7 +47,7 @@ M.explorer = {
   sort = { fields = { "sort" } },
   tree = true,
   git_status = true,
-  git_status_open = true,
+  git_status_open = false,
   supports_live = true,
   follow_file = true,
   focus = "list",
