@@ -2362,6 +2362,7 @@ Snacks.picker.actions.yank(_, item)
 ---@field list snacks.picker.list
 ---@field matcher snacks.picker.Matcher
 ---@field main number
+---@field _main snacks.picker.Main
 ---@field preview snacks.picker.Preview
 ---@field shown? boolean
 ---@field sort snacks.picker.sort
@@ -2490,6 +2491,12 @@ and then`vim.schedule` the callback.
 ```lua
 ---@param cb fun()
 picker:norm(cb)
+```
+
+### `picker:on_current_tab()`
+
+```lua
+picker:on_current_tab()
 ```
 
 ### `picker:ref()`
