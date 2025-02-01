@@ -140,7 +140,7 @@ function M.vsplit(picker)
 end
 
 function M.tab(picker)
-  wincmd(picker, "tab")
+  wincmd(picker, "tabnew")
 end
 
 function M.toggle_maximize(picker)
