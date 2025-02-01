@@ -494,23 +494,6 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
----@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts? snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
----@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
-```
-
-```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -586,6 +569,23 @@ It's a previewer that shows a preview based on the item data.
 ---@field preview? snacks.win.Config|{} preview window config
 ```
 
+```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts? snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
+---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
+```
+
 ## 📦 Module
 
 ```lua
@@ -613,6 +613,15 @@ Snacks.picker()
 ```lua
 ---@type fun(opts: snacks.picker.Config): snacks.Picker
 Snacks.picker()
+```
+
+### `Snacks.picker.get()`
+
+Get active pickers, optionally filtered by source
+
+```lua
+---@param opts? {source?: string}
+Snacks.picker.get(opts)
 ```
 
 ### `Snacks.picker.pick()`
@@ -2346,12 +2355,15 @@ Snacks.picker.actions.vsplit(picker)
 Snacks.picker.actions.yank(_, item)
 ```
 
+
+
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
 ---@class snacks.Picker
 ---@field id number
 ---@field opts snacks.picker.Config
+---@field init_opts? snacks.picker.Config
 ---@field finder snacks.picker.Finder
 ---@field format snacks.picker.format
 ---@field input snacks.picker.input
@@ -2371,6 +2383,13 @@ Snacks.picker.actions.yank(_, item)
 ---@field history snacks.picker.History
 ---@field visual? snacks.picker.Visual
 local M = {}
+```
+
+### `Snacks.picker.picker.get()`
+
+```lua
+---@param opts? {source?: string}
+Snacks.picker.picker.get(opts)
 ```
 
 ### `picker:action()`
@@ -2561,5 +2580,3 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
-
-
