@@ -137,7 +137,7 @@ local tree = Tree.new()
 ---@field ref snacks.Picker.ref
 ---@field opts snacks.picker.explorer.Config
 ---@field on_find? fun()?
----@field git_status {file: string, status: string}[]
+---@field git_status {file: string, status: string, sort?:string}[]
 local State = {}
 State.__index = State
 ---@param picker snacks.Picker
@@ -179,6 +179,24 @@ function State.new(picker)
     end
   end
   return self
+end
+
+function State:sort_git_status()
+  for _, s in ipairs(self.git_status) do
+    if self.tree:in_cwd(self.cwd, s.file) then
+      local parts = vim.split(s.file:sub(#self.cwd + 2), "/", { plain = true })
+      for i, part in ipairs(parts) do
+        parts[i] = (i == #parts and "#" or "!") .. part
+      end
+      s.sort = table.concat(parts, " ") .. " "
+    end
+  end
+  self.git_status = vim.tbl_filter(function(s)
+    return s.sort
+  end, self.git_status)
+  table.sort(self.git_status, function(a, b)
+    return a.sort < b.sort
+  end)
 end
 
 function State:picker()
@@ -423,7 +441,7 @@ M.actions = {
       return
     end
     for _, s in ipairs(state.git_status) do
-      if s.file > item.file then
+      if s.sort and s.sort > item.sort then
         return state:show(s.file)
       end
     end
@@ -436,7 +454,7 @@ M.actions = {
     end
     for i = #state.git_status, 1, -1 do
       local s = state.git_status[i]
-      if s.file < item.file then
+      if s.sort and s.sort < item.sort then
         return state:show(s.file)
       end
     end
@@ -712,6 +730,8 @@ function M.explorer(opts, ctx)
         end
       end
     end
+
+    state:sort_git_status()
 
     -- Add git status to files and parents
     for _, s in ipairs(state.git_status) do
