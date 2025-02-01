@@ -66,6 +66,21 @@ function M:__newindex(key, value)
   end
 end
 
+---@param opts? {source?: string}
+function M.get(opts)
+  opts = opts or {}
+  local ret = {} ---@type snacks.Picker[]
+  for picker in pairs(M._active) do
+    if not opts.source or picker.opts.source == opts.source then
+      ret[#ret + 1] = picker
+    end
+  end
+  table.sort(ret, function(a, b)
+    return a.id < b.id
+  end)
+  return ret
+end
+
 ---@hide
 ---@param opts? snacks.picker.Config
 ---@return snacks.Picker
@@ -129,7 +144,6 @@ function M.new(opts)
 
   self.visual = Snacks.picker.util.visual()
   self.start_time = uv.hrtime()
-  Snacks.picker.current = self
   self._main = require("snacks.picker.core.main").new(self.opts.main)
   local actions = require("snacks.picker.core.actions").get(self)
   self.opts.win.input.actions = actions
@@ -592,7 +606,7 @@ function M:close()
   M.last.topline = self.list.top
   M.last.opts = M.last.opts or {}
   M.last.opts.live = self.opts.live
-  Snacks.picker.current = nil
+
   local current = vim.api.nvim_get_current_win()
   local is_picker_win = vim.tbl_contains({ self.input.win.win, self.list.win.win, self.preview.win.win }, current)
   if is_picker_win and vim.api.nvim_win_is_valid(self.main) then
