@@ -10,6 +10,7 @@ local _id = 0
 ---@class snacks.Picker
 ---@field id number
 ---@field opts snacks.picker.Config
+---@field init_opts? snacks.picker.Config
 ---@field finder snacks.picker.Finder
 ---@field format snacks.picker.format
 ---@field input snacks.picker.input
@@ -88,6 +89,7 @@ function M.new(opts)
   local self = setmetatable({}, M)
   _id = _id + 1
   self.id = _id
+  self.init_opts = opts
   self.opts = Snacks.picker.config.get(opts)
   if self.opts.source == "resume" then
     return M.resume()
@@ -172,14 +174,6 @@ function M.new(opts)
   self.list = require("snacks.picker.core.list").new(self)
   self.input = require("snacks.picker.core.input").new(self)
   self.preview = require("snacks.picker.core.preview").new(self.opts, layout.preview == "main" and self.main or nil)
-
-  M.last = {
-    opts = opts,
-    selected = {},
-    cursor = self.list.cursor,
-    filter = self.input.filter,
-    topline = self.list.top,
-  }
 
   self.title = self.opts.title or Snacks.picker.util.title(self.opts.source or "search")
 
@@ -601,10 +595,14 @@ function M:close()
 
   self:hist_record(true)
   self.closed = true
-  M.last.selected = self:selected({ fallback = false })
-  M.last.cursor = self.list.cursor
-  M.last.topline = self.list.top
-  M.last.opts = M.last.opts or {}
+
+  M.last = {
+    opts = self.init_opts or {},
+    selected = self:selected({ fallback = false }),
+    cursor = self.list.cursor,
+    topline = self.list.top,
+    filter = self.input.filter,
+  }
   M.last.opts.live = self.opts.live
 
   local current = vim.api.nvim_get_current_win()
