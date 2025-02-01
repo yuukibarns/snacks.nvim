@@ -79,6 +79,8 @@ M.explorer = {
         ["I"] = "toggle_ignored",
         ["H"] = "toggle_hidden",
         ["Z"] = "explorer_close_all",
+        ["]g"] = "explorer_git_next",
+        ["[g"] = "explorer_git_prev",
       },
     },
   },

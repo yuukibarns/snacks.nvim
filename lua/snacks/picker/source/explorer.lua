@@ -137,6 +137,7 @@ local tree = Tree.new()
 ---@field ref snacks.Picker.ref
 ---@field opts snacks.picker.explorer.Config
 ---@field on_find? fun()?
+---@field git_status {file: string, status: string}[]
 local State = {}
 State.__index = State
 ---@param picker snacks.Picker
@@ -147,6 +148,7 @@ function State.new(picker)
   local filter = picker:filter()
   self.cwd = filter.cwd
   self.tree = tree
+  self.git_status = {}
   local buf = vim.api.nvim_win_get_buf(picker.main)
   local buf_file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
   if uv.fs_stat(buf_file) then
@@ -415,6 +417,31 @@ M.actions = {
       end,
     })
   end,
+  explorer_git_next = function(picker, item)
+    local state = M.get_state(picker)
+    if not item or #state.git_status == 0 then
+      return
+    end
+    for _, s in ipairs(state.git_status) do
+      if s.file > item.file then
+        return state:show(s.file)
+      end
+    end
+    return state:show(state.git_status[1].file)
+  end,
+  explorer_git_prev = function(picker, item)
+    local state = M.get_state(picker)
+    if not item or #state.git_status == 0 then
+      return
+    end
+    for i = #state.git_status, 1, -1 do
+      local s = state.git_status[i]
+      if s.file < item.file then
+        return state:show(s.file)
+      end
+    end
+    return state:show(state.git_status[#state.git_status].file)
+  end,
   explorer_move = function(picker)
     local state = M.get_state(picker)
     ---@type string[]
@@ -578,6 +605,7 @@ function M.explorer(opts, ctx)
   }
   local cwd = state.cwd
   dirs[cwd] = root
+  state.git_status = {}
 
   local items = {} ---@type table<string, snacks.picker.explorer.Item>
   ---@async
@@ -620,14 +648,13 @@ function M.explorer(opts, ctx)
 
     -- gather git status in a separate coroutine,
     -- so that both git and fd can run in parallel
-    local git_status = {} ---@type table<string, string>
     local git_async ---@type snacks.picker.Async?
     if opts.git_status then
       git_async = require("snacks.picker.util.async").new(function()
         git(function(item)
           local path = Snacks.picker.util.path(item)
           if path then
-            git_status[path] = item.status
+            table.insert(state.git_status, { file = path, status = item.status })
           end
         end)
       end)
@@ -687,10 +714,11 @@ function M.explorer(opts, ctx)
     end
 
     -- Add git status to files and parents
-    for path, status in pairs(git_status) do
-      add_git_status(path, status)
+    for _, s in ipairs(state.git_status) do
+      local file, status = s.file, s.status
+      add_git_status(file, status)
       add_git_status(cwd, status)
-      for dir in Snacks.picker.util.parents(path, cwd) do
+      for dir in Snacks.picker.util.parents(file, cwd) do
         add_git_status(dir, status)
       end
     end
