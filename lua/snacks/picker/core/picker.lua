@@ -78,7 +78,7 @@ function M.new(opts)
     return M.resume()
   end
 
-  self.history = require("snacks.picker.util.history").new("picker", {
+  self.history = require("snacks.picker.util.history").new("picker_" .. (self.opts.source or "custom"), {
     ---@param hist snacks.picker.history.Record
     filter = function(hist)
       if hist.pattern == "" and hist.search == "" then
