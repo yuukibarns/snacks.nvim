@@ -202,7 +202,6 @@ function State:follow()
   if item and item.file == norm(file) then
     return
   end
-  dd("follow", file)
   self:show(file)
 end
 
