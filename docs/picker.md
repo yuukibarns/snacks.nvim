@@ -490,7 +490,7 @@ Snacks.picker.pick({source = "files", ...})
 
 ```lua
 ---@class snacks.picker.jump.Action: snacks.picker.Action
----@field cmd? string
+---@field cmd? snacks.picker.EditCmd
 ```
 
 ```lua
@@ -2095,7 +2095,7 @@ Snacks.picker.actions.git_stash_apply(_, item)
 ### `Snacks.picker.actions.help()`
 
 ```lua
-Snacks.picker.actions.help(picker)
+Snacks.picker.actions.help(picker, item, action)
 ```
 
 ### `Snacks.picker.actions.history_back()`
@@ -2295,18 +2295,6 @@ and moves the cursor to the prev item.
 Snacks.picker.actions.select_and_prev(picker)
 ```
 
-### `Snacks.picker.actions.split()`
-
-```lua
-Snacks.picker.actions.split(picker)
-```
-
-### `Snacks.picker.actions.tab()`
-
-```lua
-Snacks.picker.actions.tab(picker)
-```
-
 ### `Snacks.picker.actions.toggle_focus()`
 
 ```lua
@@ -2341,12 +2329,6 @@ Snacks.picker.actions.toggle_maximize(picker)
 
 ```lua
 Snacks.picker.actions.toggle_preview(picker)
-```
-
-### `Snacks.picker.actions.vsplit()`
-
-```lua
-Snacks.picker.actions.vsplit(picker)
 ```
 
 ### `Snacks.picker.actions.yank()`
