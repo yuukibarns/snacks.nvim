@@ -561,7 +561,7 @@ M.actions = {
     local state = M.get_state(picker)
     vim.fn.chdir(state:dir())
   end,
-  confirm = function(picker)
+  confirm = function(picker, item, action)
     local state = M.get_state(picker)
     local item = picker:current()
     if not item then
@@ -574,7 +574,7 @@ M.actions = {
       end
       state:toggle(item)
     else
-      picker:action("jump")
+      Snacks.picker.actions.jump(picker, item, action)
     end
   end,
 }
