@@ -316,7 +316,7 @@ function M:init_layout(layout)
     else
       self.input.win:focus()
     end
-  end, { buf = true })
+  end, { buf = true, nested = true })
 
   self.preview:update(preview_main and self.main or nil)
   -- apply box highlight groups
