@@ -18,6 +18,7 @@ local _id = 0
 ---@field list snacks.picker.list
 ---@field matcher snacks.picker.Matcher
 ---@field main number
+---@field _main snacks.picker.Main
 ---@field preview snacks.picker.Preview
 ---@field shown? boolean
 ---@field sort snacks.picker.sort
@@ -28,7 +29,6 @@ local _id = 0
 ---@field history snacks.picker.History
 ---@field visual? snacks.picker.Visual
 local M = {}
-M.__index = M
 
 --- Keep track of garbage collection
 ---@type table<snacks.Picker,boolean>
@@ -49,8 +49,26 @@ M.last = nil
 
 ---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
 
+function M:__index(key)
+  if M[key] then
+    return M[key]
+  end
+  if key == "main" then
+    return self._main:get()
+  end
+end
+
+function M:__newindex(key, value)
+  if key == "main" then
+    self._main:set(value)
+  else
+    rawset(self, key, value)
+  end
+end
+
 ---@hide
 ---@param opts? snacks.picker.Config
+---@return snacks.Picker
 function M.new(opts)
   local self = setmetatable({}, M)
   _id = _id + 1
@@ -112,7 +130,7 @@ function M.new(opts)
   self.visual = Snacks.picker.util.visual()
   self.start_time = uv.hrtime()
   Snacks.picker.current = self
-  self.main = require("snacks.picker.core.main").get(self.opts.main)
+  self._main = require("snacks.picker.core.main").new(self.opts.main)
   local actions = require("snacks.picker.core.actions").get(self)
   self.opts.win.input.actions = actions
   self.opts.win.list.actions = actions
@@ -208,6 +226,11 @@ end
 function M:is_focused()
   local current = vim.api.nvim_get_current_win()
   return vim.tbl_contains({ self.input.win.win, self.list.win.win, self.preview.win.win }, current)
+end
+
+function M:on_current_tab()
+  return self.layout:valid()
+    and vim.api.nvim_get_current_tabpage() == vim.api.nvim_win_get_tabpage(self.layout.root.win)
 end
 
 --- Execute the callback in normal mode.

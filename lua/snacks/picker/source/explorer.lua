@@ -152,8 +152,12 @@ function State.new(picker)
   if uv.fs_stat(buf_file) then
     self:open(buf_file)
   end
-  picker.list.win:on({ "WinEnter", "BufEnter" }, function()
-    self:follow()
+  picker.list.win:on({ "WinEnter", "BufEnter" }, function(_, ev)
+    vim.schedule(function()
+      if ev.buf == vim.api.nvim_get_current_buf() then
+        self:follow()
+      end
+    end)
   end)
   picker.list.win:on("TermClose", function()
     self:update()
@@ -185,7 +189,7 @@ function State:follow()
     return
   end
   local picker = self:picker()
-  if not picker or picker:is_focused() then
+  if not picker or picker:is_focused() or not picker:on_current_tab() then
     return
   end
   local win = vim.api.nvim_get_current_win()
@@ -194,6 +198,11 @@ function State:follow()
   end
   local buf = vim.api.nvim_get_current_buf()
   local file = vim.api.nvim_buf_get_name(buf)
+  local item = picker:current()
+  if item and item.file == norm(file) then
+    return
+  end
+  dd("follow", file)
   self:show(file)
 end
 
@@ -201,7 +210,7 @@ end
 ---@param opts? {refresh?: boolean}
 function State:show(path, opts)
   opts = opts or {}
-  path = vim.fs.normalize(path)
+  path = norm(path)
   if not uv.fs_stat(path) then
     return
   end

@@ -123,10 +123,13 @@ M.edit_vsplit = { "vsplit", "confirm" }
 M.edit_tab = { "tab", "confirm" }
 
 local function wincmd(picker, cmd)
+  local win = vim.api.nvim_get_current_win()
   if vim.api.nvim_win_is_valid(picker.main) then
     vim.api.nvim_win_call(picker.main, function()
       vim.cmd(cmd)
       picker.main = vim.api.nvim_get_current_win()
+      local ft = vim.bo[vim.api.nvim_get_current_buf()].filetype
+      vim.api.nvim_set_current_win(win)
     end)
   end
 end
