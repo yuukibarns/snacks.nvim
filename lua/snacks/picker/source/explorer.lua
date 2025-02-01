@@ -6,7 +6,6 @@ local M = {}
 ---@type table<snacks.Picker, snacks.picker.explorer.State>
 M._state = setmetatable({}, { __mode = "k" })
 local uv = vim.uv or vim.loop
-local expanded = {} ---@type table<string, boolean>
 
 ---@class snacks.picker.explorer.Item: snacks.picker.finder.Item
 ---@field file string
@@ -18,11 +17,124 @@ local expanded = {} ---@type table<string, boolean>
 ---@field internal? boolean internal parent directories not part of fd output
 ---@field status? string
 
+---@class snacks.picker.explorer.Node
+---@field name string
+---@field open boolean
+---@field parent? snacks.picker.explorer.Node
+---@field children table<string, snacks.picker.explorer.Node>
+
+local function norm(path)
+  return vim.fs.normalize(path)
+end
+
+---@class snacks.picker.explorer.Tree
+---@field root snacks.picker.explorer.Node
+local Tree = {}
+Tree.__index = Tree
+
+function Tree.new()
+  local self = setmetatable({}, Tree)
+  self.root = { name = "", open = true, children = {} }
+  return self
+end
+
+---@param path string
+function Tree:add(path)
+  return self:find(path, { add = true }) ---@type snacks.picker.explorer.Node
+end
+
+---@param path string
+---@param opts? {add?: boolean}
+function Tree:find(path, opts)
+  opts = opts or {}
+  path = norm(path)
+  local node = self.root
+  for part in path:gmatch("[^/]+") do
+    if not node.children[part] then
+      if not opts.add then
+        return
+      end
+      node.children[part] = { name = part, open = true, parent = node, children = {} }
+    end
+    node = node.children[part] ---@type snacks.picker.explorer.Node
+  end
+  return node
+end
+
+---@param path string
+function Tree:open(path)
+  path = norm(path)
+  local node = self:add(path)
+  while node do
+    node.open = true
+    node = node.parent
+  end
+end
+
+---@param cwd string
+---@param path string
+function Tree:in_cwd(cwd, path)
+  path = norm(path)
+  cwd = norm(cwd)
+  return cwd == "/" or path == cwd or path:find(cwd .. "/", 1, true) == 1
+end
+
+---@param cwd string
+---@param path string
+function Tree:visible(cwd, path)
+  path = norm(path)
+  cwd = norm(cwd)
+  if not self:in_cwd(cwd, path) then
+    return false
+  end
+  local cwd_node = self:add(cwd)
+  local node = self:find(path)
+  if not node then
+    return false
+  end
+  while node and node ~= cwd_node do
+    if not node.open then
+      return false
+    end
+    node = node.parent
+  end
+  return true
+end
+
+---@param path string
+function Tree:close(path)
+  path = norm(path)
+  local node = self:add(path)
+  node.open = false
+end
+
+function Tree:close_all()
+  self.root.children = {}
+end
+
+---@param cwd string
+---@param ret? string[]
+function Tree:dirs(cwd, ret)
+  cwd = norm(cwd)
+  local node = self:add(cwd)
+  ret = ret or {}
+  ret[#ret + 1] = cwd
+  cwd = cwd == "/" and "" or cwd
+  for _, child in pairs(node.children) do
+    if child.open then
+      local dir = cwd .. "/" .. child.name
+      self:dirs(dir, ret)
+    end
+  end
+  return ret
+end
+local tree = Tree.new()
+
 ---@class snacks.picker.explorer.State
 ---@field cwd string
----@field expanded table<string, boolean>
+---@field tree snacks.picker.explorer.Tree
 ---@field all? boolean
----@field picker snacks.Picker.ref
+---@field ref snacks.Picker.ref
 ---@field opts snacks.picker.explorer.Config
 ---@field on_find? fun()?
 local State = {}
@@ -31,15 +143,14 @@ State.__index = State
 function State.new(picker)
   local self = setmetatable({}, State)
   self.opts = picker.opts --[[@as snacks.picker.explorer.Config]]
-  self.picker = picker:ref()
+  self.ref = picker:ref()
   local filter = picker:filter()
   self.cwd = filter.cwd
-  self.expanded = expanded
-  self.expanded[self.cwd] = true
+  self.tree = tree
   local buf = vim.api.nvim_win_get_buf(picker.main)
   local buf_file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
   if uv.fs_stat(buf_file) then
-    self:expand(buf_file)
+    self:open(buf_file)
   end
   picker.list.win:on({ "WinEnter", "BufEnter" }, function()
     self:follow()
@@ -64,12 +175,17 @@ function State.new(picker)
   return self
 end
 
+function State:picker()
+  local ret = self.ref()
+  return ret and not ret.closed and ret or nil
+end
+
 function State:follow()
   if not self.opts.follow_file then
     return
   end
-  local picker = self.picker()
-  if not picker or picker:is_focused() or picker.closed then
+  local picker = self:picker()
+  if not picker or picker:is_focused() then
     return
   end
   local win = vim.api.nvim_get_current_win()
@@ -82,29 +198,29 @@ function State:follow()
 end
 
 ---@param path string
-function State:show(path)
-  local picker = self.picker()
-  if not picker or picker.closed then
-    return
-  end
+---@param opts? {refresh?: boolean}
+function State:show(path, opts)
+  opts = opts or {}
   path = vim.fs.normalize(path)
   if not uv.fs_stat(path) then
     return
   end
   local function show()
-    local picker = self.picker()
-    if not picker or picker.closed then
-      return
-    end
-    for item, idx in picker:iter() do
-      if item.file == path then
-        picker.list:view(idx)
-        break
+    local picker = self:picker()
+    if picker then
+      for item, idx in picker:iter() do
+        if item.file == path then
+          picker.list:view(idx)
+          break
+        end
       end
     end
   end
-  if not self:is_visible(path) then
-    self:expand(path)
+  local visible = self:is_visible(path)
+  if opts.refresh or not visible then
+    if not visible then
+      self:open(path)
+    end
     self:update({ on_done = show })
   else
     show()
@@ -113,47 +229,16 @@ end
 
 ---@param path string
 function State:is_visible(path)
-  path = vim.fs.normalize(path)
-  local dir = vim.fn.isdirectory(path) == 1 and path or vim.fs.dirname(path)
-  if not self:in_cwd(dir) then
-    return false
-  end
-  if not self.expanded[dir] then
-    return false
-  end
-  for p, v in pairs(self.expanded) do
-    if not v and p:find(dir .. "/", 1, true) == 1 then
-      return false
-    end
-  end
-  return true
-end
-
----@param dir string
-function State:is_open(dir)
-  return self.all or self.expanded[dir]
-end
-
-function State:in_cwd(path)
-  return path == self.cwd or path:find(self.cwd .. "/", 1, true) == 1
+  return self.tree:visible(self.cwd, vim.fs.dirname(path))
 end
 
 ---@param path string
-function State:expand(path)
-  if not self:in_cwd(path) then
+function State:open(path)
+  if not self.tree:in_cwd(self.cwd, path) then
     return
   end
-  if vim.fn.isdirectory(path) == 1 then
-    self.expanded[path] = true
-  else
-    self.expanded[vim.fs.dirname(path)] = true
-  end
-  for p in vim.fs.parents(path) do
-    if not self:in_cwd(p) then
-      break
-    end
-    self.expanded[p] = true
-  end
+  path = vim.fn.isdirectory(path) == 1 and path or vim.fs.dirname(path)
+  self.tree:open(path)
 end
 
 ---@param item snacks.picker.Item
@@ -162,42 +247,13 @@ function State:toggle(item)
   if not dir then
     return
   end
-  self.expanded[dir] = not self.expanded[dir]
-  if self.expanded[dir] then
-    self:expand(dir)
+  dir = item.dir and dir or vim.fs.dirname(dir)
+  if self.tree:visible(self.cwd, dir) then
+    self.tree:close(dir)
+  else
+    self.tree:open(dir)
   end
   self:update()
-end
-
-function State:expand_dirs()
-  local expand = {} ---@type table<string, boolean>
-  local exclude = {} ---@type table<string, boolean>
-  for k, v in pairs(self.expanded) do
-    if self:in_cwd(k) then
-      (v and expand or exclude)[k] = true
-    end
-  end
-  -- remove excluded directories
-  for p in pairs(expand) do
-    for e in pairs(exclude) do
-      if p:find(e .. "/", 1, true) == 1 then
-        expand[p] = nil
-        break
-      end
-    end
-  end
-  local ret = vim.tbl_keys(expand) ---@type string[]
-  -- add parents
-  for p in pairs(expand) do
-    for pp in vim.fs.parents(p) do
-      if expand[pp] or not self:in_cwd(pp) then
-        break
-      end
-      expand[pp] = true
-      ret[#ret + 1] = pp
-    end
-  end
-  return ret
 end
 
 ---@param opts snacks.picker.explorer.Config
@@ -216,7 +272,7 @@ function State:setup(opts, ctx)
   }
   self.all = #ctx.filter.search > 0
   if self.all then
-    local picker = self.picker()
+    local picker = self:picker()
     if not picker then
       return {}
     end
@@ -233,7 +289,7 @@ function State:setup(opts, ctx)
       end
     end
   else
-    opts.dirs = self:expand_dirs()
+    opts.dirs = self.tree:dirs(self.cwd)
     vim.list_extend(opts.args, { "--max-depth", "1" })
   end
   return opts
@@ -242,18 +298,17 @@ end
 ---@param opts? {target?: boolean, on_done?: fun()}
 function State:update(opts)
   opts = opts or {}
-  local picker = self.picker()
-  if not picker or picker.closed then
-    return
+  local picker = self:picker()
+  if picker then
+    if opts.target ~= false then
+      picker.list:set_target()
+    end
+    picker:find({ on_done = opts.on_done })
   end
-  if opts.target ~= false then
-    picker.list:set_target()
-  end
-  picker:find({ on_done = opts.on_done })
 end
 
 function State:dir()
-  local picker = self.picker()
+  local picker = self:picker()
   if not picker then
     return self.cwd
   end
@@ -267,15 +322,9 @@ function State:dir()
   end
 end
 
+---@param cwd string
 function State:set_cwd(cwd)
-  cwd = vim.fs.normalize(cwd)
   self.cwd = cwd
-  self.expanded[cwd] = true
-  for k in pairs(self.expanded) do
-    if not self:in_cwd(k) then
-      self.expanded[k] = nil
-    end
-  end
   self:update({ target = false })
 end
 
@@ -298,14 +347,28 @@ end
 
 ---@type table<string, snacks.picker.Action.spec>
 M.actions = {
+  explorer_update = function(picker)
+    M.get_state(picker):update()
+  end,
   explorer_up = function(picker)
     M.get_state(picker):up()
   end,
   explorer_close = function(picker)
     local state = M.get_state(picker)
+    local item = picker:current()
+    if not item then
+      return
+    end
     local dir = state:dir()
-    state.expanded[dir] = false
-    state:update()
+    if item.dir and not item.open then
+      dir = vim.fs.dirname(dir)
+    end
+    state.tree:close(dir)
+    state:show(dir, { refresh = true })
+  end,
+  explorer_close_all = function(picker)
+    M.get_state(picker).tree:close_all()
+    M.get_state(picker):update()
   end,
   explorer_add = function(picker)
     local state = M.get_state(picker)
@@ -320,7 +383,7 @@ M.actions = {
       local is_dir = value:sub(-1) == "/"
       dir = is_dir and path or vim.fs.dirname(path)
       vim.fn.mkdir(dir, "p")
-      state:expand(dir)
+      state:open(dir)
       if not is_dir then
         if uv.fs_stat(path) then
           Snacks.notify.warn("File already exists:\n- `" .. path .. "`")
@@ -339,7 +402,7 @@ M.actions = {
     Snacks.rename.rename_file({
       file = item.file,
       on_rename = function(new)
-        state:expand(new)
+        state:open(new)
         state:update()
       end,
     })
@@ -389,7 +452,7 @@ M.actions = {
       local dir = state:dir()
       local path = vim.fs.normalize(dir .. "/" .. value)
       vim.fn.mkdir(vim.fs.dirname(path), "p")
-      state:expand(dir)
+      state:open(dir)
       if uv.fs_stat(path) then
         Snacks.notify.warn("File already exists:\n- `" .. path .. "`")
         return
@@ -425,6 +488,14 @@ M.actions = {
   explorer_focus = function(picker)
     local state = M.get_state(picker)
     state:set_cwd(state:dir())
+  end,
+  explorer_open = function(picker, item)
+    if item then
+      local _, err = vim.ui.open(item.file)
+      if err then
+        Snacks.notify.error("Failed to open `" .. item.file .. "`:\n- " .. err)
+      end
+    end
   end,
   explorer_yank = function(_, item)
     if not item then
@@ -469,6 +540,16 @@ function M.explorer(opts, ctx)
   local state = M.get_state(ctx.picker)
   opts = state:setup(opts, ctx)
   opts.notify = false
+  local expanded = {} ---@type table<string, boolean>
+  for _, dir in ipairs(opts.dirs or {}) do
+    expanded[dir] = true
+  end
+  -- vim.notify(table.concat(opts.dirs or {}, "\n"), "info")
+
+  ---@param path string
+  local function is_open(path)
+    return state.all or expanded[path]
+  end
 
   local Git = require("snacks.picker.source.git")
 
@@ -557,7 +638,7 @@ function M.explorer(opts, ctx)
           dirs[item.file].internal = false
           return
         end
-        item.open = state:is_open(item.file)
+        item.open = is_open(item.file)
         dirs[item.file] = item
       end
 
@@ -568,7 +649,7 @@ function M.explorer(opts, ctx)
             text = dir,
             file = dir,
             dir = true,
-            open = state:is_open(dir),
+            open = is_open(dir),
             internal = true,
           }
           add(dirs[dir])
@@ -584,7 +665,7 @@ function M.explorer(opts, ctx)
     end
 
     local function add_git_status(path, status)
-      if not opts.git_status_open and state.expanded[path] then
+      if not opts.git_status_open and is_open(path) then
         return
       end
       local item = items[path]
