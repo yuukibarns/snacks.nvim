@@ -447,13 +447,13 @@ function M.undo(opts, ctx)
           local item = table.remove(items, 1)
           Snacks.picker.util.resolve(item)
         end
-        if #items == 0 then
-          vim.api.nvim_buf_delete(tmpbuf, { force = true })
-        end
         ctx.async:resume()
       end)
       ctx.async:suspend()
     end
+    vim.schedule(function()
+      vim.api.nvim_buf_delete(tmpbuf, { force = true })
+    end)
   end
 end
 
