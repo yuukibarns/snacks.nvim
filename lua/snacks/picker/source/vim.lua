@@ -346,13 +346,14 @@ function M.undo(opts, ctx)
   local tmp_file = vim.fn.stdpath("cache") .. "/snacks-undo"
   local tmp_undo = tmp_file .. ".undo"
   local tmpbuf = vim.fn.bufadd(tmp_file)
+  vim.bo[tmpbuf].swapfile = false
   vim.fn.writefile(vim.api.nvim_buf_get_lines(buf, 0, -1, false), tmp_file)
   vim.fn.bufload(tmpbuf)
   vim.api.nvim_buf_call(buf, function()
     vim.cmd("silent wundo! " .. tmp_undo)
   end)
   vim.api.nvim_buf_call(tmpbuf, function()
-    vim.cmd("silent rundo " .. tmp_undo)
+    pcall(vim.cmd, "silent rundo " .. tmp_undo)
   end)
 
   ---@param item snacks.picker.finder.Item
