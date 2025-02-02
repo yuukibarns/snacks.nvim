@@ -94,9 +94,11 @@ function M.projects(opts, ctx)
       end
     end
 
-    for file in oldfiles(ctx.filter) do
-      local dir = Snacks.git.get_root(file)
-      add(dir)
+    if opts.recent then
+      for file in oldfiles(ctx.filter) do
+        local dir = Snacks.git.get_root(file)
+        add(dir)
+      end
     end
 
     ---@async

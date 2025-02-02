@@ -610,12 +610,14 @@ M.picker_preview = {
 ---@field dev? string|string[] top-level directories containing multiple projects (sub-folders that contains a root pattern)
 ---@field projects? string[] list of project directories
 ---@field patterns? string[] patterns to detect project root directories
+---@field recent? boolean include project directories of recent files
 M.projects = {
   finder = "recent_projects",
   format = "file",
   dev = { "~/dev", "~/projects" },
   confirm = "load_session",
   patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "package.json", "Makefile" },
+  recent = true,
   win = {
     preview = { minimal = true },
     input = {
