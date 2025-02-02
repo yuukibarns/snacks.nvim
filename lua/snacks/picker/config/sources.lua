@@ -698,6 +698,7 @@ M.undo = {
   preview = "preview",
   confirm = "item_action",
   win = { preview = { wo = { number = false, relativenumber = false, signcolumn = "no" } } },
+  icons = { tree = { last = "┌╴" } }, -- the tree is upside down
 }
 
 -- Open a project from zoxide
