@@ -438,6 +438,7 @@ function M:regex(str, pattern)
   end
   local from, to = re:match_str(str)
   if from and to then
+    from = from + 1
     return self.score:get(str, from, to), from, to, str
   end
 end

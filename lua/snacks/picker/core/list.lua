@@ -570,7 +570,7 @@ function M:render()
     if self.matcher.pattern ~= pattern then
       self.matcher:init(pattern)
     end
-    local search = vim.trim(self.picker.input.filter.search)
+    local search = Snacks.picker.util.parse(vim.trim(self.picker.input.filter.search))
     if self.matcher_regex.pattern ~= search then
       self.matcher_regex:init(search)
     end
