@@ -413,8 +413,9 @@ function M:select_key(item)
   return item._select_key
 end
 
----@param items snacks.picker.Item[]
+---@param items? snacks.picker.Item[]
 function M:set_selected(items)
+  items = items or {}
   self.selected = items
   self.selected_map = {}
   for _, item in ipairs(items) do

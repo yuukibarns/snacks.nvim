@@ -407,6 +407,16 @@ function M.setup(opts)
   })
 end
 
+---@param prompt string
+---@param fn fun()
+function M.confirm(prompt, fn)
+  Snacks.picker.select({ "Yes", "No" }, { prompt = prompt }, function(_, idx)
+    if idx == 1 then
+      fn()
+    end
+  end)
+end
+
 ---@type table<string, snacks.picker.Action.spec>
 M.actions = {
   explorer_update = function(picker)
@@ -499,57 +509,58 @@ M.actions = {
     ---@type string[]
     local paths = vim.tbl_map(Snacks.picker.util.path, picker:selected())
     if #paths == 0 then
-      Snacks.notify.warn("No files selected to move")
-      return
+      Snacks.notify.warn("No files selected to move. Renaming instead.")
+      return M.actions.explorer_rename(picker, picker:current())
     end
     local target = state:dir()
     local what = #paths == 1 and vim.fn.fnamemodify(paths[1], ":p:~:.") or #paths .. " files"
     local t = vim.fn.fnamemodify(target, ":p:~:.")
 
-    Snacks.picker.select({ "Yes", "No" }, { prompt = "Move " .. what .. " to " .. t .. "?" }, function(_, idx)
-      if idx == 1 then
-        for _, from in ipairs(paths) do
-          local to = target .. "/" .. vim.fn.fnamemodify(from, ":t")
-          Snacks.rename.on_rename_file(from, to, function()
-            local ok, err = pcall(vim.fn.rename, from, to)
-            if not ok then
-              Snacks.notify.error("Failed to move `" .. from .. "`:\n- " .. err)
-            end
-          end)
-        end
-        state:update()
+    M.confirm("Move " .. what .. " to " .. t .. "?", function()
+      for _, from in ipairs(paths) do
+        local to = target .. "/" .. vim.fn.fnamemodify(from, ":t")
+        Snacks.rename.on_rename_file(from, to, function()
+          local ok, err = pcall(vim.fn.rename, from, to)
+          if not ok then
+            Snacks.notify.error("Failed to move `" .. from .. "`:\n- " .. err)
+          end
+        end)
       end
+      picker.list:set_selected() -- clear selection
+      state:update()
     end)
   end,
   explorer_copy = function(picker, item)
     if not item then
       return
     end
-    if item.dir then
-      Snacks.notify.warn("Cannot copy directories")
+    local state = M.get_state(picker)
+    ---@type string[]
+    local paths = vim.tbl_map(Snacks.picker.util.path, picker:selected())
+    -- Copy selection
+    if #paths > 0 then
+      local dir = state:dir()
+      Snacks.picker.util.copy(paths, dir)
+      state:open(dir)
+      picker.list:set_selected() -- clear selection
+      state:update()
       return
     end
-    local state = M.get_state(picker)
     Snacks.input({
       prompt = "Copy to",
     }, function(value)
       if not value or value:find("^%s$") then
         return
       end
-      local dir = state:dir()
-      local path = vim.fs.normalize(dir .. "/" .. value)
-      vim.fn.mkdir(vim.fs.dirname(path), "p")
-      state:open(dir)
-      if uv.fs_stat(path) then
-        Snacks.notify.warn("File already exists:\n- `" .. path .. "`")
+      local dir = vim.fs.dirname(item.file)
+      local to = vim.fs.normalize(dir .. "/" .. value)
+      if uv.fs_stat(to) then
+        Snacks.notify.warn("File already exists:\n- `" .. to .. "`")
         return
       end
-      uv.fs_copyfile(item.file, path, function(err)
-        if err then
-          Snacks.notify.error("Failed to copy `" .. item.file .. "` to `" .. path .. "`:\n- " .. err)
-        end
-        state:update()
-      end)
+      Snacks.picker.util.copy_path(item.file, to)
+      state:open(dir)
+      state:update()
     end)
   end,
   explorer_del = function(picker)
@@ -560,16 +571,14 @@ M.actions = {
       return
     end
     local what = #paths == 1 and vim.fn.fnamemodify(paths[1], ":p:~:.") or #paths .. " files"
-    Snacks.picker.select({ "Yes", "No" }, { prompt = "Delete " .. what .. "?" }, function(_, idx)
-      if idx == 1 then
-        for _, path in ipairs(paths) do
-          local ok, err = pcall(vim.fn.delete, path, "rf")
-          if not ok then
-            Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
-          end
+    M.confirm("Delete " .. what .. "?", function(_, idx)
+      for _, path in ipairs(paths) do
+        local ok, err = pcall(vim.fn.delete, path, "rf")
+        if not ok then
+          Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
         end
-        state:update()
       end
+      state:update()
     end)
   end,
   explorer_focus = function(picker)
@@ -597,7 +606,6 @@ M.actions = {
   end,
   confirm = function(picker, item, action)
     local state = M.get_state(picker)
-    local item = picker:current()
     if not item then
       return
     elseif item.dir then

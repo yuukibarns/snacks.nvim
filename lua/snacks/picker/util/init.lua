@@ -444,4 +444,63 @@ function M.dir(item)
   return vim.fn.isdirectory(path) == 1 and path or vim.fs.dirname(path)
 end
 
+---@param paths string[]
+---@param dir string
+function M.copy(paths, dir)
+  dir = vim.fs.normalize(dir)
+  paths = vim.tbl_map(vim.fs.normalize, paths) ---@type string[]
+  for _, path in ipairs(paths) do
+    local name = vim.fn.fnamemodify(path, ":t")
+    local to = dir .. "/" .. name
+    M.copy_path(path, to)
+  end
+end
+
+---@param from string
+---@param to string
+function M.copy_path(from, to)
+  if not uv.fs_stat(from) then
+    Snacks.notify.error(("File `%s` does not exist"):format(from))
+    return
+  end
+  if vim.fn.isdirectory(from) == 1 then
+    M.copy_dir(from, to)
+  else
+    M.copy_file(from, to)
+  end
+end
+
+---@param from string
+---@param to string
+function M.copy_file(from, to)
+  if vim.fn.filereadable(from) == 0 then
+    Snacks.notify.error(("File `%s` is not readable"):format(from))
+    return
+  end
+  if uv.fs_stat(to) then
+    Snacks.notify.error(("File `%s` already exists"):format(to))
+    return
+  end
+  local dir = vim.fs.dirname(to)
+  vim.fn.mkdir(dir, "p")
+  local ok, err = uv.fs_copyfile(from, to, { excl = true, ficlone = true })
+  if not ok then
+    Snacks.notify.error(("Failed to copy file:\n - from: `%s`\n- to: `%s`\n%s"):format(from, to, err))
+  end
+end
+
+---@param from string
+---@param to string
+function M.copy_dir(from, to)
+  if vim.fn.isdirectory(from) == 0 then
+    Snacks.notify.error(("Directory `%s` does not exist"):format(from))
+    return
+  end
+  vim.fn.mkdir(to, "p")
+  for fname in vim.fs.dir(from, { follow = false }) do
+    local path = from .. "/" .. fname
+    M.copy_path(path, to .. "/" .. fname)
+  end
+end
+
 return M
