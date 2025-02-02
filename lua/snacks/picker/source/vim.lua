@@ -333,6 +333,7 @@ function M.spelling()
   return items
 end
 
+---@param opts snacks.picker.undo.Config
 ---@type snacks.picker.finder
 function M.undo(opts, ctx)
   local tree = vim.fn.undotree()
@@ -374,7 +375,7 @@ function M.undo(opts, ctx)
     end)
     vim.o.eventignore = ei
 
-    local diff = vim.diff(table.concat(before, "\n") .. "\n", table.concat(after, "\n") .. "\n", { ctxlen = 4 }) --[[@as string]]
+    local diff = vim.diff(table.concat(before, "\n"), table.concat(after, "\n"), opts.diff) --[[@as string]]
     local changes = {} ---@type string[]
     local added, removed = 0, 0
 
