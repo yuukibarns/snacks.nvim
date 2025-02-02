@@ -375,7 +375,7 @@ function M.undo(opts, ctx)
     end)
     vim.o.eventignore = ei
 
-    local diff = vim.diff(table.concat(before, "\n"), table.concat(after, "\n"), opts.diff) --[[@as string]]
+    local diff = vim.diff(table.concat(before, "\n") .. "\n", table.concat(after, "\n") .. "\n", opts.diff) --[[@as string]]
     local changes = {} ---@type string[]
     local added, removed = 0, 0
 
