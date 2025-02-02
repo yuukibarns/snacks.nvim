@@ -132,6 +132,8 @@ function Tree:dirs(cwd, ret)
   return ret
 end
 local tree = Tree.new()
+-- global git status
+local git_tree_status = {} ---@type table<string, string>
 
 ---@class snacks.picker.explorer.State
 ---@field cwd string
@@ -142,7 +144,6 @@ local tree = Tree.new()
 ---@field opts snacks.picker.explorer.Config
 ---@field on_find? fun()?
 ---@field git_status {file: string, status: string, sort?:string}[]
----@field git_tree_status table<string, string>
 ---@field expanded table<string, boolean>
 local State = {}
 State.__index = State
@@ -156,7 +157,6 @@ function State.new(picker)
   self.tree = tree
   self.tick = 0
   self.git_status = {}
-  self.git_tree_status = {}
   self.expanded = {}
   local buf = vim.api.nvim_win_get_buf(picker.main)
   local buf_file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
@@ -209,13 +209,13 @@ function State:update_git_status()
   end)
 
   -- Update tree status
-  self.git_tree_status = {}
+  git_tree_status = {}
 
   ---@param p string
   ---@param s string
   ---@param is_dir? boolean
   local function add_git_status(p, s, is_dir)
-    self.git_tree_status[p] = self.git_tree_status[p] and Git.merge_status(self.git_tree_status[p], s) or s
+    git_tree_status[p] = git_tree_status[p] and Git.merge_status(git_tree_status[p], s) or s
   end
 
   -- Add git status to files and parents
@@ -660,7 +660,7 @@ function M.explorer(opts, ctx)
 
   ---@param item snacks.picker.explorer.Item
   local function add_git_status(item)
-    item.status = (opts.git_status_open or not item.open) and state.git_tree_status[item.file or ""] or nil
+    item.status = (opts.git_status_open or not item.open) and git_tree_status[item.file or ""] or nil
   end
 
   ---@async
