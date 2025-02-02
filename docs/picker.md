@@ -1780,6 +1780,8 @@ Not meant to be used directly.
 ```
 
 ```lua
+---@class snacks.picker.undo.Config: snacks.picker.Config
+---@field diff? vim.diff.Opts
 {
   finder = "vim_undo",
   format = "undo",
@@ -1787,6 +1789,12 @@ Not meant to be used directly.
   confirm = "item_action",
   win = { preview = { wo = { number = false, relativenumber = false, signcolumn = "no" } } },
   icons = { tree = { last = "┌╴" } }, -- the tree is upside down
+  diff = {
+    ctxlen = 4,
+    ignore_cr_at_eol = true,
+    ignore_whitespace_change_at_eol = true,
+    indent_heuristic = true,
+  },
 }
 ```
 
