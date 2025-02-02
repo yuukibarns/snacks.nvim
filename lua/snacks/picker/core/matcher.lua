@@ -321,7 +321,9 @@ function M:update(item)
         item.frecency = item.frecency or self.frecency:get(item)
         score = score + (1 - 1 / (1 + item.frecency)) * BONUS_FRECENCY
       end
-      if self.opts.cwd_bonus and self.cwd == item.cwd or Snacks.picker.util.path(item):find(self.cwd, 1, true) == 1 then
+      if
+        self.opts.cwd_bonus and (self.cwd == item.cwd or Snacks.picker.util.path(item):find(self.cwd, 1, true) == 1)
+      then
         score = score + BONUS_CWD
       end
     end
