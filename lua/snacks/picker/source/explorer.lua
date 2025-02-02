@@ -215,9 +215,6 @@ function State:update_git_status()
   ---@param s string
   ---@param is_dir? boolean
   local function add_git_status(p, s, is_dir)
-    if not self.opts.git_status_open and is_dir and (self.expanded[p] or self.all) then
-      return
-    end
     self.git_tree_status[p] = self.git_tree_status[p] and Git.merge_status(self.git_tree_status[p], s) or s
   end
 
@@ -661,6 +658,11 @@ function M.explorer(opts, ctx)
   dirs[cwd] = root
   state.git_status = {}
 
+  ---@param item snacks.picker.explorer.Item
+  local function add_git_status(item)
+    item.status = (opts.git_status_open or not item.open) and state.git_tree_status[item.file or ""] or nil
+  end
+
   ---@async
   return function(cb)
     if state.on_find then
@@ -681,7 +683,7 @@ function M.explorer(opts, ctx)
       else
         item.sort = parent.sort .. "#" .. basename .. " "
       end
-      item.status = state.git_tree_status[item.file or ""]
+      add_git_status(item)
 
       if opts.tree then
         -- tree
@@ -751,6 +753,7 @@ function M.explorer(opts, ctx)
             status = item.status,
           })
         end)
+        me:sleep(1000)
         check()
 
         state:update_git_status()
@@ -759,7 +762,8 @@ function M.explorer(opts, ctx)
         check()
         -- add git status to picker items
         for item in ctx.picker:iter() do
-          item.status = state.git_tree_status[item.file or ""]
+          ---@cast item snacks.picker.explorer.Item
+          add_git_status(item)
         end
         ctx.picker:update({ force = true })
       end)
