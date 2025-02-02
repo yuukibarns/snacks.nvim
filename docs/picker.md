@@ -1635,12 +1635,21 @@ Open recent projects
     preview = { minimal = true },
     input = {
       keys = {
-        -- every action will always first change the cwd to the project
-        ["<c-e>"] = { { "cd", "picker_explorer" }, mode = { "n", "i" } },
-        ["<c-f>"] = { { "cd", "picker_files" }, mode = { "n", "i" } },
-        ["<c-g>"] = { { "cd", "picker_grep" }, mode = { "n", "i" } },
-        ["<c-r>"] = { { "cd", "picker_recent" }, mode = { "n", "i" } },
-        ["<c-w>"] = { { "cd" }, mode = { "n", "i" } },
+        -- every action will always first change the cwd of the current tabpage to the project
+        ["<c-e>"] = { { "tcd", "picker_explorer" }, mode = { "n", "i" } },
+        ["<c-f>"] = { { "tcd", "picker_files" }, mode = { "n", "i" } },
+        ["<c-g>"] = { { "tcd", "picker_grep" }, mode = { "n", "i" } },
+        ["<c-r>"] = { { "tcd", "picker_recent" }, mode = { "n", "i" } },
+        ["<c-w>"] = { { "tcd" }, mode = { "n", "i" } },
+        ["<c-t>"] = {
+          function(picker)
+            vim.cmd("tabnew")
+            Snacks.notify("New tab opened")
+            picker:close()
+            Snacks.picker.projects()
+          end,
+          mode = { "n", "i" },
+        },
       },
     },
   },
@@ -2159,6 +2168,12 @@ Snacks.picker.actions.item_action(picker, item, action)
 Snacks.picker.actions.jump(picker, _, action)
 ```
 
+### `Snacks.picker.actions.lcd()`
+
+```lua
+Snacks.picker.actions.lcd(_, item)
+```
+
 ### `Snacks.picker.actions.list_bottom()`
 
 ```lua
@@ -2336,6 +2351,12 @@ and moves the cursor to the prev item.
 
 ```lua
 Snacks.picker.actions.select_and_prev(picker)
+```
+
+### `Snacks.picker.actions.tcd()`
+
+```lua
+Snacks.picker.actions.tcd(_, item)
 ```
 
 ### `Snacks.picker.actions.toggle_focus()`
