@@ -170,6 +170,18 @@ function M.cd(_, item)
   end
 end
 
+function M.tcd(_, item)
+  if item then
+    vim.cmd.tcd(Snacks.picker.util.dir(item))
+  end
+end
+
+function M.lcd(_, item)
+  if item then
+    vim.cmd.lcd(Snacks.picker.util.dir(item))
+  end
+end
+
 function M.picker_files(_, item)
   if item then
     Snacks.picker.files({ cwd = Snacks.picker.util.dir(item) })
