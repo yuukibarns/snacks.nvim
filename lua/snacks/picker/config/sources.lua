@@ -631,6 +631,15 @@ M.projects = {
         ["<c-g>"] = { { "tcd", "picker_grep" }, mode = { "n", "i" } },
         ["<c-r>"] = { { "tcd", "picker_recent" }, mode = { "n", "i" } },
         ["<c-w>"] = { { "tcd" }, mode = { "n", "i" } },
+        ["<c-t>"] = {
+          function(picker)
+            vim.cmd("tabnew")
+            Snacks.notify("New tab opened")
+            picker:close()
+            Snacks.picker.projects()
+          end,
+          mode = { "n", "i" },
+        },
       },
     },
   },
