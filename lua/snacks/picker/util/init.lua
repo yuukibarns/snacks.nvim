@@ -365,15 +365,22 @@ function M.shallow_copy(t)
   return setmetatable(ret, getmetatable(t))
 end
 
----@param opts? {main?: number}
+---@param opts? {main?: number, float?:boolean, filter?: fun(win:number, buf:number):boolean?}
 function M.pick_win(opts)
-  opts = opts or {}
+  opts = Snacks.config.merge({
+    filter = function(win, buf)
+      return not vim.bo[buf].filetype:find("^snacks")
+    end,
+  }, opts)
+
   local overlays = {} ---@type snacks.win[]
   local chars = "asdfghjkl"
   local wins = {} ---@type number[]
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
-    if vim.api.nvim_win_get_config(win).relative == "" and not vim.bo[buf].filetype:find("^snacks") then
+    local keep = (opts.float or vim.api.nvim_win_get_config(win).relative == "")
+      and (not opts.filter or opts.filter(win, buf))
+    if keep then
       wins[#wins + 1] = win
     end
   end
