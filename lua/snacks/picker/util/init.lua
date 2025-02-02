@@ -427,4 +427,14 @@ function M.parents(path, cwd)
   end
 end
 
+--- Checks if the path is a directory,
+--- if not it returns the parent directory
+---@param item string|snacks.picker.Item
+function M.dir(item)
+  local path = type(item) == "table" and M.path(item) or item
+  ---@cast path string
+  path = vim.fs.normalize(path)
+  return vim.fn.isdirectory(path) == 1 and path or vim.fs.dirname(path)
+end
+
 return M

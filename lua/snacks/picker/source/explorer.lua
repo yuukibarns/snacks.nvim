@@ -4,7 +4,7 @@ local Git = require("snacks.picker.source.git")
 local M = {}
 
 ---@class snacks.picker
----@field explorer fun(opts?: snacks.picker.explorer.Config): snacks.Picker
+---@field explorer fun(opts?: snacks.picker.explorer.Config|{}): snacks.Picker
 
 ---@type table<snacks.Picker, snacks.picker.explorer.State>
 M._state = setmetatable({}, { __mode = "k" })

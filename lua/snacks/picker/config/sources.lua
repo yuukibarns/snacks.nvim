@@ -607,13 +607,26 @@ M.picker_preview = {
 -- Open recent projects
 ---@class snacks.picker.projects.Config: snacks.picker.Config
 ---@field filter? snacks.picker.filter.Config
+---@field dev? string|string[] top-level directories containing multiple projects (sub-folders that contains a root pattern)
+---@field projects? string[] list of project directories
+---@field patterns? string[] patterns to detect project root directories
 M.projects = {
   finder = "recent_projects",
   format = "file",
+  dev = { "~/dev", "~/projects" },
   confirm = "load_session",
+  patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "package.json", "Makefile" },
   win = {
-    preview = {
-      minimal = true,
+    preview = { minimal = true },
+    input = {
+      keys = {
+        -- every action will always first change the cwd to the project
+        ["<c-e>"] = { { "cd", "picker_explorer" }, mode = { "n", "i" } },
+        ["<c-f>"] = { { "cd", "picker_files" }, mode = { "n", "i" } },
+        ["<c-g>"] = { { "cd", "picker_grep" }, mode = { "n", "i" } },
+        ["<c-r>"] = { { "cd", "picker_recent" }, mode = { "n", "i" } },
+        ["<c-w>"] = { { "cd" }, mode = { "n", "i" } },
+      },
     },
   },
 }
