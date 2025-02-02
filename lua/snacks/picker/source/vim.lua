@@ -338,19 +338,22 @@ function M.undo(opts, ctx)
   local tree = vim.fn.undotree()
   local buf = vim.api.nvim_get_current_buf()
   local file = vim.api.nvim_buf_get_name(buf)
-  local win = vim.api.nvim_get_current_win()
-  local view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
   local items = {} ---@type snacks.picker.finder.Item[]
 
   -- Copy the current buffer to a temporary file and load the undo history.
   -- This is done to prevent the current buffer from being modified,
   -- and is way better for performance, since LSP change tracking won't be triggered
-  local tmp = vim.fn.stdpath("cache") .. "/snacks-undo"
-  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  vim.fn.writefile(lines, tmp)
-  uv.fs_copyfile(vim.fn.undofile(file), vim.fn.undofile(tmp))
-  buf = vim.fn.bufadd(tmp)
-  vim.fn.bufload(buf)
+  local tmp_file = vim.fn.stdpath("cache") .. "/snacks-undo"
+  local tmp_undo = tmp_file .. ".undo"
+  local tmpbuf = vim.fn.bufadd(tmp_file)
+  vim.fn.writefile(vim.api.nvim_buf_get_lines(buf, 0, -1, false), tmp_file)
+  vim.fn.bufload(tmpbuf)
+  vim.api.nvim_buf_call(buf, function()
+    vim.cmd("silent wundo! " .. tmp_undo)
+  end)
+  vim.api.nvim_buf_call(tmpbuf, function()
+    vim.cmd("silent rundo " .. tmp_undo)
+  end)
 
   ---@param item snacks.picker.finder.Item
   local function resolve(item)
@@ -360,13 +363,13 @@ function M.undo(opts, ctx)
 
     local ei = vim.o.eventignore
     vim.o.eventignore = "all"
-    vim.api.nvim_buf_call(buf, function()
+    vim.api.nvim_buf_call(tmpbuf, function()
       -- state after the undo
       vim.cmd("noautocmd silent undo " .. entry.seq)
-      after = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+      after = vim.api.nvim_buf_get_lines(tmpbuf, 0, -1, false)
       -- state before the undo
       vim.cmd("noautocmd silent undo")
-      before = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+      before = vim.api.nvim_buf_get_lines(tmpbuf, 0, -1, false)
     end)
     vim.o.eventignore = ei
 
@@ -426,30 +429,11 @@ function M.undo(opts, ctx)
     end
   end
   add(tree.entries)
-  -- reverse the items to show the most recent changes first
-
-  -- disable folding to prevent fold re-calculations
-  local foldmethod = vim.wo[win].foldmethod
-  vim.wo[win].foldmethod = "manual"
-  vim.b[buf].snacks_scroll = false
-
-  local function restore()
-    vim.api.nvim_buf_call(buf, function()
-      -- reset to the original state
-      vim.cmd("noautocmd silent undo " .. tree.seq_cur)
-      vim.wo[win].foldmethod = foldmethod
-    end)
-    vim.api.nvim_win_call(win, function()
-      vim.fn.winrestview(view)
-    end)
-    vim.b[buf].snacks_scroll = nil
-  end
 
   -- Resolve the items in batches to prevent blocking the UI
   ---@param cb async fun(item: snacks.picker.finder.Item)
   ---@async
   return function(cb)
-    ctx.async:on("abort", vim.schedule_wrap(restore))
     for i = #items, 1, -1 do
       cb(items[i])
     end
@@ -461,10 +445,9 @@ function M.undo(opts, ctx)
           count = count + 1
           local item = table.remove(items, 1)
           Snacks.picker.util.resolve(item)
-          -- cb(item)
         end
         if #items == 0 then
-          restore()
+          vim.api.nvim_buf_delete(tmpbuf, { force = true })
         end
         ctx.async:resume()
       end)
