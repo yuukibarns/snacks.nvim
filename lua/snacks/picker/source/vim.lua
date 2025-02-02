@@ -15,6 +15,8 @@ local M = {}
 ---@class snacks.picker.history.Config: snacks.picker.Config
 ---@field name string
 
+local uv = vim.uv or vim.loop
+
 function M.commands()
   local commands = vim.api.nvim_get_commands({})
   for k, v in pairs(vim.api.nvim_buf_get_commands(0, {})) do
@@ -340,6 +342,15 @@ function M.undo(opts, ctx)
   local view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
   local items = {} ---@type snacks.picker.finder.Item[]
 
+  -- Copy the current buffer to a temporary file and load the undo history.
+  -- This is done to prevent the current buffer from being modified,
+  -- and is way better for performance, since LSP change tracking won't be triggered
+  local tmp = vim.fn.stdpath("cache") .. "/snacks-undo"
+  uv.fs_copyfile(file, tmp)
+  uv.fs_copyfile(vim.fn.undofile(file), vim.fn.undofile(tmp))
+  buf = vim.fn.bufadd(tmp)
+  vim.fn.bufload(buf)
+
   ---@param item snacks.picker.finder.Item
   local function resolve(item)
     local entry = item.item ---@type vim.fn.undotree.entry
@@ -388,6 +399,9 @@ function M.undo(opts, ctx)
   ---@param parent? snacks.picker.finder.Item
   local function add(entries, parent)
     entries = entries or {}
+    table.sort(entries, function(a, b)
+      return a.seq < b.seq
+    end)
     local last ---@type snacks.picker.finder.Item?
     for e, entry in ipairs(entries) do
       add(entry.alt, last or parent)
@@ -412,9 +426,6 @@ function M.undo(opts, ctx)
   end
   add(tree.entries)
   -- reverse the items to show the most recent changes first
-  for i = 1, #items / 2 do
-    items[i], items[#items - i + 1] = items[#items - i + 1], items[i]
-  end
 
   -- disable folding to prevent fold re-calculations
   local foldmethod = vim.wo[win].foldmethod
@@ -438,6 +449,9 @@ function M.undo(opts, ctx)
   ---@async
   return function(cb)
     ctx.async:on("abort", vim.schedule_wrap(restore))
+    for i = #items, 1, -1 do
+      cb(items[i])
+    end
 
     while #items > 0 do
       vim.schedule(function()
@@ -446,7 +460,7 @@ function M.undo(opts, ctx)
           count = count + 1
           local item = table.remove(items, 1)
           Snacks.picker.util.resolve(item)
-          cb(item)
+          -- cb(item)
         end
         if #items == 0 then
           restore()
