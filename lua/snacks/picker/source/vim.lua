@@ -346,7 +346,8 @@ function M.undo(opts, ctx)
   -- This is done to prevent the current buffer from being modified,
   -- and is way better for performance, since LSP change tracking won't be triggered
   local tmp = vim.fn.stdpath("cache") .. "/snacks-undo"
-  uv.fs_copyfile(file, tmp)
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  vim.fn.writefile(lines, tmp)
   uv.fs_copyfile(vim.fn.undofile(file), vim.fn.undofile(tmp))
   buf = vim.fn.bufadd(tmp)
   vim.fn.bufload(buf)
