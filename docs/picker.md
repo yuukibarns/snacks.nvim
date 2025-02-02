@@ -841,6 +841,9 @@ Neovim commands
   auto_close = false,
   jump = { close = false },
   layout = { preset = "sidebar", preview = false },
+  -- to show the explorer to the right, add the below to
+  -- your config under `opts.picker.sources.explorer`
+  -- layout = { layout = { position = "right" } },
   formatters = { file = { filename_only = true } },
   matcher = { sort_empty = true },
   config = function(opts)
