@@ -753,7 +753,6 @@ function M.explorer(opts, ctx)
             status = item.status,
           })
         end)
-        me:sleep(1000)
         check()
 
         state:update_git_status()
