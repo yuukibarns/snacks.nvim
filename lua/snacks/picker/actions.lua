@@ -224,6 +224,7 @@ function M.pick_win(picker, item, action)
 end
 
 function M.bufdelete(picker)
+  picker.preview:reset()
   local non_buf_delete_requested = false
   for _, item in ipairs(picker:selected({ fallback = true })) do
     if item.buf then
@@ -231,19 +232,13 @@ function M.bufdelete(picker)
     else
       non_buf_delete_requested = true
     end
-    picker.list:unselect(item)
   end
-
   if non_buf_delete_requested then
     Snacks.notify.warn("Only open buffers can be deleted", { title = "Snacks Picker" })
   end
-
-  local cursor = picker.list.cursor
-  picker:find({
-    on_done = function()
-      picker.list:view(cursor)
-    end,
-  })
+  picker.list:set_selected()
+  picker.list:set_target()
+  picker:find()
 end
 
 function M.git_stage(picker)
