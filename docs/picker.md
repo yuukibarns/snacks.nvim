@@ -1043,6 +1043,8 @@ Git log
 ```
 
 ```lua
+---@class snacks.picker.git.status.Config: snacks.picker.Config
+---@field ignored? boolean show ignored files
 {
   finder = "git_status",
   format = "git_status",
