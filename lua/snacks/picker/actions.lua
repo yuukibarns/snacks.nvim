@@ -86,18 +86,18 @@ function M.jump(picker, _, action)
         local path = assert(Snacks.picker.util.path(item), "Either item.buf or item.file is required")
         buf = vim.fn.bufadd(path)
       end
+      vim.bo[buf].buflisted = true
 
       -- use an existing window if possible
-      if #items == 1 and picker.opts.jump.reuse_win and buf ~= current_buf then
+      if cmd == "buffer" and #items == 1 and picker.opts.jump.reuse_win and buf ~= current_buf then
         win = vim.fn.win_findbuf(buf)[1] or win
         vim.api.nvim_set_current_win(win)
       end
 
-      vim.bo[buf].buflisted = true
-
       -- open the first buffer
       if i == 1 then
         vim.cmd(("%s %d"):format(cmd, buf))
+        win = vim.api.nvim_get_current_win()
       end
     end
   end
