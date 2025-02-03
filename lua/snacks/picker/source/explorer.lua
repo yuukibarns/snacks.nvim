@@ -146,6 +146,7 @@ local git_tree_status = {} ---@type table<string, string>
 ---@field git_status {file: string, status: string, sort?:string}[]
 ---@field expanded table<string, boolean>
 ---@field cache table<string, snacks.picker.explorer.Item[]>
+---@field cache_opts? snacks.picker.explorer.Config|{}
 local State = {}
 State.__index = State
 ---@param picker snacks.Picker
@@ -213,19 +214,21 @@ function State:update_git_status()
   -- Update tree status
   git_tree_status = {}
 
-  ---@param p string
-  ---@param s string
-  ---@param is_dir? boolean
-  local function add_git_status(p, s, is_dir)
-    git_tree_status[p] = git_tree_status[p] and Git.merge_status(git_tree_status[p], s) or s
+  ---@param path string
+  ---@param status string
+  local function add_git_status(path, status)
+    git_tree_status[path] = git_tree_status[path] and Git.merge_status(git_tree_status[path], status) or status
   end
 
   -- Add git status to files and parents
   for _, s in ipairs(self.git_status) do
-    add_git_status(s.file, s.status)
-    add_git_status(self.cwd, s.status, true)
-    for dir in Snacks.picker.util.parents(s.file, self.cwd) do
-      add_git_status(dir, s.status, true)
+    local path = s.file:gsub("/$", "")
+    add_git_status(path, s.status)
+    if s.status:sub(1, 1) ~= "!" then -- don't propagate ignored status
+      add_git_status(self.cwd, s.status)
+      for dir in Snacks.picker.util.parents(path, self.cwd) do
+        add_git_status(dir, s.status)
+      end
     end
   end
 end
@@ -642,7 +645,9 @@ function M.explorer(opts, ctx)
   local tick = state.tick
   opts.notify = false
   local expanded = {} ---@type table<string, boolean>
-  local use_cache = not state.all
+  local cache_opts = { hidden = opts.hidden, ignored = opts.ignored }
+
+  local use_cache = not state.all and vim.deep_equal(state.cache_opts, cache_opts)
   for _, dir in ipairs(opts.dirs or {}) do
     expanded[dir] = true
     use_cache = use_cache and state.cache[dir] ~= nil
@@ -650,6 +655,7 @@ function M.explorer(opts, ctx)
 
   if not use_cache then
     state.cache = {}
+    state.cache_opts = cache_opts
   end
 
   ---@param path string
@@ -659,7 +665,14 @@ function M.explorer(opts, ctx)
 
   ---@param item snacks.picker.explorer.Item
   local function add_git_status(item)
-    item.status = (opts.git_status_open or not item.open) and git_tree_status[item.file or ""] or nil
+    item.status = git_tree_status[item.file or ""] or nil
+    local ignored = item.status and item.status:sub(1, 1) == "!"
+    if item.open and not opts.git_status_open and not ignored then
+      item.status = nil
+    end
+    if item.status and ignored then
+      item.ignored = true
+    end
   end
 
   ---@type snacks.picker.explorer.Item
@@ -720,6 +733,9 @@ function M.explorer(opts, ctx)
         item.sort = parent.sort .. "!" .. basename .. " "
       else
         item.sort = parent.sort .. "#" .. basename .. " "
+      end
+      if basename:sub(1, 1) == "." then
+        item.hidden = true
       end
       add_git_status(item)
 
