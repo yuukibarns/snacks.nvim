@@ -182,27 +182,25 @@ function M.lcd(_, item)
   end
 end
 
-function M.picker_files(_, item)
-  if item then
-    Snacks.picker.files({ cwd = Snacks.picker.util.dir(item) })
+function M.picker(picker, item, action)
+  if not item then
+    return
   end
+  local source = action.source or "files"
+  for _, p in ipairs(Snacks.picker.get({ source = source })) do
+    p:close()
+  end
+  Snacks.picker(source, {
+    cwd = Snacks.picker.util.dir(item),
+    on_show = function()
+      picker:close()
+    end,
+  })
 end
 
-function M.picker_explorer(_, item)
-  if item then
-    local p = Snacks.picker.get({ source = "explorer" })[1]
-    if p then
-      p:close()
-    end
-    Snacks.picker.explorer({ cwd = Snacks.picker.util.dir(item) })
-  end
-end
-
-function M.picker_recent(_, item)
-  if item then
-    Snacks.picker.recent({ filter = { cwd = Snacks.picker.util.dir(item) } })
-  end
-end
+M.picker_files = { action = "picker", source = "files" }
+M.picker_explorer = { action = "picker", source = "explorer" }
+M.picker_recent = { action = "picker", source = "recent" }
 
 function M.pick_win(picker, item, action)
   if not picker.layout.split then
