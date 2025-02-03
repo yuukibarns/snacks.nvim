@@ -330,7 +330,6 @@ function State:setup(opts, ctx)
     "d", -- include directories
     "--path-separator", -- same everywhere
     "/",
-    "--absolute-path", -- easier to work with
     "--follow", -- always needed to make sure we see symlinked dirs as dirs
   }
   self.all = #ctx.filter.search > 0
@@ -352,6 +351,7 @@ function State:setup(opts, ctx)
         end
       end
     end
+    opts.dirs = { self.cwd }
   else
     opts.dirs = self.tree:dirs(self.cwd)
     for _, dir in ipairs(opts.dirs or {}) do
