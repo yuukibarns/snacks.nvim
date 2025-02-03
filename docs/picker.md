@@ -2318,28 +2318,16 @@ Snacks.picker.actions.loclist(picker)
 Snacks.picker.actions.pick_win(picker, item, action)
 ```
 
-### `Snacks.picker.actions.picker_explorer()`
+### `Snacks.picker.actions.picker()`
 
 ```lua
-Snacks.picker.actions.picker_explorer(_, item)
-```
-
-### `Snacks.picker.actions.picker_files()`
-
-```lua
-Snacks.picker.actions.picker_files(_, item)
+Snacks.picker.actions.picker(picker, item, action)
 ```
 
 ### `Snacks.picker.actions.picker_grep()`
 
 ```lua
 Snacks.picker.actions.picker_grep(_, item)
-```
-
-### `Snacks.picker.actions.picker_recent()`
-
-```lua
-Snacks.picker.actions.picker_recent(_, item)
 ```
 
 ### `Snacks.picker.actions.preview_scroll_down()`
