@@ -110,6 +110,9 @@ end
 function M:refresh(picker)
   self.item = nil
   self:reset()
+  if self.main then
+    self.win:update()
+  end
   vim.schedule(function()
     self:show(picker)
   end)
