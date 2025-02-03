@@ -471,7 +471,7 @@ M.actions = {
         end
         io.open(path, "w"):close()
       end
-      state:update()
+      state:update({ force = true })
     end)
   end,
   explorer_rename = function(picker, item)
@@ -483,7 +483,7 @@ M.actions = {
       file = item.file,
       on_rename = function(new)
         state:open(new)
-        state:update()
+        state:update({ force = true })
       end,
     })
   end,
@@ -535,7 +535,7 @@ M.actions = {
         end)
       end
       picker.list:set_selected() -- clear selection
-      state:update()
+      state:update({ force = true })
     end)
   end,
   explorer_copy = function(picker, item)
@@ -551,7 +551,7 @@ M.actions = {
       Snacks.picker.util.copy(paths, dir)
       state:open(dir)
       picker.list:set_selected() -- clear selection
-      state:update()
+      state:update({ force = true })
       return
     end
     Snacks.input({
@@ -568,7 +568,7 @@ M.actions = {
       end
       Snacks.picker.util.copy_path(item.file, to)
       state:open(dir)
-      state:update()
+      state:update({ force = true })
     end)
   end,
   explorer_del = function(picker)
@@ -586,7 +586,7 @@ M.actions = {
           Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
         end
       end
-      state:update()
+      state:update({ force = true })
     end)
   end,
   explorer_focus = function(picker)
