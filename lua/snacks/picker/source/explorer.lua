@@ -586,6 +586,7 @@ M.actions = {
           Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
         end
       end
+      picker.list:set_selected() -- clear selection
       state:update({ force = true })
     end)
   end,
