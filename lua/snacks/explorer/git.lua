@@ -56,6 +56,7 @@ function M.update(cwd, opts)
       "-uall",
       "--porcelain=v1",
       "--ignored=matching",
+      "-z",
     },
   }, function()
     stdout:close()
@@ -71,7 +72,7 @@ function M.update(cwd, opts)
       return
     end
     local ret = {} ---@type snacks.explorer.git.Status[]
-    for _, line in ipairs(vim.split(output, "\r?\n")) do
+    for _, line in ipairs(vim.split(output, "\0")) do
       if line ~= "" then
         local status, file = line:sub(1, 2), line:sub(4)
         ret[#ret + 1] = {
