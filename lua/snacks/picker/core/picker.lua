@@ -553,6 +553,17 @@ function M:current(opts)
   return ret
 end
 
+--- Returns the directory of the current item or the cwd.
+--- When the item is a directory, return item path,
+--- otherwise return the directory of the item.
+function M:dir()
+  local item = self:current()
+  if item then
+    return Snacks.picker.util.dir(item)
+  end
+  return self:cwd()
+end
+
 --- Get the selected items.
 --- If `fallback=true` and there is no selection, return the current item.
 ---@param opts? {fallback?: boolean} default is `false`
