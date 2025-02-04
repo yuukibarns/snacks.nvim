@@ -34,7 +34,11 @@ function State.new(picker)
   local self = setmetatable({}, State)
 
   local opts = picker.opts --[[@as snacks.picker.explorer.Config]]
-  local ref = picker:ref()
+  local r = picker:ref()
+  local function ref()
+    local v = r.value
+    return v and not v.closed and v or nil
+  end
 
   local buf = vim.api.nvim_win_get_buf(picker.main)
   local buf_file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
@@ -58,11 +62,10 @@ function State.new(picker)
 
   picker.list.win:on("BufWritePost", function(_, ev)
     local p = ref()
-    if not p then
-      return true
+    if p then
+      Tree:refresh(ev.file)
+      Actions.update(p)
     end
-    Tree:refresh(ev.file)
-    Actions.update(p)
   end)
 
   picker.list.win:on("DirChanged", function(_, ev)
@@ -81,7 +84,7 @@ function State.new(picker)
           return
         end
         local p = ref()
-        if not p or p:is_focused() or not p:on_current_tab() then
+        if not p or p:is_focused() or not p:on_current_tab() or p.closed then
           return
         end
         local win = vim.api.nvim_get_current_win()
