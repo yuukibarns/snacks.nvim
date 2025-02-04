@@ -21,7 +21,7 @@ local running = {} ---@type table<string, fun()>
 
 function M.abort()
   for _, abort in pairs(running) do
-    abort()
+    pcall(abort)
   end
   running = {}
 end
@@ -38,37 +38,39 @@ function M.watch(cwd)
   end
   M.abort()
 
-  local timer = assert(uv.new_timer())
-  local cancel = watch(cwd, {
-    uvflags = { recursive = true },
-  }, function(path)
-    -- handle deletes
-    while not uv.fs_stat(path) do
-      local p = vim.fs.dirname(path)
-      if p == path then
-        return
-      end
-      path = p
-    end
-    Tree:refresh(path)
-
-    -- batch updates and give explorer the time to update before the watcher
-    timer:start(100, 0, function()
-      local picker = Snacks.picker.get({ source = "explorer" })[1]
-      if picker and Tree:is_dirty(picker:cwd(), picker.opts) then
-        if not picker.list.target then
-          picker.list:set_target()
+  pcall(function()
+    local timer = assert(uv.new_timer())
+    local cancel = watch(cwd, {
+      uvflags = { recursive = true },
+    }, function(path)
+      -- handle deletes
+      while not uv.fs_stat(path) do
+        local p = vim.fs.dirname(path)
+        if p == path then
+          return
         end
-        picker:find()
+        path = p
       end
+      Tree:refresh(path)
+
+      -- batch updates and give explorer the time to update before the watcher
+      timer:start(100, 0, function()
+        local picker = Snacks.picker.get({ source = "explorer" })[1]
+        if picker and Tree:is_dirty(picker:cwd(), picker.opts) then
+          if not picker.list.target then
+            picker.list:set_target()
+          end
+          picker:find()
+        end
+      end)
     end)
-  end)
-  running[cwd] = function()
-    if not timer:is_closing() then
-      timer:close()
+    running[cwd] = function()
+      if not timer:is_closing() then
+        timer:close()
+      end
+      cancel()
     end
-    cancel()
-  end
+  end)
 end
 
 return M
