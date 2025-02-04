@@ -192,6 +192,9 @@ function M.explorer(opts, ctx)
   if opts.git_status then
     require("snacks.explorer.git").update(ctx.filter.cwd, {
       on_update = function()
+        if ctx.picker.closed then
+          return
+        end
         ctx.picker:find()
       end,
     })
