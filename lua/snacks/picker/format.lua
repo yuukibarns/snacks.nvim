@@ -98,10 +98,13 @@ function M.filename(item, picker)
   end
   ret[#ret + 1] = { " " }
   if item.type == "link" then
-    local real = uv.fs_realpath(item.file) or uv.fs_readlink(item.file)
+    local real = uv.fs_realpath(item.file)
+    local broken = not real
+    real = real or uv.fs_readlink(item.file)
     if real then
       ret[#ret + 1] = { "-> ", "SnacksPickerDelim" }
-      ret[#ret + 1] = { Snacks.picker.util.truncpath(real, 20), "SnacksPickerLink" }
+      ret[#ret + 1] =
+        { Snacks.picker.util.truncpath(real, 20), broken and "SnacksPickerLinkBroken" or "SnacksPickerLink" }
       ret[#ret + 1] = { " " }
     end
   end
