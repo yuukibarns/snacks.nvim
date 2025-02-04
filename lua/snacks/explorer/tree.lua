@@ -5,6 +5,7 @@
 ---@field status? string
 ---@field ignored? boolean
 ---@field type "file"|"directory"|"link"|"fifo"|"socket"|"char"|"block"|"unknown"
+---@field dir? boolean
 ---@field open? boolean wether the node should be expanded (only for directories)
 ---@field expanded? boolean wether the node is expanded (only for directories)
 ---@field parent? snacks.picker.explorer.Node
@@ -34,7 +35,7 @@ Tree.__index = Tree
 
 function Tree.new()
   local self = setmetatable({}, Tree)
-  self.root = { name = "", children = {}, type = "directory", path = "" }
+  self.root = { name = "", children = {}, dir = true, type = "directory", path = "" }
   self.nodes = {}
   return self
 end
@@ -75,6 +76,7 @@ function Tree:child(node, name, type)
       parent = node,
       children = {},
       type = type,
+      dir = type == "directory" or (type == "link" and vim.fn.isdirectory(path) == 1),
       hidden = name:sub(1, 1) == ".",
     }
     self.nodes[path] = node.children[name]
@@ -121,18 +123,17 @@ function Tree:expand(node)
     return
   end
   local found = {} ---@type table<string, boolean>
-  assert(node.type == "directory", "Can only expand directories")
+  assert(node.dir, "Can only expand directories")
   local fs = uv.fs_scandir(node.path)
   while fs do
     local name, t = uv.fs_scandir_next(fs)
     if not name then
       break
     end
-    if t == "link" and vim.fn.isdirectory(node.path .. "/" .. name) == 1 then
-      t = "directory"
-    end
     found[name] = true
-    self:child(node, name, t).type = t
+    local child = self:child(node, name, t)
+    child.type = t
+    child.dir = t == "directory" or (t == "link" and vim.fn.isdirectory(child.path) == 1)
   end
   for name in pairs(node.children) do
     if not found[name] then
@@ -172,17 +173,15 @@ function Tree:walk(node, fn, opts)
   end
   local children = vim.tbl_values(node.children) ---@type snacks.picker.explorer.Node[]
   table.sort(children, function(a, b)
-    local a_dir = a.type == "directory"
-    local b_dir = b.type == "directory"
-    if a_dir ~= b_dir then
-      return a_dir
+    if a.dir ~= b.dir then
+      return a.dir
     end
     return a.name < b.name
   end)
   for c, child in ipairs(children) do
     child.last = c == #children
     abort = false
-    if child.type == "directory" and (child.open or (opts and opts.all)) then
+    if child.dir and (child.open or (opts and opts.all)) then
       abort = self:walk(child, fn, opts)
     else
       abort = fn(child)
@@ -210,7 +209,7 @@ function Tree:get(cwd, cb, opts)
         return false
       end
     end
-    if n.type == "directory" and n.open and not n.expanded and opts.expand ~= false then
+    if n.dir and n.open and not n.expanded and opts.expand ~= false then
       self:expand(n)
     end
     cb(n)
@@ -223,7 +222,7 @@ function Tree:is_dirty(cwd, opts)
   opts = opts or {}
   local dirty = false
   self:get(cwd, function(n)
-    if n.type == "directory" and n.open and not n.expanded then
+    if n.dir and n.open and not n.expanded then
       dirty = true
     end
   end, { hidden = opts.hidden, ignored = opts.ignored, expand = false })

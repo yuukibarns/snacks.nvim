@@ -151,7 +151,7 @@ function M.next(cwd, path, up)
   local next ---@type snacks.picker.explorer.Node?
   local found = false
   Tree:walk(root, function(node)
-    local want = node.type ~= "directory" and node.status and not node.ignored
+    local want = not node.dir and node.status and not node.ignored
     if node.path == path then
       found = true
     end

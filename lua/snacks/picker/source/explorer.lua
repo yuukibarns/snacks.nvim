@@ -211,13 +211,13 @@ function M.explorer(opts, ctx)
     Tree:get(ctx.filter.cwd, function(node)
       local item = {
         file = node.path,
-        dir = node.type == "directory",
+        dir = node.dir,
         open = node.open,
         text = node.path,
         parent = node.parent and items[node.parent.path] or nil,
         hidden = node.hidden,
         ignored = node.ignored,
-        status = (node.type ~= "directory" or not node.open or opts.git_status_open) and node.status or nil,
+        status = (not node.dir or not node.open or opts.git_status_open) and node.status or nil,
         last = node.last,
         type = node.type,
       }
@@ -298,7 +298,7 @@ function M.search(opts, ctx)
       end
       local node = Tree:find(item.file)
       if node then
-        item.status = (node.type ~= "directory" or opts.git_status_open) and node.status or nil
+        item.status = (not node.dir or opts.git_status_open) and node.status or nil
       end
 
       if opts.tree then
