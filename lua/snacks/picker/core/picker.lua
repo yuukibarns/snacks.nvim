@@ -590,6 +590,10 @@ function M:close()
     return
   end
 
+  if self.opts.on_close then
+    self.opts.on_close(self)
+  end
+
   self:hist_record(true)
   self.closed = true
 
