@@ -164,6 +164,9 @@ function M.setup(opts)
         end
       end,
       on_done = function()
+        if not searching then
+          return
+        end
         local picker = ref.value
         if not picker or picker.closed then
           return
