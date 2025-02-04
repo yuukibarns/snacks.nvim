@@ -105,6 +105,7 @@ Snacks.picker.pick({source = "files", ...})
 ---@field main? snacks.picker.main.Config main editor window config
 ---@field on_change? fun(picker:snacks.Picker, item?:snacks.picker.Item) called when the cursor changes
 ---@field on_show? fun(picker:snacks.Picker) called when the picker is shown
+---@field on_close? fun(picker:snacks.Picker) called when the picker is closed
 ---@field jump? snacks.picker.jump.Config|{}
 --- Other
 ---@field config? fun(opts:snacks.picker.Config):snacks.picker.Config? custom config function
@@ -381,6 +382,8 @@ Snacks.picker.pick({source = "files", ...})
   debug = {
     scores = false, -- show scores in the list
     leaks = false, -- show when pickers don't get garbage collected
+    explorer = false, -- show explorer debug info
+    files = false, -- show file debug info
   },
 }
 ```
@@ -550,6 +553,23 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts? snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
+---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
+```
+
+```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -623,23 +643,6 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
-```
-
-```lua
----@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts? snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
----@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
 ```
 
 ## 📦 Module
@@ -889,13 +892,14 @@ Neovim commands
 ---@field tree? boolean show the file tree (default: true)
 ---@field git_status? boolean show git status (default: true)
 ---@field git_status_open? boolean show recursive git status for open directories
+---@field watch? boolean watch for file changes
 {
   finder = "explorer",
   sort = { fields = { "sort" } },
   tree = true,
+  watch = true,
   git_status = true,
   git_status_open = false,
-  supports_live = true,
   follow_file = true,
   focus = "list",
   auto_close = false,
@@ -905,7 +909,7 @@ Neovim commands
   -- your config under `opts.picker.sources.explorer`
   -- layout = { layout = { position = "right" } },
   formatters = { file = { filename_only = true } },
-  matcher = { sort_empty = true },
+  matcher = { sort_empty = false },
   config = function(opts)
     return require("snacks.picker.source.explorer").setup(opts)
   end,
@@ -924,7 +928,7 @@ Neovim commands
         ["P"] = "toggle_preview",
         ["y"] = "explorer_yank",
         ["u"] = "explorer_update",
-        ["<c-c>"] = "explorer_cd",
+        ["<c-c>"] = "tcd",
         ["."] = "explorer_focus",
         ["I"] = "toggle_ignored",
         ["H"] = "toggle_hidden",
@@ -2457,8 +2461,6 @@ Snacks.picker.actions.toggle_preview(picker)
 Snacks.picker.actions.yank(_, item)
 ```
 
-
-
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -2532,6 +2534,16 @@ picker:current(opts)
 
 ```lua
 picker:cwd()
+```
+
+### `picker:dir()`
+
+Returns the directory of the current item or the cwd.
+When the item is a directory, return item path,
+otherwise return the directory of the item.
+
+```lua
+picker:dir()
 ```
 
 ### `picker:empty()`
@@ -2682,3 +2694,5 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
+
+
