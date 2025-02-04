@@ -163,6 +163,18 @@ function M.setup(opts)
           end
         end
       end,
+      on_done = function()
+        local picker = ref.value
+        if not picker or picker.closed then
+          return
+        end
+        for item, idx in picker:iter() do
+          if not item.dir then
+            picker.list:view(idx)
+            return
+          end
+        end
+      end,
     },
     formatters = {
       file = {
@@ -265,21 +277,6 @@ function M.search(opts, ctx)
   ---@async
   return function(cb)
     cb(root)
-    -- focus the first non-internal item
-    ctx.picker.matcher.task:on(
-      "done",
-      vim.schedule_wrap(function()
-        if ctx.picker.closed then
-          return
-        end
-        for item, idx in ctx.picker:iter() do
-          if not item.internal then
-            ctx.picker.list:view(idx)
-            return
-          end
-        end
-      end)
-    )
 
     ---@param item snacks.picker.explorer.Item
     local function add(item)
