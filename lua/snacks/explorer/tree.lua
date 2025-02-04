@@ -52,8 +52,9 @@ function Tree:find(path)
   if self.nodes[path] then
     return self.nodes[path]
   end
+
   local node = self.root
-  local parts = vim.split(path:gsub("^/", ""), "/", { plain = true })
+  local parts = vim.split(path, "/", { plain = true })
   local is_dir = vim.fn.isdirectory(path) == 1
   for p, part in ipairs(parts) do
     node = self:child(node, part, (is_dir or p < #parts) and "directory" or "file")
@@ -66,7 +67,7 @@ end
 ---@param type string
 function Tree:child(node, name, type)
   if not node.children[name] then
-    local path = (node.path .. "/" .. name)
+    local path = ((node.path == "" and "" or (node.path .. "/")) .. name)
     node.children[name] = {
       name = name,
       path = path,
