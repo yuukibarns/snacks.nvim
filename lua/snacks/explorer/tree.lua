@@ -128,6 +128,9 @@ function Tree:expand(node)
     if not name then
       break
     end
+    if t == "link" and vim.fn.isdirectory(node.path .. "/" .. name) == 1 then
+      t = "directory"
+    end
     found[name] = true
     self:child(node, name, t).type = t
   end
