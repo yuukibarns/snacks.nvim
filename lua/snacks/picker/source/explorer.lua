@@ -195,6 +195,7 @@ function M.explorer(opts, ctx)
         if ctx.picker.closed then
           return
         end
+        ctx.picker.list:set_target()
         ctx.picker:find()
       end,
     })
