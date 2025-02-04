@@ -296,6 +296,7 @@ function M.search(opts, ctx)
       if basename:sub(1, 1) == "." then
         item.hidden = true
       end
+      item.text = item.text:sub(1, #opts.cwd) == opts.cwd and item.text:sub(#opts.cwd + 2) or item.text
       local node = Tree:find(item.file)
       if node then
         item.status = (not node.dir or opts.git_status_open) and node.status or nil
