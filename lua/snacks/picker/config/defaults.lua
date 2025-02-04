@@ -377,6 +377,8 @@ local defaults = {
   debug = {
     scores = false, -- show scores in the list
     leaks = false, -- show when pickers don't get garbage collected
+    explorer = false, -- show explorer debug info
+    files = false, -- show file debug info
   },
 }
 
