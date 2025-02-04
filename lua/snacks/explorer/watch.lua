@@ -14,7 +14,8 @@ function M.watcher()
   elseif vim.fn.executable("inotifywait") == 1 then
     return vim._watch.inotify
   end
-  return vim._watch.watchdirs
+  -- This is horrible for performance. Don't use it!
+  -- return vim._watch.watchdirs
 end
 
 local running = {} ---@type table<string, fun()>
