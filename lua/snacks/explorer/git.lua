@@ -82,7 +82,7 @@ function M.update(cwd, opts)
     end
     M._update(cwd, ret)
     if opts and opts.on_update then
-      opts.on_update()
+      vim.schedule(opts.on_update)
     end
   end
 
