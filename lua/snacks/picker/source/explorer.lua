@@ -223,6 +223,7 @@ function M.explorer(opts, ctx)
     end
     local items = {} ---@type table<string, snacks.picker.explorer.Item>
     local top = Tree:find(ctx.filter.cwd)
+    local last = {} ---@type table<snacks.picker.explorer.Node, snacks.picker.explorer.Item>
     Tree:get(ctx.filter.cwd, function(node)
       local item = {
         file = node.path,
@@ -233,11 +234,16 @@ function M.explorer(opts, ctx)
         hidden = node.hidden,
         ignored = node.ignored,
         status = (not node.dir or not node.open or opts.git_status_open) and node.status or nil,
-        last = node.last,
+        last = true,
         type = node.type,
       }
+      if last[node.parent] then
+        last[node.parent].last = false
+      end
+      last[node.parent] = item
       if top == node then
         item.hidden = false
+        item.ignored = false
       end
       items[node.path] = item
       cb(item)
