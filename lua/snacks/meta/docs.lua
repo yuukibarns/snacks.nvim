@@ -617,6 +617,21 @@ function M.readme(plugins, types)
   local info = M.extract(lines, { prefix = "Snacks", name = "init" })
   local readme = table.concat(vim.fn.readfile("README.md"), "\n")
   local example = table.concat(vim.fn.readfile("docs/examples/init.lua"), "\n")
+  local e = M.examples("picker").general or ""
+  local l = vim.split(e, "\n")
+  table.remove(l)
+  table.remove(l)
+  local start = false
+  l = vim.tbl_filter(function(line)
+    if line:find("^%s*keys =") then
+      start = true
+      return false
+    end
+    return start
+  end, l)
+  l[1] = vim.trim(l[1])
+  e = table.concat(l, "\n")
+  example = example:gsub("%-%- EXTRA_KEYS", e)
 
   -- config type
   lines = {}
