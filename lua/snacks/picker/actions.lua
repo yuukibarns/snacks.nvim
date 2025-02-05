@@ -350,14 +350,18 @@ function M.git_branch_del(picker, item)
       return
     end
 
-    -- Proceed with deletion
-    Snacks.picker.util.cmd({ "git", "branch", "-d", branch }, function()
-      Snacks.notify("Deleted Branch `" .. branch .. "`", { title = "Snacks Picker" })
-      vim.cmd.checktime()
-      picker.list:set_selected()
-      picker.list:set_target()
-      picker:find()
-    end, { cwd = picker:cwd() })
+    Snacks.picker.select({ "Yes", "No" }, { prompt = ("Delete branch %q?"):format(branch) }, function(_, idx)
+      if idx == 1 then
+        -- Proceed with deletion
+        Snacks.picker.util.cmd({ "git", "branch", "-d", branch }, function()
+          Snacks.notify("Deleted Branch `" .. branch .. "`", { title = "Snacks Picker" })
+          vim.cmd.checktime()
+          picker.list:set_selected()
+          picker.list:set_target()
+          picker:find()
+        end, { cwd = picker:cwd() })
+      end
+    end)
   end, { cwd = picker:cwd() })
 end
 
