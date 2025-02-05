@@ -225,6 +225,14 @@ Snacks.picker.pick({source = "files", ...})
         ["<c-s>"] = { "edit_split", mode = { "i", "n" } },
         ["<c-u>"] = { "list_scroll_up", mode = { "i", "n" } },
         ["<c-v>"] = { "edit_vsplit", mode = { "i", "n" } },
+        ["<c-z>h"] = { "layout_left", mode = { "i", "n" } },
+        ["<c-z><c-h>"] = { "layout_left", mode = { "i", "n" } },
+        ["<c-z>j"] = { "layout_bottom", mode = { "i", "n" } },
+        ["<c-z><c-j>"] = { "layout_bottom", mode = { "i", "n" } },
+        ["<c-z>k"] = { "layout_top", mode = { "i", "n" } },
+        ["<c-z><c-k>"] = { "layout_top", mode = { "i", "n" } },
+        ["<c-z>l"] = { "layout_right", mode = { "i", "n" } },
+        ["<c-z><c-l>"] = { "layout_right", mode = { "i", "n" } },
         ["?"] = "toggle_help_input",
         ["G"] = "list_bottom",
         ["gg"] = "list_top",
@@ -266,6 +274,14 @@ Snacks.picker.pick({source = "files", ...})
         ["<c-s>"] = "edit_split",
         ["<c-u>"] = "list_scroll_up",
         ["<c-v>"] = "edit_vsplit",
+        ["<c-z>h"] = { "layout_left", mode = { "i", "n" } },
+        ["<c-z><c-h>"] = { "layout_left", mode = { "i", "n" } },
+        ["<c-z>j"] = { "layout_bottom", mode = { "i", "n" } },
+        ["<c-z><c-j>"] = { "layout_bottom", mode = { "i", "n" } },
+        ["<c-z>k"] = { "layout_top", mode = { "i", "n" } },
+        ["<c-z><c-k>"] = { "layout_top", mode = { "i", "n" } },
+        ["<c-z>l"] = { "layout_right", mode = { "i", "n" } },
+        ["<c-z><c-l>"] = { "layout_right", mode = { "i", "n" } },
         ["?"] = "toggle_help_list",
         ["G"] = "list_bottom",
         ["gg"] = "list_top",
@@ -553,20 +569,8 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
----@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts? snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
----@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
+---@class snacks.picker.layout.Action: snacks.picker.Action
+---@field layout? snacks.picker.layout.Config|string
 ```
 
 ```lua
@@ -643,6 +647,23 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
+```
+
+```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts? snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
+---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
 ```
 
 ## 📦 Module
@@ -1920,6 +1941,12 @@ Open a project from zoxide
 
 ## 🖼️ Layouts
 
+### `bottom`
+
+```lua
+{ preset = "ivy", layout = { position = "bottom" } }
+```
+
 ### `default`
 
 ```lua
@@ -2013,6 +2040,18 @@ Open a project from zoxide
 }
 ```
 
+### `left`
+
+```lua
+M.sidebar
+```
+
+### `right`
+
+```lua
+{ preset = "sidebar", layout = { position = "right" } }
+```
+
 ### `select`
 
 ```lua
@@ -2086,6 +2125,12 @@ Open a project from zoxide
     },
   },
 }
+```
+
+### `top`
+
+```lua
+{ preset = "ivy", layout = { position = "top" } }
 ```
 
 ### `vertical`
@@ -2238,6 +2283,12 @@ Snacks.picker.actions.item_action(picker, item, action)
 
 ```lua
 Snacks.picker.actions.jump(picker, _, action)
+```
+
+### `Snacks.picker.actions.layout()`
+
+```lua
+Snacks.picker.actions.layout(picker, _, action)
 ```
 
 ### `Snacks.picker.actions.lcd()`
@@ -2460,6 +2511,8 @@ Snacks.picker.actions.toggle_preview(picker)
 ```lua
 Snacks.picker.actions.yank(_, item)
 ```
+
+
 
 ## 📦 `snacks.picker.core.picker`
 
@@ -2694,5 +2747,3 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
-
-
