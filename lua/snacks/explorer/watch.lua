@@ -1,5 +1,8 @@
 local M = {}
 
+local Git = require("snacks.explorer.git")
+local Tree = require("snacks.explorer.tree")
+
 local uv = vim.uv or vim.loop
 
 ---@alias snacks.explorer.Watcher fun(path:string, opts:vim._watch.watch.Opts?, callback:vim._watch.Callback):fun()
@@ -27,51 +30,84 @@ function M.abort()
   running = {}
 end
 
+local timer = assert(uv.new_timer())
+
+function M.refresh()
+  -- batch updates and give explorer the time to update before the watcher
+  timer:start(500, 0, function()
+    local picker = Snacks.picker.get({ source = "explorer" })[1]
+    if picker and not picker.closed and Tree:is_dirty(picker:cwd(), picker.opts) then
+      if not picker.list.target then
+        picker.list:set_target()
+      end
+      picker:find()
+    end
+  end)
+end
+
+---@param cwd string
+function M.watch_git(cwd)
+  local root = Snacks.git.get_root(cwd)
+  if not root then
+    return
+  end
+  local handle = assert(vim.uv.new_fs_event())
+  handle:start(root .. "/.git", {}, function(_, file)
+    if file == "index" then
+      Git.refresh(root)
+      M.refresh()
+    end
+  end)
+  return function()
+    if handle and not handle:is_closing() then
+      handle:close()
+    end
+  end
+end
+
+---@param cwd string
+function M.watch_files(cwd)
+  local watch = M.watcher()
+  if not watch then
+    return
+  end
+
+  return watch(cwd, {
+    uvflags = { recursive = true },
+  }, function(path, changes)
+    -- handle deletes
+    while not uv.fs_stat(path) do
+      local p = vim.fs.dirname(path)
+      if p == path then
+        return
+      end
+      path = p
+    end
+    Tree:refresh(path)
+    M.refresh()
+  end)
+end
+
 ---@param cwd string
 function M.watch(cwd)
   if running[cwd] then
     return
   end
-  local Tree = require("snacks.explorer.tree")
-  local watch = M.watcher()
-  if not watch then
-    return
-  end
-  M.abort()
 
-  pcall(function()
-    local timer = assert(uv.new_timer())
-    local cancel = watch(cwd, {
-      uvflags = { recursive = true },
-    }, function(path)
-      -- handle deletes
-      while not uv.fs_stat(path) do
-        local p = vim.fs.dirname(path)
-        if p == path then
-          return
-        end
-        path = p
-      end
-      Tree:refresh(path)
+  local watchers = { M.watch_git, M.watch_files }
+  local cancel = {} ---@type (fun())[]
 
-      -- batch updates and give explorer the time to update before the watcher
-      timer:start(100, 0, function()
-        local picker = Snacks.picker.get({ source = "explorer" })[1]
-        if picker and Tree:is_dirty(picker:cwd(), picker.opts) then
-          if not picker.list.target then
-            picker.list:set_target()
-          end
-          picker:find()
-        end
-      end)
-    end)
-    running[cwd] = function()
-      if not timer:is_closing() then
-        timer:close()
-      end
-      cancel()
+  for _, watch in ipairs(watchers) do
+    local ok, c = pcall(watch, cwd)
+    if ok and c then
+      cancel[#cancel + 1] = c
     end
-  end)
+  end
+
+  running[cwd] = function()
+    vim.tbl_map(pcall, cancel)
+    running[cwd] = nil
+  end
 end
 
 return M

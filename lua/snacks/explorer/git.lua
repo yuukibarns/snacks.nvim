@@ -21,6 +21,15 @@ function M.refresh(path)
 end
 
 ---@param cwd string
+function M.is_dirty(cwd)
+  local root = Snacks.git.get_root(cwd)
+  if not root then
+    return false
+  end
+  return M.state[root] == nil
+end
+
+---@param cwd string
 ---@param opts? {on_update?: fun(), ttl?: number, force?: boolean}
 function M.update(cwd, opts)
   opts = opts or {}

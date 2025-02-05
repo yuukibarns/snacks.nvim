@@ -220,6 +220,9 @@ end
 ---@param opts? {hidden?: boolean, ignored?: boolean}
 function Tree:is_dirty(cwd, opts)
   opts = opts or {}
+  if require("snacks.explorer.git").is_dirty(cwd) then
+    return true
+  end
   local dirty = false
   self:get(cwd, function(n)
     if n.dir and n.open and not n.expanded then

@@ -49,14 +49,6 @@ function State.new(picker)
     end
   end
 
-  picker.list.win:on("TermClose", function()
-    local p = ref()
-    if p then
-      Tree:refresh(p:cwd())
-      Actions.update(p)
-    end
-  end, { pattern = "*lazygit" })
-
   picker.list.win:on("BufWritePost", function(_, ev)
     local p = ref()
     if p then
