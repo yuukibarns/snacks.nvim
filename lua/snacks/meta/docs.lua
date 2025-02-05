@@ -450,14 +450,26 @@ function M.picker(ret)
   local info = M.extract(lines, { prefix = "Snacks.picker", name = "sources" })
   local sources = vim.tbl_keys(info.props)
   table.sort(sources)
+  local source_types = {} ---@type table<string, string>
   table.insert(ret, "## 🔍 Sources\n")
   for _, source in ipairs(sources) do
     local opts = info.props[source]
+    local opts_lines = vim.split(opts, "\n")
+    for _, l in ipairs(opts_lines) do
+      local t = l:match("^---@type (.*)$")
+      t = t or l:match("^---@class (.*)$")
+      if t then
+        t = vim.trim(t:gsub(":.*", ""))
+        source_types[source] = t
+        break
+      end
+    end
     table.insert(ret, ("### `%s`"):format(source))
     table.insert(ret, "")
     table.insert(ret, ("```vim\n:lua Snacks.picker.%s(opts?)\n```\n"):format(source))
     table.insert(ret, M.md(opts))
   end
+  M.picker_types(source_types)
   lines = vim.fn.readfile("lua/snacks/picker/config/layouts.lua")
   info = M.extract(lines, { prefix = "Snacks.picker", name = "layouts" })
   sources = vim.tbl_keys(info.props)
@@ -578,6 +590,23 @@ function M.types(types)
   )
 
   vim.fn.writefile(lines, "lua/snacks/meta/types.lua")
+end
+
+---@param types table<string,string>
+function M.picker_types(types)
+  local opts = Snacks.picker.config.get() --[[@as table<string,unknown>]]
+  local sources = vim.tbl_keys(opts.sources) ---@type string[]
+  table.sort(sources)
+  local lines = {} ---@type string[]
+  lines[#lines + 1] = "---@meta _"
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "---@class snacks.picker"
+  for _, source in ipairs(sources) do
+    local t = types[source] or "snacks.picker.Config"
+    t = t:gsub("|.*", "") .. "|{}"
+    lines[#lines + 1] = ("---@field %s fun(opts?: %s): snacks.Picker"):format(source, t)
+  end
+  vim.fn.writefile(lines, "lua/snacks/picker/types.lua")
 end
 
 ---@param plugins snacks.meta.Plugin[]
