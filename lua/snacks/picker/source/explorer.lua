@@ -37,6 +37,8 @@ function State.new(picker)
     return v and not v.closed and v or nil
   end
 
+  Tree:refresh(picker:cwd())
+
   local buf = vim.api.nvim_win_get_buf(picker.main)
   local buf_file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
   if uv.fs_stat(buf_file) then
