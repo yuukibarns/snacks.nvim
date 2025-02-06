@@ -121,8 +121,9 @@ docs for more information on how to customize these styles
 ---@class snacks.terminal.Opts: snacks.terminal.Config
 ---@field cwd? string
 ---@field env? table<string, string>
----@field auto_close? boolean close the terminal buffer when the process exits
+---@field start_insert? boolean start insert mode when starting the terminal
 ---@field auto_insert? boolean start insert mode when entering the terminal buffer
+---@field auto_close? boolean close the terminal buffer when the process exits
 ---@field interactive? boolean shortcut for `auto_close` and `auto_insert` (default: true)
 ```
 
