@@ -921,6 +921,7 @@ Neovim commands
 {
   finder = "explorer",
   sort = { fields = { "sort" } },
+  supports_live = true,
   tree = true,
   watch = true,
   git_status = true,
