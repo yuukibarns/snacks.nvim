@@ -23,8 +23,9 @@ local defaults = {
 ---@class snacks.terminal.Opts: snacks.terminal.Config
 ---@field cwd? string
 ---@field env? table<string, string>
----@field auto_close? boolean close the terminal buffer when the process exits
+---@field start_insert? boolean start insert mode when starting the terminal
 ---@field auto_insert? boolean start insert mode when entering the terminal buffer
+---@field auto_close? boolean close the terminal buffer when the process exits
 ---@field interactive? boolean shortcut for `auto_close` and `auto_insert` (default: true)
 
 Snacks.config.style("terminal", {
@@ -85,6 +86,7 @@ function M.open(cmd, opts)
 
   local interactive = opts.interactive ~= false
   local auto_insert = opts.auto_insert or (opts.auto_insert == nil and interactive)
+  local start_insert = opts.start_insert or (opts.start_insert == nil and interactive)
   local auto_close = opts.auto_close or (opts.auto_close == nil and interactive)
 
   local on_buf = opts.win and opts.win.on_buf
@@ -100,7 +102,7 @@ function M.open(cmd, opts)
   local on_win = opts.win and opts.win.on_win
   ---@param self snacks.terminal
   opts.win.on_win = function(self)
-    if auto_insert and vim.api.nvim_get_current_buf() == self.buf then
+    if start_insert and vim.api.nvim_get_current_buf() == self.buf then
       vim.cmd.startinsert()
     end
     if on_win then
