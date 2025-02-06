@@ -140,7 +140,9 @@ function M.jump(picker, _, action)
 end
 
 function M.close(picker)
-  picker:close()
+  picker:norm(function()
+    picker:close()
+  end)
 end
 
 M.cancel = "close"
