@@ -124,7 +124,7 @@ docs for more information on how to customize these styles
 ---@field start_insert? boolean start insert mode when starting the terminal
 ---@field auto_insert? boolean start insert mode when entering the terminal buffer
 ---@field auto_close? boolean close the terminal buffer when the process exits
----@field interactive? boolean shortcut for `auto_close` and `auto_insert` (default: true)
+---@field interactive? boolean shortcut for `start_insert`, `auto_close` and `auto_insert` (default: true)
 ```
 
 ## 📦 Module
