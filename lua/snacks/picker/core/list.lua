@@ -83,7 +83,6 @@ function M.new(picker)
       winhighlight = Snacks.picker.highlight.winhl("SnacksPickerList", { CursorLine = "Visual" }),
       linebreak = true,
       breakindent = true,
-      wrap = false,
     },
   })
   self.win = Snacks.win(win_opts)
