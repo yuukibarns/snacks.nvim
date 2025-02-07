@@ -803,9 +803,14 @@ M.undo = {
     preview = { wo = { number = false, relativenumber = false, signcolumn = "no" } },
     input = {
       keys = {
-        ["<c-y>"] = { "yank", mode = { "n", "i" } },
+        ["<c-y>"] = { "yank_add", mode = { "n", "i" } },
+        ["<c-s-y>"] = { "yank_del", mode = { "n", "i" } },
       },
     },
+  },
+  actions = {
+    yank_add = { action = "yank", field = "added_lines" },
+    yank_del = { action = "yank", field = "removed_lines" },
   },
   icons = { tree = { last = "┌╴" } }, -- the tree is upside down
   diff = {
