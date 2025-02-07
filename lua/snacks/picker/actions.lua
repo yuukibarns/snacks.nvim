@@ -421,9 +421,14 @@ function M.loclist(picker)
   setqflist(items, { win = picker.main })
 end
 
-function M.yank(_, item)
+function M.yank(picker, item, action)
   if item then
-    vim.fn.setreg("+", item.data or item.text)
+    local reg = action.reg or "+"
+    local value = item.data or item.text
+    vim.fn.setreg(reg, value)
+    local buf = item.buf or vim.api.nvim_win_get_buf(picker.main)
+    local ft = vim.bo[buf].filetype
+    Snacks.notify(("Yanked to register `%s`:\n```%s\n%s\n```"):format(reg, ft, value), { title = "Snacks Picker" })
   end
 end
 M.copy = M.yank
