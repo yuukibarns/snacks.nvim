@@ -400,6 +400,7 @@ Snacks.picker.pick({source = "files", ...})
     leaks = false, -- show when pickers don't get garbage collected
     explorer = false, -- show explorer debug info
     files = false, -- show file debug info
+    grep = false, -- show file debug info
   },
 }
 ```
