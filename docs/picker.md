@@ -157,6 +157,8 @@ Snacks.picker.pick({source = "files", ...})
     severity = {
       icons = true, -- show severity icons
       level = false, -- show severity level
+      ---@type "left"|"right"
+      pos = "left", -- position of the diagnostics
     },
   },
   ---@class snacks.picker.previewers.Config
@@ -918,6 +920,8 @@ Neovim commands
 ---@field tree? boolean show the file tree (default: true)
 ---@field git_status? boolean show git status (default: true)
 ---@field git_status_open? boolean show recursive git status for open directories
+---@field diagnostics? boolean show diagnostics
+---@field diagnostics_open? boolean show recursive diagnostics for open directories
 ---@field watch? boolean watch for file changes
 {
   finder = "explorer",
@@ -925,6 +929,8 @@ Neovim commands
   supports_live = true,
   tree = true,
   watch = true,
+  diagnostics = true,
+  diagnostics_open = false,
   git_status = true,
   git_status_open = false,
   follow_file = true,
@@ -935,7 +941,10 @@ Neovim commands
   -- to show the explorer to the right, add the below to
   -- your config under `opts.picker.sources.explorer`
   -- layout = { layout = { position = "right" } },
-  formatters = { file = { filename_only = true } },
+  formatters = {
+    file = { filename_only = true },
+    severity = { pos = "right" },
+  },
   matcher = { sort_empty = false, fuzzy = false },
   config = function(opts)
     return require("snacks.picker.source.explorer").setup(opts)
