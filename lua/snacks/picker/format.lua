@@ -61,8 +61,8 @@ function M.filename(item, picker)
     if item.dir and item.open then
       icon = " "
     end
-    local padded_icon = icon:sub(-1) == " " and icon or icon .. " "
-    ret[#ret + 1] = { padded_icon, hl, virtual = true }
+    icon = Snacks.picker.util.align(icon, picker.opts.formatters.file.icon_width or 2)
+    ret[#ret + 1] = { icon, hl, virtual = true }
   end
 
   local base_hl = item.dir and "SnacksPickerDirectory" or "SnacksPickerFile"
