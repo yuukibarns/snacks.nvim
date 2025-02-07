@@ -68,7 +68,6 @@ function M.update(cwd, opts)
       opts.untracked and "-unormal" or "-uno",
     },
   }, function()
-    stdout:close()
     handle:close()
   end)
 
@@ -102,6 +101,7 @@ function M.update(cwd, opts)
       output = output .. data
     else
       process()
+      stdout:close()
     end
   end)
 end
