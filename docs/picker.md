@@ -1082,6 +1082,31 @@ Find git files
 }
 ```
 
+### `git_grep`
+
+```vim
+:lua Snacks.picker.git_grep(opts?)
+```
+
+Grep in git files
+
+```lua
+---@class snacks.picker.git.grep.Config: snacks.picker.Config
+---@field untracked? boolean search in untracked files
+---@field submodules? boolean search in submodule files
+---@field need_search? boolean require a search pattern
+{
+  finder = "git_grep",
+  format = "file",
+  untracked = false,
+  need_search = true,
+  submodules = false,
+  show_empty = true,
+  supports_live = true,
+  live = true,
+}
+```
+
 ### `git_log`
 
 ```vim
