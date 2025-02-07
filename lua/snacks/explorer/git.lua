@@ -30,7 +30,7 @@ function M.is_dirty(cwd)
 end
 
 ---@param cwd string
----@param opts? {on_update?: fun(), ttl?: number, force?: boolean}
+---@param opts? {on_update?: fun(), ttl?: number, force?: boolean, ignored?: boolean}
 function M.update(cwd, opts)
   opts = opts or {}
   local ttl = opts.ttl or CACHE_TTL
@@ -62,7 +62,7 @@ function M.update(cwd, opts)
     args = {
       "--no-pager",
       "status",
-      "-uall",
+      "-unormal",
       "--porcelain=v1",
       "--ignored=matching",
       "-z",
@@ -134,6 +134,10 @@ function M._update(cwd, results)
     local deleted = s.status:find("D") and s.status ~= "UD"
     if not deleted then
       add_git_status(path, s.status)
+    end
+    if is_dir then
+      local n = Tree:find(path)
+      n.dir_status = s.status
     end
     if s.status:sub(1, 1) ~= "!" then -- don't propagate ignored status
       add_git_status(cwd, s.status)

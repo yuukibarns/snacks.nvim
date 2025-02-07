@@ -2,7 +2,8 @@
 ---@field path string
 ---@field name string
 ---@field hidden? boolean
----@field status? string
+---@field status? string merged git status
+---@field dir_status? string git status of the directory
 ---@field ignored? boolean
 ---@field type "file"|"directory"|"link"|"fifo"|"socket"|"char"|"block"|"unknown"
 ---@field dir? boolean
