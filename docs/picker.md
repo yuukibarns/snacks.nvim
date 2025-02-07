@@ -1938,7 +1938,14 @@ Not meant to be used directly.
   format = "undo",
   preview = "preview",
   confirm = "item_action",
-  win = { preview = { wo = { number = false, relativenumber = false, signcolumn = "no" } } },
+  win = {
+    preview = { wo = { number = false, relativenumber = false, signcolumn = "no" } },
+    input = {
+      keys = {
+        ["<c-y>"] = { "yank", mode = { "n", "i" } },
+      },
+    },
+  },
   icons = { tree = { last = "┌╴" } }, -- the tree is upside down
   diff = {
     ctxlen = 4,
@@ -2558,7 +2565,7 @@ Snacks.picker.actions.toggle_preview(picker)
 ### `Snacks.picker.actions.yank()`
 
 ```lua
-Snacks.picker.actions.yank(_, item)
+Snacks.picker.actions.yank(picker, item, action)
 ```
 
 
