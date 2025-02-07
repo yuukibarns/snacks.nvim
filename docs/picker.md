@@ -967,6 +967,7 @@ Neovim commands
         ["u"] = "explorer_update",
         ["<c-c>"] = "tcd",
         ["<c-f>"] = "picker_grep",
+        ["<c-t>"] = "terminal",
         ["."] = "explorer_focus",
         ["I"] = "toggle_ignored",
         ["H"] = "toggle_hidden",
@@ -2510,6 +2511,12 @@ Snacks.picker.actions.select_and_prev(picker)
 
 ```lua
 Snacks.picker.actions.tcd(_, item)
+```
+
+### `Snacks.picker.actions.terminal()`
+
+```lua
+Snacks.picker.actions.terminal(_, item)
 ```
 
 ### `Snacks.picker.actions.toggle_focus()`
