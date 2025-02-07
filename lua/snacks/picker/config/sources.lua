@@ -403,7 +403,6 @@ M.keymaps = {
 --- Search for a lazy.nvim plugin spec
 M.lazy = {
   finder = "lazy_spec",
-  live = false,
   pattern = "'",
 }
 
