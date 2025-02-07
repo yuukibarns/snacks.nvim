@@ -769,6 +769,29 @@ M.spelling = {
   confirm = "item_action",
 }
 
+---@class snacks.picker.treesitter.Config: snacks.picker.Config
+---@field filter table<string, string[]|boolean>? symbol kind filter
+M.treesitter = {
+  finder = "treesitter_symbols",
+  format = "lsp_symbol",
+  filter = {
+    default = {
+      "Class",
+      "Enum",
+      "Field",
+      "Function",
+      "Method",
+      "Module",
+      "Namespace",
+      "Struct",
+      "Trait",
+    },
+    -- set to `true` to include all symbols
+    markdown = true,
+    help = true,
+  },
+}
+
 ---@class snacks.picker.undo.Config: snacks.picker.Config
 ---@field diff? vim.diff.Opts
 M.undo = {
