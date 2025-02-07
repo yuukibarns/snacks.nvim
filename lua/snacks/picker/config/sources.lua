@@ -42,6 +42,7 @@ M.buffers = {
 ---@field tree? boolean show the file tree (default: true)
 ---@field git_status? boolean show git status (default: true)
 ---@field git_status_open? boolean show recursive git status for open directories
+---@field git_untracked? boolean needed to show untracked git status
 ---@field diagnostics? boolean show diagnostics
 ---@field diagnostics_open? boolean show recursive diagnostics for open directories
 ---@field watch? boolean watch for file changes
@@ -55,6 +56,7 @@ M.explorer = {
   diagnostics_open = false,
   git_status = true,
   git_status_open = false,
+  git_untracked = true,
   follow_file = true,
   focus = "list",
   auto_close = false,

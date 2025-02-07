@@ -30,7 +30,7 @@ function M.is_dirty(cwd)
 end
 
 ---@param cwd string
----@param opts? {on_update?: fun(), ttl?: number, force?: boolean, ignored?: boolean}
+---@param opts? {on_update?: fun(), ttl?: number, force?: boolean, untracked?: boolean}
 function M.update(cwd, opts)
   opts = opts or {}
   local ttl = opts.ttl or CACHE_TTL
@@ -62,10 +62,10 @@ function M.update(cwd, opts)
     args = {
       "--no-pager",
       "status",
-      "-unormal",
       "--porcelain=v1",
       "--ignored=matching",
       "-z",
+      opts.untracked and "-unormal" or "-uno",
     },
   }, function()
     stdout:close()

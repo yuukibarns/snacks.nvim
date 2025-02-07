@@ -211,6 +211,7 @@ function M.explorer(opts, ctx)
 
   if opts.git_status then
     require("snacks.explorer.git").update(ctx.filter.cwd, {
+      untracked = opts.git_untracked,
       on_update = function()
         if ctx.picker.closed then
           return
