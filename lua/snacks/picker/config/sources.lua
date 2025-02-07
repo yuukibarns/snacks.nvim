@@ -88,6 +88,7 @@ M.explorer = {
         ["u"] = "explorer_update",
         ["<c-c>"] = "tcd",
         ["<c-f>"] = "picker_grep",
+        ["<c-t>"] = "terminal",
         ["."] = "explorer_focus",
         ["I"] = "toggle_ignored",
         ["H"] = "toggle_hidden",

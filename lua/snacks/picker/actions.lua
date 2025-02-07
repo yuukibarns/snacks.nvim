@@ -195,6 +195,12 @@ function M.picker_grep(_, item)
   end
 end
 
+function M.terminal(_, item)
+  if item then
+    Snacks.terminal(nil, { cwd = Snacks.picker.util.dir(item) })
+  end
+end
+
 function M.cd(_, item)
   if item then
     vim.fn.chdir(Snacks.picker.util.dir(item))
