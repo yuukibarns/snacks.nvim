@@ -404,6 +404,7 @@ Snacks.picker.pick({source = "files", ...})
     explorer = false, -- show explorer debug info
     files = false, -- show file debug info
     grep = false, -- show file debug info
+    extmarks = false, -- show extmarks errors
   },
 }
 ```
