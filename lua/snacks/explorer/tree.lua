@@ -271,4 +271,36 @@ function Tree:close_all(cwd)
   end, { all = true })
 end
 
+---@param cwd string
+---@param filter fun(node: snacks.picker.explorer.Node):boolean?
+---@param opts? {up?: boolean, path?: string}
+function Tree:next(cwd, filter, opts)
+  opts = opts or {}
+  local path = opts.path or cwd
+  local root = self:node(cwd) or nil
+  if not root then
+    return
+  end
+  local first ---@type snacks.picker.explorer.Node?
+  local last ---@type snacks.picker.explorer.Node?
+  local prev ---@type snacks.picker.explorer.Node?
+  local next ---@type snacks.picker.explorer.Node?
+  local found = false
+  self:walk(root, function(node)
+    local want = not node.dir and filter(node) and not node.ignored
+    if node.path == path then
+      found = true
+    end
+    if want then
+      first, last = first or node, node
+      next = next or (found and node.path ~= path and node) or nil
+      prev = not found and node or prev
+    end
+  end, { all = true })
+  if opts.up then
+    return prev or last
+  end
+  return next or first
+end
+
 return Tree.new()

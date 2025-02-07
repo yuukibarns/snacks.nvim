@@ -149,31 +149,9 @@ end
 ---@param up? boolean
 function M.next(cwd, path, up)
   local Tree = require("snacks.explorer.tree")
-  path = path or cwd
-  local root = Tree:node(cwd) or nil
-  if not root then
-    return
-  end
-  local first ---@type snacks.picker.explorer.Node?
-  local last ---@type snacks.picker.explorer.Node?
-  local prev ---@type snacks.picker.explorer.Node?
-  local next ---@type snacks.picker.explorer.Node?
-  local found = false
-  Tree:walk(root, function(node)
-    local want = not node.dir and node.status and not node.ignored
-    if node.path == path then
-      found = true
-    end
-    if want then
-      first, last = first or node, node
-      next = next or (found and node.path ~= path and node) or nil
-      prev = not found and node or prev
-    end
-  end, { all = true })
-  if up then
-    return prev or last
-  end
-  return next or first
+  return Tree:next(cwd, function(node)
+    return node.status ~= nil
+  end, { up = up, path = path })
 end
 
 return M
