@@ -12,6 +12,7 @@
 ---@field last? boolean child of the parent
 ---@field utime? number
 ---@field children table<string, snacks.picker.explorer.Node>
+---@field severity? number
 
 local uv = vim.uv or vim.loop
 

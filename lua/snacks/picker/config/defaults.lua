@@ -151,6 +151,8 @@ local defaults = {
     severity = {
       icons = true, -- show severity icons
       level = false, -- show severity level
+      ---@type "left"|"right"
+      pos = "left", -- position of the diagnostics
     },
   },
   ---@class snacks.picker.previewers.Config

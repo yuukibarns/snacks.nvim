@@ -71,6 +71,15 @@ function State.new(picker)
     end
   end)
 
+  picker.list.win:on("DiagnosticChanged", function(_, ev)
+    local p = ref()
+    if p then
+      require("snacks.explorer.diagnostics").update(p:cwd())
+      p.list:set_target()
+      p:find()
+    end
+  end)
+
   -- schedule initial follow
   if opts.follow_file then
     picker.list.win:on({ "WinEnter", "BufEnter" }, function(_, ev)
@@ -212,6 +221,10 @@ function M.explorer(opts, ctx)
     })
   end
 
+  if opts.diagnostics then
+    require("snacks.explorer.diagnostics").update(ctx.filter.cwd)
+  end
+
   return function(cb)
     if state.on_find then
       ctx.picker.matcher.task:on("done", vim.schedule_wrap(state.on_find))
@@ -232,6 +245,7 @@ function M.explorer(opts, ctx)
         status = (not node.dir or not node.open or opts.git_status_open) and node.status or nil,
         last = true,
         type = node.type,
+        severity = (not node.dir or not node.open or opts.diagnostics_open) and node.severity or nil,
       }
       if last[node.parent] then
         last[node.parent].last = false
