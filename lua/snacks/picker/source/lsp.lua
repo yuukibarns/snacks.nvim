@@ -375,6 +375,12 @@ function M.symbols(opts, ctx)
           return want(M.symbol_kind(item.kind))
         end,
       })
+      table.sort(items, function(a, b)
+        if a.pos[1] == b.pos[1] then
+          return a.pos[2] < b.pos[2]
+        end
+        return a.pos[1] < b.pos[1]
+      end)
       for _, item in ipairs(items) do
         item.tree = opts.tree
         item.buf = bufmap[item.file]
