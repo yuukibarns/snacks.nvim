@@ -147,6 +147,7 @@ function M.status(opts, ctx)
 
   local cwd = vim.fs.normalize(opts and opts.cwd or uv.cwd() or ".") or nil
   cwd = Snacks.git.get_root(cwd)
+  local prev ---@type snacks.picker.finder.Item?
   return require("snacks.picker.source.proc").proc({
     opts,
     {
@@ -156,10 +157,18 @@ function M.status(opts, ctx)
       args = args,
       ---@param item snacks.picker.finder.Item
       transform = function(item)
-        local status, file = item.text:sub(1, 2), item.text:sub(4)
-        item.cwd = cwd
-        item.status = status
-        item.file = file
+        local status, file = item.text:match("^(..) (.+)$")
+        if status then
+          item.cwd = cwd
+          item.status = status
+          item.file = file
+          prev = item
+        elseif prev and prev.status:find("R") then
+          prev.rename = item.text
+          return false
+        else
+          return false
+        end
       end,
     },
   }, ctx)
