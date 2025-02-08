@@ -171,6 +171,7 @@ function M.diff(opts, ctx)
   local args = { "--no-pager", "diff", "--no-color", "--no-ext-diff" }
   local file, line ---@type string?, number?
   local header, hunk = {}, {} ---@type string[], string[]
+  local header_len = 4
   local finder = require("snacks.picker.source.proc").proc({
     opts,
     { cmd = "git", args = args },
@@ -194,7 +195,11 @@ function M.diff(opts, ctx)
         add()
         file = text:match("^diff .* a/(.*) b/.*$")
         header = { text }
-      elseif file and #header < 4 then
+        header_len = 4
+      elseif file and #header < header_len then
+        if text:find("^deleted file") then
+          header_len = 5
+        end
         header[#header + 1] = text
       elseif text:find("@", 1, true) == 1 then
         add()
