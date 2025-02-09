@@ -1,5 +1,29 @@
 # 🍿 image
 
+![Image](https://github.com/user-attachments/assets/4e8a686c-bf41-4989-9d74-1641ecf2835f)
+
+Image viewer using the [Kitty Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/).
+
+Supported terminals:
+
+- [kitty](https://sw.kovidgoyal.net/kitty/)
+- [wezterm](https://wezfurlong.org/wezterm/)
+- [ghostty](https://ghostty.org/)
+
+In order to automatically display the image when openinng an image file,
+you need to enable the `image` plugin in your `snacks` config.
+
+Supported image formats:
+
+- PNG
+- JPEG/JPG
+- GIF
+- BMP
+- WEBP
+
+[ImageMagick](https://imagemagick.org/index.php) is required to convert images
+to the supported formats (all except PNG).
+
 <!-- docgen -->
 
 ## 📦 Setup
