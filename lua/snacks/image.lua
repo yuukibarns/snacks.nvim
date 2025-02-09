@@ -114,7 +114,6 @@ function M:update()
   if not self:ready() then
     return
   end
-  dd("update")
   -- hide images that are no longer visible
   for win in pairs(self.wins) do
     local buf = vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win)
