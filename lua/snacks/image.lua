@@ -17,17 +17,7 @@ local write = function(data)
   io.stdout:write(data)
 end
 
--- enable tmux passthrough and wrap the data in tmux escape sequences
-if os.getenv("TMUX") then
-  local ok, out = pcall(vim.fn.system, { "tmux", "set", "-p", "allow-passthrough", "on" })
-  if not ok or vim.v.shell_error ~= 0 then
-    Snacks.notify.error({ "Failed to enable `allow-passthrough` for `tmux`:", out }, { title = "Image" })
-  end
-  write = function(data)
-    data = string.format("\027Ptmux;%s\027\\", data:gsub("\027", "\027\027"))
-    io.stdout:write(data)
-  end
-end
+local mux = false
 
 ---@class snacks.image.Config
 ---@field file? string
@@ -63,6 +53,24 @@ local diacritics = vim.split(
 local supported_formats = { "png", "jpg", "jpeg", "gif", "bmp", "webp" }
 local supported_terminals = { "kitty", "wezterm", "ghostty", "konsole" }
 
+function M.setup_mux()
+  if mux then
+    return
+  end
+  mux = true
+  -- enable tmux passthrough and wrap the data in tmux escape sequences
+  if os.getenv("TMUX") then
+    local ok, out = pcall(vim.fn.system, { "tmux", "set", "-p", "allow-passthrough", "on" })
+    if not ok or vim.v.shell_error ~= 0 then
+      Snacks.notify.error({ "Failed to enable `allow-passthrough` for `tmux`:", out }, { title = "Image" })
+    end
+    write = function(data)
+      data = string.format("\027Ptmux;%s\027\\", data:gsub("\027", "\027\027"))
+      io.stdout:write(data)
+    end
+  end
+end
+
 ---@param buf number
 ---@param opts? snacks.image.Config
 function M.new(buf, opts)
@@ -88,6 +96,7 @@ function M.new(buf, opts)
     vim.bo[buf].modified = false
     return
   end
+  M.setup_mux()
 
   local self = setmetatable({}, M)
   images[buf] = self
