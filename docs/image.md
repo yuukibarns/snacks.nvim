@@ -48,7 +48,20 @@ to the supported formats (all except PNG).
 ```lua
 ---@class snacks.image.Config
 ---@field file? string
-{}
+---@field wo? vim.wo|{} options for windows showing the image
+{
+  wo = {
+    wrap = false,
+    number = false,
+    relativenumber = false,
+    cursorcolumn = false,
+    signcolumn = "no",
+    foldcolumn = "0",
+    list = false,
+    spell = false,
+    statuscolumn = "",
+  },
+}
 ```
 
 ## 📚 Types
@@ -63,12 +76,21 @@ to the supported formats (all except PNG).
 ---@class snacks.image
 ---@field id number
 ---@field buf number
----@field wins table<number, snacks.image.Dim>
 ---@field opts snacks.image.Config
 ---@field file string
 ---@field augroup number
 ---@field _convert uv.uv_process_t?
 Snacks.image = {}
+```
+
+### `Snacks.image.dim()`
+
+Get the dimensions of a PNG file
+
+```lua
+---@param file string
+---@return number width, number height
+Snacks.image.dim(file)
 ```
 
 ### `Snacks.image.health()`
@@ -163,4 +185,11 @@ image:request(opts)
 
 ```lua
 image:update()
+```
+
+### `image:wins()`
+
+```lua
+---@return number[]
+image:wins()
 ```
