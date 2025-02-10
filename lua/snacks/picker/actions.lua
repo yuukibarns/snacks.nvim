@@ -432,7 +432,7 @@ end
 function M.yank(picker, item, action)
   ---@cast action snacks.picker.yank.Action
   if item then
-    local reg = action.reg or "+"
+    local reg = action.reg or vim.v.register
     local value = item[action.field] or item.data or item.text
     vim.fn.setreg(reg, value)
     local buf = item.buf or vim.api.nvim_win_get_buf(picker.main)
@@ -442,10 +442,12 @@ function M.yank(picker, item, action)
 end
 M.copy = M.yank
 
-function M.put(picker, item)
+function M.put(picker, item, action)
+  ---@cast action snacks.picker.yank.Action
   picker:close()
   if item then
-    vim.api.nvim_put({ item.data or item.text }, "c", true, true)
+    local value = item[action.field] or item.data or item.text
+    vim.api.nvim_put({ value }, "", true, true)
   end
 end
 
