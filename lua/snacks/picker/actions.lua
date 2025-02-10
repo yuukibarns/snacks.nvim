@@ -519,6 +519,14 @@ function M.help(picker, item, action)
   ---@cast action snacks.picker.jump.Action
   if item then
     picker:close()
+    local file = Snacks.picker.util.path(item) or ""
+    if package.loaded.lazy then
+      local plugin = file:match("/([^/]+)/doc/")
+      if plugin then
+        require("lazy").load({ plugins = { plugin } })
+      end
+    end
+
     local cmd = "help " .. item.text
     if action.cmd == "vsplit" then
       cmd = "vert " .. cmd
