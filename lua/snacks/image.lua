@@ -53,6 +53,7 @@ local diacritics = vim.split(
 local supported_formats = { "png", "jpg", "jpeg", "gif", "bmp", "webp" }
 local supported_terminals = { "kitty", "wezterm", "ghostty", "konsole" }
 
+---@private
 function M.setup_mux()
   if mux then
     return
@@ -306,16 +307,19 @@ function M:request(opts)
   write("\27_G" .. table.concat(msg) .. "\27\\")
 end
 
+--- Check if the file format is supported
 ---@param file string
 function M.supports_file(file)
   return vim.tbl_contains(supported_formats, vim.fn.fnamemodify(file, ":e"))
 end
 
+--- Check if the file format is supported and the terminal supports the kitty graphics protocol
 ---@param file string
 function M.supports(file)
   return M.supports_file(file) and M.supports_terminal()
 end
 
+-- Check if the terminal supports the kitty graphics protocol
 function M.supports_terminal()
   local opts = Snacks.config.get("image", defaults)
   if opts.force then
@@ -360,6 +364,7 @@ function M.dim(file)
   return width, height
 end
 
+---@private
 function M.health()
   local opts = Snacks.config.get("image", defaults)
   local ok, err = M.supports_terminal()

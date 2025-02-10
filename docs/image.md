@@ -94,12 +94,6 @@ Get the dimensions of a PNG file
 Snacks.image.dim(file)
 ```
 
-### `Snacks.image.health()`
-
-```lua
-Snacks.image.health()
-```
-
 ### `Snacks.image.new()`
 
 ```lua
@@ -108,13 +102,9 @@ Snacks.image.health()
 Snacks.image.new(buf, opts)
 ```
 
-### `Snacks.image.setup_mux()`
-
-```lua
-Snacks.image.setup_mux()
-```
-
 ### `Snacks.image.supports()`
+
+Check if the file format is supported and the terminal supports the kitty graphics protocol
 
 ```lua
 ---@param file string
@@ -123,12 +113,16 @@ Snacks.image.supports(file)
 
 ### `Snacks.image.supports_file()`
 
+Check if the file format is supported
+
 ```lua
 ---@param file string
 Snacks.image.supports_file(file)
 ```
 
 ### `Snacks.image.supports_terminal()`
+
+Check if the terminal supports the kitty graphics protocol
 
 ```lua
 Snacks.image.supports_terminal()
