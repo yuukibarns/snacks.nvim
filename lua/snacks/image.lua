@@ -1,7 +1,6 @@
 ---@class snacks.image
 ---@field id number
 ---@field buf number
----@field wins table<number, snacks.image.Dim>
 ---@field opts snacks.image.Config
 ---@field file string
 ---@field augroup number
@@ -32,7 +31,20 @@ end
 
 ---@class snacks.image.Config
 ---@field file? string
-local defaults = {}
+---@field wo? vim.wo|{} options for windows showing the image
+local defaults = {
+  wo = {
+    wrap = false,
+    number = false,
+    relativenumber = false,
+    cursorcolumn = false,
+    signcolumn = "no",
+    foldcolumn = "0",
+    list = false,
+    spell = false,
+    statuscolumn = "",
+  },
+}
 local uv = vim.uv or vim.loop
 local ns = vim.api.nvim_create_namespace("snacks.image")
 
@@ -72,6 +84,7 @@ function M.new(buf, opts)
     vim.bo[buf].filetype = "markdown"
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(table.concat(lines, "\n"), "\n"))
     vim.bo[buf].modifiable = false
+    vim.bo[buf].modified = false
     return
   end
 
@@ -100,13 +113,11 @@ function M.new(buf, opts)
 
   Snacks.util.bo(buf, {
     filetype = "image",
-    buftype = "nofile",
     modifiable = false,
     modified = false,
     swapfile = false,
   })
   self.buf = buf
-  self.wins = {}
 
   self.augroup = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true })
   vim.api.nvim_create_autocmd(
@@ -144,13 +155,18 @@ function M.new(buf, opts)
   return self
 end
 
+---@return number[]
+function M:wins()
+  return vim.tbl_filter(function(win)
+    return vim.api.nvim_win_get_buf(win) == self.buf
+  end, vim.api.nvim_list_wins())
+end
+
 function M:grid_size()
   local width, height = vim.o.columns, vim.o.lines
-  for _, win in pairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_win_get_buf(win) == self.buf then
-      width = math.min(width, vim.api.nvim_win_get_width(win))
-      height = math.min(height, vim.api.nvim_win_get_height(win))
-    end
+  for _, win in pairs(self:wins()) do
+    width = math.min(width, vim.api.nvim_win_get_width(win))
+    height = math.min(height, vim.api.nvim_win_get_height(win))
   end
   return width, height
 end
@@ -184,6 +200,7 @@ function M:render(width, height)
   vim.bo[self.buf].modifiable = true
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   vim.bo[self.buf].modifiable = false
+  vim.bo[self.buf].modified = false
   for r = 1, height do
     vim.api.nvim_buf_set_extmark(self.buf, ns, r - 1, 0, {
       end_col = #lines[r],
@@ -200,7 +217,16 @@ function M:update()
   if not self:ready() then
     return
   end
+  for _, win in ipairs(self:wins()) do
+    Snacks.util.wo(win, self.opts.wo or {})
+  end
   local width, height = self:grid_size()
+  self:render(width, height)
+  for _, win in ipairs(self:wins()) do
+    vim.api.nvim_win_call(win, function()
+      vim.fn.winrestview({ topline = 1, lnum = 1, col = 0, leftcol = 0 })
+    end)
+  end
   self:request({
     a = "p",
     U = 1,
@@ -209,7 +235,6 @@ function M:update()
     c = width,
     r = height,
   })
-  self:render(width, height)
 end
 
 function M:ready()
@@ -268,8 +293,7 @@ function M:request(opts)
     msg[#msg + 1] = ";"
     msg[#msg + 1] = vim.base64.encode(opts.data)
   end
-  local data = "\27_G" .. table.concat(msg) .. "\27\\"
-  write(data)
+  write("\27_G" .. table.concat(msg) .. "\27\\")
 end
 
 ---@param file string
