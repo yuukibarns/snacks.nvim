@@ -327,6 +327,25 @@ function M.supports_terminal()
   return true
 end
 
+--- Get the dimensions of a PNG file
+---@param file string
+---@return number width, number height
+function M.dim(file)
+  -- extract header with IHDR chunk
+  local fd = assert(io.open(vim.fs.normalize(file), "rb"), "Failed to open file: " .. file)
+  local header = fd:read(24) ---@type string
+  fd:close()
+
+  -- Check PNG signature
+  assert(header:sub(1, 8) == "\137PNG\r\n\26\n", "Not a valid PNG file: " .. file)
+
+  -- Extract width and height from the IHDR chunk
+  local width = header:byte(17) * 16777216 + header:byte(18) * 65536 + header:byte(19) * 256 + header:byte(20)
+  local height = header:byte(21) * 16777216 + header:byte(22) * 65536 + header:byte(23) * 256 + header:byte(24)
+
+  return width, height
+end
+
 function M.health()
   local ok, err = M.supports_terminal()
   if ok then
