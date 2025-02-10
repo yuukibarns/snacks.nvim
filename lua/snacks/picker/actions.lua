@@ -175,7 +175,7 @@ function M.layout(picker, _, action)
   if (layout.layout.position or "float") ~= "float" then
     picker.opts.auto_close = false
     picker.opts.jump.close = false
-    picker:toggle_preview(false)
+    picker:toggle("preview", { enable = false })
     picker.list.win:focus()
   end
 end
@@ -190,7 +190,11 @@ function M.toggle_maximize(picker)
 end
 
 function M.toggle_preview(picker)
-  picker:toggle_preview()
+  picker:toggle("preview")
+end
+
+function M.toggle_input(picker)
+  picker:toggle("input", { focus = true })
 end
 
 function M.picker_grep(_, item)
@@ -585,9 +589,9 @@ end
 
 function M.toggle_focus(picker)
   if vim.api.nvim_get_current_win() == picker.input.win.win then
-    picker.list.win:focus()
+    picker:focus("list", { show = true })
   else
-    picker.input.win:focus()
+    picker:focus("input", { show = true })
   end
 end
 
@@ -609,15 +613,15 @@ function M.cycle_win(picker)
 end
 
 function M.focus_input(picker)
-  picker.input.win:focus()
+  picker:focus("input", { show = true })
 end
 
 function M.focus_list(picker)
-  picker.list.win:focus()
+  picker:focus("list", { show = true })
 end
 
 function M.focus_preview(picker)
-  picker.preview.win:focus()
+  picker:focus("preview", { show = true })
 end
 
 function M.item_action(picker, item, action)
