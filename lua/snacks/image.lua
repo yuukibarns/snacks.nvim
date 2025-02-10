@@ -33,6 +33,7 @@ end
 ---@field file? string
 ---@field wo? vim.wo|{} options for windows showing the image
 local defaults = {
+  force = false, -- try displaying the image, even if the terminal does not support it
   wo = {
     wrap = false,
     number = false,
@@ -307,6 +308,10 @@ function M.supports(file)
 end
 
 function M.supports_terminal()
+  local opts = Snacks.config.get("image", defaults)
+  if opts.force then
+    return true
+  end
   local TERM = os.getenv("TERM") or ""
   local term ---@type string?
   for _, t in ipairs(supported_terminals) do
@@ -347,11 +352,16 @@ function M.dim(file)
 end
 
 function M.health()
+  local opts = Snacks.config.get("image", defaults)
   local ok, err = M.supports_terminal()
   if ok then
     Snacks.health.ok("your terminal supports the kitty graphics protocol")
   elseif err then
-    Snacks.health.warn(err)
+    if opts.force then
+      Snacks.health.ok("image viewer is enabled with `opts.force = true`")
+    else
+      Snacks.health.warn(err)
+    end
   end
 end
 
