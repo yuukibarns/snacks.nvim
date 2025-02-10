@@ -63,9 +63,11 @@ to the supported formats (all except PNG).
 ---@class snacks.Image
 ---@field id number
 ---@field buf number
+---@field req_buf number
 ---@field wins table<number, snacks.image.Dim>
 ---@field opts snacks.image.Config
 ---@field file string
+---@field augroup number
 ---@field _convert uv.uv_process_t?
 Snacks.image = {}
 ```
@@ -83,6 +85,12 @@ Snacks.image.new(buf, opts)
 ```lua
 ---@param file string
 Snacks.image.supports(file)
+```
+
+### `image:close()`
+
+```lua
+image:close()
 ```
 
 ### `image:convert()`

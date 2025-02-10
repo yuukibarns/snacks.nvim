@@ -9,9 +9,10 @@ Table of Contents                             *snacks-image-table-of-contents*
 4. Module                                                |snacks-image-module|
   - Snacks.image.new()                |snacks-image-module-snacks.image.new()|
   - Snacks.image.supports()      |snacks-image-module-snacks.image.supports()|
+  - image:close()                          |snacks-image-module-image:close()|
   - image:convert()                      |snacks-image-module-image:convert()|
   - image:create()                        |snacks-image-module-image:create()|
-  - image:dim()                              |snacks-image-module-image:dim()|
+  - image:grid_size()                  |snacks-image-module-image:grid_size()|
   - image:hide()                            |snacks-image-module-image:hide()|
   - image:ready()                          |snacks-image-module-image:ready()|
   - image:render()                        |snacks-image-module-image:render()|
@@ -86,9 +87,11 @@ to the supported formats (all except PNG).
     ---@class snacks.Image
     ---@field id number
     ---@field buf number
+    ---@field req_buf number
     ---@field wins table<number, snacks.image.Dim>
     ---@field opts snacks.image.Config
     ---@field file string
+    ---@field augroup number
     ---@field _convert uv.uv_process_t?
     Snacks.image = {}
 <
@@ -111,10 +114,18 @@ to the supported formats (all except PNG).
 <
 
 
+IMAGE:CLOSE()                              *snacks-image-module-image:close()*
+
+>lua
+    image:close()
+<
+
+
 IMAGE:CONVERT()                          *snacks-image-module-image:convert()*
 
 >lua
-    image:convert()
+    ---@param file string
+    image:convert(file)
 <
 
 
@@ -125,20 +136,17 @@ IMAGE:CREATE()                            *snacks-image-module-image:create()*
 <
 
 
-IMAGE:DIM()                                  *snacks-image-module-image:dim()*
+IMAGE:GRID_SIZE()                      *snacks-image-module-image:grid_size()*
 
 >lua
-    ---@param win number
-    ---@return snacks.image.Dim
-    image:dim(win)
+    image:grid_size()
 <
 
 
 IMAGE:HIDE()                                *snacks-image-module-image:hide()*
 
 >lua
-    ---@param win? number
-    image:hide(win)
+    image:hide()
 <
 
 
@@ -151,9 +159,12 @@ IMAGE:READY()                              *snacks-image-module-image:ready()*
 
 IMAGE:RENDER()                            *snacks-image-module-image:render()*
 
+Renders the unicode placeholder grid in the buffer
+
 >lua
-    ---@param win number
-    image:render(win)
+    ---@param width number
+    ---@param height number
+    image:render(width, height)
 <
 
 

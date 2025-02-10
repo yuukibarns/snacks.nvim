@@ -4,6 +4,7 @@
 ---@field wins table<number, snacks.image.Dim>
 ---@field opts snacks.image.Config
 ---@field file string
+---@field augroup number
 ---@field _convert uv.uv_process_t?
 local M = {}
 M.__index = M
@@ -12,6 +13,13 @@ M.meta = {
   desc = "Image viewer using Kitty Graphics Protocol, supported by `kitty`, `weztermn` and `ghostty`",
   needs_setup = true,
 }
+
+if os.getenv("TMUX") then
+  local ok, out = pcall(vim.fn.system, { "tmux", "set", "-p", "allow-passthrough", "on" })
+  if vim.v.shell_error ~= 0 then
+    Snacks.notify.error({ "Failed to enable `allow-passthrough` for `tmux`:", out }, { title = "Image" })
+  end
+end
 
 ---@class snacks.image.Config
 ---@field file? string
@@ -66,11 +74,11 @@ function M.new(buf, opts)
   self.buf = buf
   self.wins = {}
 
-  local group = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true })
+  self.augroup = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true })
   vim.api.nvim_create_autocmd(
     { "VimResized", "BufWinEnter", "WinClosed", "BufWinLeave", "WinNew", "BufEnter", "BufLeave", "WinResized" },
     {
-      group = group,
+      group = self.augroup,
       buffer = self.buf,
       callback = function()
         vim.schedule(function()
@@ -81,13 +89,12 @@ function M.new(buf, opts)
   )
 
   vim.api.nvim_create_autocmd("BufWipeout", {
-    group = group,
+    group = self.augroup,
     buffer = self.buf,
     callback = function()
       vim.schedule(function()
-        self:hide()
+        self:close()
       end)
-      pcall(vim.api.nvim_del_augroup_by_id, group)
     end,
   })
 
@@ -116,10 +123,18 @@ function M:grid_size()
   return width, height
 end
 
+function M:close()
+  self:hide()
+  pcall(vim.api.nvim_del_augroup_by_id, self.augroup)
+end
+
 --- Renders the unicode placeholder grid in the buffer
 ---@param width number
 ---@param height number
 function M:render(width, height)
+  if not self:ready() then
+    return
+  end
   local hl = "SnacksImage" .. self.id
   -- image id is coded in the foreground color
   vim.api.nvim_set_hl(0, hl, { fg = self.id })
@@ -158,12 +173,11 @@ function M:update()
     a = "p",
     U = 1,
     i = self.id,
+    C = 1,
     c = width,
     r = height,
   })
-  vim.schedule(function()
-    self:render(width, height)
-  end)
+  self:render(width, height)
 end
 
 function M:ready()
@@ -174,7 +188,6 @@ function M:create()
   -- create the image
   self:request({
     f = 100,
-    s = 2,
     t = "f",
     i = self.id,
     data = self.file,
@@ -224,7 +237,11 @@ function M:request(opts)
     msg[#msg + 1] = vim.base64.encode(opts.data)
   end
   local data = "\27_G" .. table.concat(msg) .. "\27\\"
-  io.write(data)
+  -- tmux passthrough
+  if os.getenv("TMUX") then
+    data = string.format("\027Ptmux;%s\027\\", data:gsub("\027", "\027\027"))
+  end
+  io.stdout:write(data)
 end
 
 ---@param file string
