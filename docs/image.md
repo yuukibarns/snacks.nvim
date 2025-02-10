@@ -63,7 +63,6 @@ to the supported formats (all except PNG).
 ---@class snacks.Image
 ---@field id number
 ---@field buf number
----@field req_buf number
 ---@field wins table<number, snacks.image.Dim>
 ---@field opts snacks.image.Config
 ---@field file string
