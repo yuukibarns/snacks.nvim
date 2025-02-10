@@ -60,7 +60,7 @@ to the supported formats (all except PNG).
 ## 📦 Module
 
 ```lua
----@class snacks.Image
+---@class snacks.image
 ---@field id number
 ---@field buf number
 ---@field wins table<number, snacks.image.Dim>
@@ -69,6 +69,12 @@ to the supported formats (all except PNG).
 ---@field augroup number
 ---@field _convert uv.uv_process_t?
 Snacks.image = {}
+```
+
+### `Snacks.image.health()`
+
+```lua
+Snacks.image.health()
 ```
 
 ### `Snacks.image.new()`
@@ -84,6 +90,19 @@ Snacks.image.new(buf, opts)
 ```lua
 ---@param file string
 Snacks.image.supports(file)
+```
+
+### `Snacks.image.supports_file()`
+
+```lua
+---@param file string
+Snacks.image.supports_file(file)
+```
+
+### `Snacks.image.supports_terminal()`
+
+```lua
+Snacks.image.supports_terminal()
 ```
 
 ### `image:close()`
