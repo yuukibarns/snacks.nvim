@@ -140,6 +140,9 @@ function M.new(opts)
     if self.closed then
       return true
     end
+    if not self.root:on_current_tab() then
+      return
+    end
     local sp = vim.fn.screenpos(self.root.win, 1, 1)
     if not vim.deep_equal(sp, self.screenpos) then
       self.screenpos = sp
@@ -151,6 +154,9 @@ function M.new(opts)
 
   -- update layout on VimResized
   self.root:on("VimResized", function()
+    if not self.root:on_current_tab() then
+      return
+    end
     self:update()
   end)
   if self.opts.show ~= false then

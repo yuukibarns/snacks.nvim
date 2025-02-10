@@ -67,12 +67,14 @@ function M:__newindex(key, value)
   end
 end
 
----@param opts? {source?: string}
+---@param opts? {source?: string, tab?: boolean}
 function M.get(opts)
   opts = opts or {}
   local ret = {} ---@type snacks.Picker[]
   for picker in pairs(M._active) do
-    if not opts.source or picker.opts.source == opts.source then
+    local want = (not opts.source or picker.opts.source == opts.source)
+      and (opts.tab == false or picker:on_current_tab())
+    if want then
       ret[#ret + 1] = picker
     end
   end
@@ -240,8 +242,7 @@ function M:is_focused()
 end
 
 function M:on_current_tab()
-  return self.layout:valid()
-    and vim.api.nvim_get_current_tabpage() == vim.api.nvim_win_get_tabpage(self.layout.root.win)
+  return self.layout:valid() and self.layout.root:on_current_tab()
 end
 
 --- Execute the callback in normal mode.
