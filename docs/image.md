@@ -50,6 +50,7 @@ to the supported formats (all except PNG).
 ---@field file? string
 ---@field wo? vim.wo|{} options for windows showing the image
 {
+  force = false, -- try displaying the image, even if the terminal does not support it
   wo = {
     wrap = false,
     number = false,
@@ -105,6 +106,12 @@ Snacks.image.health()
 ---@param buf number
 ---@param opts? snacks.image.Config
 Snacks.image.new(buf, opts)
+```
+
+### `Snacks.image.setup_mux()`
+
+```lua
+Snacks.image.setup_mux()
 ```
 
 ### `Snacks.image.supports()`
