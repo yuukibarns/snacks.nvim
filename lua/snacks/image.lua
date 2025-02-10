@@ -122,13 +122,11 @@ function M.new(buf, opts)
     }
   )
 
-  vim.api.nvim_create_autocmd("BufWipeout", {
+  vim.api.nvim_create_autocmd({ "BufWipeout", "ExitPre" }, {
     group = self.augroup,
     buffer = self.buf,
     callback = function()
-      vim.schedule(function()
-        self:close()
-      end)
+      self:close()
     end,
   })
 
