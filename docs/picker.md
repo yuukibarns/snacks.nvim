@@ -942,6 +942,8 @@ Neovim commands
 ---@field diagnostics? boolean show diagnostics
 ---@field diagnostics_open? boolean show recursive diagnostics for open directories
 ---@field watch? boolean watch for file changes
+---@field exclude? string[] exclude glob patterns
+---@field include? string[] include glob patterns. These take precedence over `exclude`, `ignored` and `hidden`
 {
   finder = "explorer",
   sort = { fields = { "sort" } },
