@@ -261,7 +261,7 @@ function M:update()
   for _, win in ipairs(self:wins()) do
     Snacks.util.wo(win, self.opts.wo or {})
   end
-  if not supports_unicode_placeholder or true then
+  if not supports_unicode_placeholder then
     return self:render_fallback()
   end
   local width, height = self:grid_size()
