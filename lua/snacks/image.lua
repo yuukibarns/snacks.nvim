@@ -358,12 +358,16 @@ function M.supports_terminal()
   if opts.force then
     return true
   end
-  local TERM = os.getenv("TERM") or ""
   local term ---@type string?
-  for _, t in ipairs(supported_terminals) do
-    if TERM:find(t) then
-      term = t
-      break
+  if os.getenv("WEZTERM_PANE") then
+    term = "wezterm"
+  else
+    local TERM = os.getenv("TERM") or ""
+    for _, t in ipairs(supported_terminals) do
+      if TERM:find(t) then
+        term = t
+        break
+      end
     end
   end
   if not term then
