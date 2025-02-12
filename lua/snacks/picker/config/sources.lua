@@ -380,6 +380,7 @@ M.highlights = {
   finder = "vim_highlights",
   format = "hl",
   preview = "preview",
+  confirm = "close",
 }
 
 ---@class snacks.picker.icons.Config: snacks.picker.Config
