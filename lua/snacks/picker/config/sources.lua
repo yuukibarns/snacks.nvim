@@ -630,6 +630,7 @@ M.notifications = {
   format = "notification",
   preview = "preview",
   formatters = { severity = { level = true } },
+  confirm = "close",
 }
 
 -- List all available sources
