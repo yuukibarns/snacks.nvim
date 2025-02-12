@@ -1713,6 +1713,7 @@ vim.tbl_extend("force", {}, M.lsp_symbols, {
   format = "notification",
   preview = "preview",
   formatters = { severity = { level = true } },
+  confirm = "close",
 }
 ```
 
