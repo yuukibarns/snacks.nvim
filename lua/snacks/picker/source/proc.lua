@@ -38,6 +38,22 @@ function M.proc(opts, ctx)
       end
     end
 
+    if ctx.picker.opts.debug.proc then
+      vim.schedule(function()
+        local args = {} ---@type string[]
+        for _, arg in ipairs(opts.args or {}) do
+          table.insert(args, arg:find("[$%s]") and vim.fn.shellescape(arg) or arg)
+        end
+        Snacks.notify.info(
+          ("- **cwd**: `%s`\n```sh\n%s %s\n```"):format(
+            vim.fs.normalize(opts.cwd or uv.cwd() or "."),
+            opts.cmd,
+            table.concat(args, " ")
+          )
+        )
+      end)
+    end
+
     local sep = opts.sep or "\n"
     local aborted = false
     local stdout = assert(uv.new_pipe())
