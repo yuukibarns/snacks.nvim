@@ -155,6 +155,10 @@ function M.proc(opts, ctx)
         process(queue:pop())
       end
     end
+    -- process the last line
+    if prev then
+      cb({ text = prev })
+    end
   end
 end
 
