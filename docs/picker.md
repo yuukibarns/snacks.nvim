@@ -1323,6 +1323,7 @@ Neovim help tags
   finder = "vim_highlights",
   format = "hl",
   preview = "preview",
+  confirm = "close",
 }
 ```
 
