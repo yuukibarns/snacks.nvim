@@ -24,6 +24,7 @@ function M.proc(opts, ctx)
     opts = Snacks.config.merge(unpack(vim.deepcopy(opts))) --[[@as snacks.picker.proc.Config]]
     opts.transform = transform
   end
+  ---@cast opts snacks.picker.proc.Config
   assert(opts.cmd, "`opts.cmd` is required")
   ---@async
   return function(cb)
@@ -39,19 +40,7 @@ function M.proc(opts, ctx)
     end
 
     if ctx.picker.opts.debug.proc then
-      vim.schedule(function()
-        local args = {} ---@type string[]
-        for _, arg in ipairs(opts.args or {}) do
-          table.insert(args, arg:find("[$%s]") and vim.fn.shellescape(arg) or arg)
-        end
-        Snacks.notify.info(
-          ("- **cwd**: `%s`\n```sh\n%s %s\n```"):format(
-            vim.fs.normalize(opts.cwd or uv.cwd() or "."),
-            opts.cmd,
-            table.concat(args, " ")
-          )
-        )
-      end)
+      M.debug(opts)
     end
 
     local sep = opts.sep or "\n"
@@ -160,6 +149,29 @@ function M.proc(opts, ctx)
       cb({ text = prev })
     end
   end
+end
+
+---@param opts {cmd: string, args?: string[], cwd?: string}
+function M.debug(opts)
+  vim.schedule(function()
+    local lines = { opts.cmd } ---@type string[]
+    for _, arg in ipairs(opts.args or {}) do
+      arg = arg:find("[$%s]") and vim.fn.shellescape(arg) or arg
+      if #arg + #lines[#lines] > 40 then
+        lines[#lines] = lines[#lines] .. " \\"
+        table.insert(lines, "  " .. arg)
+      else
+        lines[#lines] = lines[#lines] .. " " .. arg
+      end
+    end
+    Snacks.notify.info(
+      ("- **cwd**: `%s`\n```sh\n%s\n```"):format(
+        vim.fn.fnamemodify(vim.fs.normalize(opts.cwd or uv.cwd() or "."), ":~"),
+        table.concat(lines, "\n")
+      ),
+      { id = "snacks.picker.proc." .. opts.cmd, title = "Snacks Proc" }
+    )
+  end)
 end
 
 return M
