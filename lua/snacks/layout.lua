@@ -462,8 +462,8 @@ function M:update_win(win, parent)
     w.opts.win = nil
   end
   -- adjust max width / height
-  w.opts.max_width = math.min(parent.width, w.opts.max_width or parent.width)
-  w.opts.max_height = math.min(parent.height, w.opts.max_height or parent.height)
+  w.opts.max_width = math.max(math.min(parent.width, w.opts.max_width or parent.width), 1)
+  w.opts.max_height = math.max(math.min(parent.height, w.opts.max_height or parent.height), 1)
   -- resolve width / height relative to parent box
   local dim = w:dim(parent)
   w.opts.width, w.opts.height = dim.width, dim.height
