@@ -47,8 +47,8 @@ FEATURES                                    *snacks.nvim-snacks.nvim-features*
                    (e.g. GitHub, GitLab, Bitbucket)      
 
   image            Image viewer using Kitty Graphics     
-                   Protocol, supported by kitty,         
-                   weztermn and ghostty                  
+                   Protocol, supported by kitty, wezterm 
+                   and ghostty                           
 
   indent           Indentguides and scopes               
 
