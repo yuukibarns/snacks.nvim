@@ -347,7 +347,7 @@ end
 ---@param idx number
 ---@return snacks.picker.Item?
 function M:get(idx)
-  return self.topk:get(idx) or self.items[idx] or self.picker.finder.items[idx]
+  return self.topk:get(idx) or self.items[idx]
 end
 
 function M:height()
