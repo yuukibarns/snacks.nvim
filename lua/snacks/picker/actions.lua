@@ -11,6 +11,7 @@ local M = {}
 ---@class snacks.picker.yank.Action: snacks.picker.Action
 ---@field reg? string
 ---@field field? string
+---@field notify? boolean
 
 ---@enum (key) snacks.picker.EditCmd
 local edit_cmd = {
@@ -435,9 +436,11 @@ function M.yank(picker, item, action)
     local reg = action.reg or vim.v.register
     local value = item[action.field] or item.data or item.text
     vim.fn.setreg(reg, value)
-    local buf = item.buf or vim.api.nvim_win_get_buf(picker.main)
-    local ft = vim.bo[buf].filetype
-    Snacks.notify(("Yanked to register `%s`:\n```%s\n%s\n```"):format(reg, ft, value), { title = "Snacks Picker" })
+    if action.notify ~= false then
+      local buf = item.buf or vim.api.nvim_win_get_buf(picker.main)
+      local ft = vim.bo[buf].filetype
+      Snacks.notify(("Yanked to register `%s`:\n```%s\n%s\n```"):format(reg, ft, value), { title = "Snacks Picker" })
+    end
   end
 end
 M.copy = M.yank
