@@ -528,7 +528,7 @@ function M.help(picker, item, action)
     local file = Snacks.picker.util.path(item) or ""
     if package.loaded.lazy then
       local plugin = file:match("/([^/]+)/doc/")
-      if plugin then
+      if plugin and require("lazy.core.config").plugins[plugin] then
         require("lazy").load({ plugins = { plugin } })
       end
     end
