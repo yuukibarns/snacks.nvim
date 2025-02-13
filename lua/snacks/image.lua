@@ -440,6 +440,7 @@ function M:ready()
     and self.buf
     and vim.api.nvim_buf_is_valid(self.buf)
     and (not self._convert or self._convert:is_closing())
+    and (self.file and vim.fn.filereadable(self.file) == 1)
 end
 
 -- create the image
@@ -460,6 +461,9 @@ function M:convert(file)
   -- convert urls and non-png files to png
   if not file:find("^https?://") and file:find("%.png$") then
     return file
+  end
+  if not file:find("^%w%w+://") then
+    file = vim.fs.normalize(file)
   end
   local fin = file .. "[0]"
   local root = vim.fn.stdpath("cache") .. "/snacks/image"
@@ -522,11 +526,12 @@ end
 ---@param file string
 ---@return number width, number height
 function M.dim(file)
+  file = vim.fs.normalize(file)
   if dims[file] then
     return dims[file].width, dims[file].height
   end
   -- extract header with IHDR chunk
-  local fd = assert(io.open(vim.fs.normalize(file), "rb"), "Failed to open file: " .. file)
+  local fd = assert(io.open(file, "rb"), "Failed to open file: " .. file)
   local header = fd:read(24) ---@type string
   fd:close()
 
