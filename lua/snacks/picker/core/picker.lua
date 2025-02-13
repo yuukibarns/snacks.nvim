@@ -507,7 +507,9 @@ function M:show()
   end
   self.shown = true
   self.layout:show()
-  self:focus()
+  if self.opts.focus ~= false then
+    self:focus()
+  end
   if self.opts.on_show then
     self.opts.on_show(self)
   end
