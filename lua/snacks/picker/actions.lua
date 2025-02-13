@@ -463,14 +463,14 @@ end
 --- and moves the cursor to the next item.
 function M.select_and_next(picker)
   picker.list:select()
-  M.list_down(picker)
+  picker.list:_move(vim.v.count1)
 end
 
 --- Toggles the selection of the current item,
 --- and moves the cursor to the prev item.
 function M.select_and_prev(picker)
   picker.list:select()
-  M.list_up(picker)
+  picker.list:_move(-vim.v.count1)
 end
 
 --- Selects all items in the list.
