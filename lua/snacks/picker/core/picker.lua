@@ -658,6 +658,9 @@ function M:close()
   self:hist_record(true)
   self.closed = true
 
+  for toggle in pairs(self.opts.toggles) do
+    self.init_opts[toggle] = self.opts[toggle]
+  end
   M.last = {
     opts = self.init_opts or {},
     selected = self:selected({ fallback = false }),
