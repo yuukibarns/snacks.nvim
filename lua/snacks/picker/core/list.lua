@@ -169,9 +169,14 @@ end
 
 --- Sets the target cursor/top for the next render.
 --- Useful to keep the cursor/top, right before triggering a `find`.
+--- If an existing target is set, it will be kept, unless `opts.force` is set.
 ---@param cursor? number
 ---@param top? number
-function M:set_target(cursor, top)
+---@param opts? {force?: boolean}
+function M:set_target(cursor, top, opts)
+  if self.target and not (opts and opts.force) then
+    return
+  end
   self.target = { cursor = cursor or self.cursor, top = top or self.top }
 end
 
