@@ -326,24 +326,9 @@ function M.check(win)
       end
 
       -- move the cursor vertically
-      local v = vim.fn.winsaveview()
       local move = math.floor(value * math.abs(move_to - move_from) / scrolls) -- delta to move this step
       local move_target = move_from + ((move_to < move_from) and -1 or 1) * move -- target line
-      local wl, _wl = vim.fn.winline(), 0
-      local move_down = wl < move_target
-      while wl ~= move_target do
-        vim.cmd(("normal! %s"):format(move_down and "j" or "k"))
-        wl, _wl = vim.fn.winline(), wl
-        if _wl == wl or wl == move_target then
-          break
-        end
-        -- overshot?
-        if (move_down and wl > move_target) or (not move_down and wl < move_target) then
-          vim.cmd(("normal! %s"):format(move_down and "k" or "j"))
-          vim.fn.winrestview({ topline = v.topline, topfill = v.topfill })
-          break
-        end
-      end
+      vim.cmd(("normal! %dH"):format(move_target))
 
       -- fix count
       if vim.v.count ~= count then
