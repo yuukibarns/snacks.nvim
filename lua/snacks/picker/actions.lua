@@ -289,15 +289,16 @@ end
 
 function M.git_stage(picker)
   local items = picker:selected({ fallback = true })
-  local cursor = picker.list.cursor
+  local done = 0
   for _, item in ipairs(items) do
     local cmd = item.status:sub(2) == " " and { "git", "restore", "--staged", item.file } or { "git", "add", item.file }
     Snacks.picker.util.cmd(cmd, function(data, code)
-      picker:find({
-        on_done = function()
-          picker.list:view(cursor + 1)
-        end,
-      })
+      done = done + 1
+      if done == #items then
+        picker.list:set_selected()
+        picker.list:set_target()
+        picker:find()
+      end
     end, { cwd = item.cwd })
   end
 end
