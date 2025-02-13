@@ -322,17 +322,17 @@ function M.check(win)
       local scroll = scroll_target - scrolled --[[@as number]]
       if scroll > 0 then
         scrolled = scrolled + scroll
-        vim.cmd(("normal! %d%s"):format(scroll, down and SCROLL_DOWN or SCROLL_UP))
+        vim.cmd(("keepjumps normal! %d%s"):format(scroll, down and SCROLL_DOWN or SCROLL_UP))
       end
 
       -- move the cursor vertically
       local move = math.floor(value * math.abs(move_to - move_from) / scrolls) -- delta to move this step
       local move_target = move_from + ((move_to < move_from) and -1 or 1) * move -- target line
-      vim.cmd(("normal! %dH"):format(move_target))
+      vim.cmd(("keepjumps normal! %dH"):format(move_target))
 
       -- fix count
       if vim.v.count ~= count then
-        vim.cmd(("normal! %dzh"):format(count))
+        vim.cmd(("keepjumps normal! %dzh"):format(count))
       end
 
       -- move the cursor horizontally
