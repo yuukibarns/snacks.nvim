@@ -556,7 +556,8 @@ end
 function M:render()
   stats.render = stats.render + 1
   if self.target then
-    self:view(self.target.cursor, self.target.top, false)
+    self:_scroll(self.target.top, true, false)
+    self:_move(self.target.cursor, true, false)
     if not self.picker:is_active() then
       self.target = nil
     end
