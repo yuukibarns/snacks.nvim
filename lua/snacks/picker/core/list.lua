@@ -150,14 +150,16 @@ function M.new(picker)
   return self
 end
 
+--- View the list at the given cursor and top.
+--- These are the normalized values, so are unaffected by reverse.
 ---@param cursor number
 ---@param top? number
 ---@param render? boolean
 function M:view(cursor, top, render)
   if top then
-    self:scroll(top, true, false)
+    self:_scroll(top, true, false)
   end
-  self:move(cursor, true, render)
+  self:_move(cursor, true, render)
   if self.cursor < cursor then
     self.target = { cursor = cursor, top = top }
   else
@@ -556,8 +558,7 @@ end
 function M:render()
   stats.render = stats.render + 1
   if self.target then
-    self:_scroll(self.target.top, true, false)
-    self:_move(self.target.cursor, true, false)
+    self:view(self.target.cursor, self.target.top, false)
     if not self.picker:is_active() then
       self.target = nil
     end
