@@ -658,6 +658,8 @@ end
 function M.markdown(buf)
   buf = buf or 0
   buf = buf == 0 and vim.api.nvim_get_current_buf() or buf
+  local file = vim.api.nvim_buf_get_name(buf)
+  local dir = vim.fs.dirname(file)
   assert(vim.bo[buf].filetype == "markdown", "`Image.markdown`: buf should be a markdown buffer")
   local images = {} ---@type table<string, snacks.image>
   local parser = vim.treesitter.get_parser(buf)
@@ -677,6 +679,9 @@ function M.markdown(buf)
         local pos = { range[1] + 1, range[2] }
         local nid = node:id()
         if not images[nid] then
+          if src:find("^%.") then
+            src = vim.fs.normalize(dir .. "/" .. src)
+          end
           images[nid] = M.new(buf, src, { pos = pos, max_width = 80 })
         else
           images[nid]:update()
