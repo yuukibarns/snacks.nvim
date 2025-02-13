@@ -116,7 +116,7 @@ function M:refresh(picker)
     self.win:update()
   end
   vim.schedule(function()
-    self:show(picker)
+    picker:show_preview()
   end)
 end
 
