@@ -37,6 +37,10 @@ M.meta = {
 ---@field wo? vim.wo|{} options for windows showing the image
 ---@field bo? vim.bo|{} options for the image buffer
 ---@field formats? string[]
+--- Resolves a reference to an image with src in a file (currently markdown only).
+--- Return the absolute path or url to the image.
+--- When `nil`, the path is resolved relative to the file.
+---@field resolve? fun(file: string, src: string): string?
 local defaults = {
   formats = { "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif", "mp4", "mov", "avi", "mkv", "webm" },
   force = false, -- try displaying the image, even if the terminal does not support it
@@ -667,6 +671,14 @@ function M.markdown(buf)
   parser:parse(true)
   local query = vim.treesitter.query.parse("markdown_inline", "(image (link_destination) @image)")
 
+  ---@param src string
+  local function resolve(src)
+    if src:find("^%.") then
+      src = vim.fs.normalize(dir .. "/" .. src)
+    end
+    return src
+  end
+
   local function update()
     local found = {} ---@type table<string, boolean>
     parser:for_each_tree(function(tstree)
@@ -679,9 +691,7 @@ function M.markdown(buf)
         local pos = { range[1] + 1, range[2] }
         local nid = node:id()
         if not images[nid] then
-          if src:find("^%.") then
-            src = vim.fs.normalize(dir .. "/" .. src)
-          end
+          src = config.resolve and config.resolve(file, src) or resolve(src)
           images[nid] = M.new(buf, src, { pos = pos, max_width = 80 })
         else
           images[nid]:update()
