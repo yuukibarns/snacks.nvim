@@ -47,6 +47,7 @@ to the supported formats (all except PNG).
 
 ```lua
 ---@class snacks.image.Config
+---@field enabled? boolean enable image viewer
 ---@field wo? vim.wo|{} options for windows showing the image
 ---@field bo? vim.bo|{} options for the image buffer
 ---@field formats? string[]
@@ -77,6 +78,7 @@ to the supported formats (all except PNG).
     spell = false,
     statuscolumn = "",
   },
+  env = {},
 }
 ```
 
@@ -97,6 +99,7 @@ to the supported formats (all except PNG).
 ---@field setup? fun(): boolean?
 ---@field transform? fun(data: string): string
 ---@field detected? boolean
+---@field remote? boolean this is a remote client, so full transfer of the image data is required
 ```
 
 ```lua
@@ -111,24 +114,6 @@ to the supported formats (all except PNG).
 ```
 
 ## 📦 Module
-
-```lua
----@class snacks.image
----@field id number
----@field ns number
----@field buf number
----@field opts snacks.image.Opts
----@field file string
----@field src string
----@field augroup number
----@field closed? boolean
----@field _loc? snacks.image.Loc
----@field _state? snacks.image.State
----@field _convert uv.uv_process_t?
----@field inline? boolean render the image inline in the buffer
----@field extmark_id? number
-Snacks.image = {}
-```
 
 ### `Snacks.image.attach()`
 
@@ -161,19 +146,18 @@ Snacks.image.env()
 Snacks.image.markdown(buf)
 ```
 
-### `Snacks.image.new()`
-
-```lua
----@param buf number
----@param opts? snacks.image.Opts
-Snacks.image.new(buf, src, opts)
-```
-
 ### `Snacks.image.request()`
 
 ```lua
 ---@param opts table<string, string|number>|{data?: string}
 Snacks.image.request(opts)
+```
+
+### `Snacks.image.set_cursor()`
+
+```lua
+---@param pos {[1]: number, [2]: number}
+Snacks.image.set_cursor(pos)
 ```
 
 ### `Snacks.image.supports()`
@@ -200,85 +184,4 @@ Check if the terminal supports the kitty graphics protocol
 
 ```lua
 Snacks.image.supports_terminal()
-```
-
-### `image:close()`
-
-```lua
-image:close()
-```
-
-### `image:convert()`
-
-```lua
----@param file string
-image:convert(file)
-```
-
-### `image:create()`
-
-create the image
-
-```lua
-image:create()
-```
-
-### `image:debug()`
-
-```lua
-image:debug(...)
-```
-
-### `image:hide()`
-
-```lua
-image:hide()
-```
-
-### `image:ready()`
-
-```lua
-image:ready()
-```
-
-### `image:render_fallback()`
-
-```lua
----@param state snacks.image.State
-image:render_fallback(state)
-```
-
-### `image:render_grid()`
-
-Renders the unicode placeholder grid in the buffer
-
-```lua
----@param loc snacks.image.Loc
-image:render_grid(loc)
-```
-
-### `image:set_cursor()`
-
-```lua
----@param pos {[1]: number, [2]: number}
-image:set_cursor(pos)
-```
-
-### `image:state()`
-
-```lua
-image:state()
-```
-
-### `image:update()`
-
-```lua
-image:update()
-```
-
-### `image:wins()`
-
-```lua
----@return number[]
-image:wins()
 ```
