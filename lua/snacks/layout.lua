@@ -451,7 +451,7 @@ function M:update_win(win, parent)
       win = self.root.win,
       backdrop = false,
       resize = false,
-      zindex = self.root.opts.zindex + win.depth,
+      zindex = (self.opts.layout.zindex or 50) + win.depth + 1,
       w = { snacks_layout = true },
     }
   )
