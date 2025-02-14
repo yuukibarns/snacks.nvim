@@ -465,7 +465,6 @@ function Placement:render_grid(loc)
   end
 
   if self.opts.inline then
-    dd(loc, self.opts)
     vim.api.nvim_buf_clear_namespace(self.buf, self.ns, 0, -1)
     self.extmark_id = vim.api.nvim_buf_set_extmark(self.buf, self.ns, loc[1] - 1, loc[2], {
       id = self.extmark_id,
