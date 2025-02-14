@@ -29,7 +29,7 @@ function M.symbol_kind(kind)
       end
     end
   end
-  return kinds[kind]
+  return kinds[kind] or "Unknown"
 end
 
 --- Neovim 0.11 uses a lua class for clients, while older versions use a table.
