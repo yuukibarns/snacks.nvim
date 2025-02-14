@@ -270,6 +270,7 @@ local defaults = {
         ["<c-k>"] = "list_up",
         ["<c-n>"] = "list_down",
         ["<c-p>"] = "list_up",
+        ["<c-q>"] = "qflist",
         ["<c-s>"] = "edit_split",
         ["<c-u>"] = "list_scroll_up",
         ["<c-v>"] = "edit_vsplit",
