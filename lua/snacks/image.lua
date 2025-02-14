@@ -820,7 +820,6 @@ function M.markdown(buf)
   vim.b[buf].snacks_image_attached = true
   local file = vim.api.nvim_buf_get_name(buf)
   local dir = vim.fs.dirname(file)
-  assert(vim.bo[buf].filetype == "markdown", "`Image.markdown`: buf should be a markdown buffer")
   local parser = vim.treesitter.get_parser(buf)
   assert(parser, "`Image.markdown`: treesitter parser not found")
   parser:parse(true)
