@@ -1,7 +1,6 @@
 ---@module 'trouble'
 ---@diagnostic disable: inject-field
 local Item = require("trouble.item")
--- test
 
 ---@type trouble.Source
 local M = {}
