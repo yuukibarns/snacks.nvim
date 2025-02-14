@@ -62,6 +62,8 @@ to the supported formats (all except PNG).
     -- enable image viewer for markdown files
     -- if your env doesn't support unicode placeholders, this will be disabled
     enabled = true,
+    inline = true, -- render the image inline in the buffer (takes precedence over `opts.float` on supported terminals)
+    float = true, -- render the image in a floating window
     max_width = 80,
     max_height = 40,
   },
@@ -79,6 +81,25 @@ to the supported formats (all except PNG).
     statuscolumn = "",
   },
   env = {},
+}
+```
+
+## 🎨 Styles
+
+Check the [styles](https://github.com/folke/snacks.nvim/blob/main/docs/styles.md)
+docs for more information on how to customize these styles
+
+### `snacks_image`
+
+```lua
+{
+  relative = "cursor",
+  border = "rounded",
+  focusable = false,
+  backdrop = false,
+  row = 1,
+  col = 1,
+  -- width/height are automatically set by the image size unless specified below
 }
 ```
 
@@ -105,12 +126,15 @@ to the supported formats (all except PNG).
 ```lua
 ---@class snacks.image.Opts
 ---@field pos? snacks.image.Pos (row, col) (1,0)-indexed. defaults to the top-left corner
+---@field inline? boolean render the image inline in the buffer
 ---@field width? number
 ---@field min_width? number
 ---@field max_width? number
 ---@field height? number
 ---@field min_height? number
 ---@field max_height? number
+---@field on_update? fun(placement: snacks.image.Placement)
+---@field on_update_pre? fun(placement: snacks.image.Placement)
 ```
 
 ## 📦 Module

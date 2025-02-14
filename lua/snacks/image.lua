@@ -36,6 +36,8 @@ local defaults = {
     -- enable image viewer for markdown files
     -- if your env doesn't support unicode placeholders, this will be disabled
     enabled = true,
+    inline = true, -- render the image inline in the buffer (takes precedence over `opts.float` on supported terminals)
+    float = true, -- render the image in a floating window
     max_width = 80,
     max_height = 40,
   },
@@ -57,14 +59,27 @@ local defaults = {
 }
 local config = Snacks.config.get("image", defaults)
 
+Snacks.config.style("snacks_image", {
+  relative = "cursor",
+  border = "rounded",
+  focusable = false,
+  backdrop = false,
+  row = 1,
+  col = 1,
+  -- width/height are automatically set by the image size unless specified below
+})
+
 ---@class snacks.image.Opts
 ---@field pos? snacks.image.Pos (row, col) (1,0)-indexed. defaults to the top-left corner
+---@field inline? boolean render the image inline in the buffer
 ---@field width? number
 ---@field min_width? number
 ---@field max_width? number
 ---@field height? number
 ---@field min_height? number
 ---@field max_height? number
+---@field on_update? fun(placement: snacks.image.Placement)
+---@field on_update_pre? fun(placement: snacks.image.Placement)
 
 ---@type snacks.image.Env[]
 local environments = {
@@ -121,6 +136,7 @@ local uv = vim.uv or vim.loop
 local images = {} ---@type table<string, snacks.Image>
 ---@type table<number, string>
 local positions = {}
+local have_magick ---@type boolean?
 setmetatable(positions, {
   __index = function(_, k)
     positions[k] = vim.fn.nr2char(tonumber(diacritics[k], 16))
@@ -134,6 +150,7 @@ setmetatable(positions, {
 ---@field id number image id. unique per nvim instance and file
 ---@field sent? boolean image data is sent
 ---@field placements table<number, snacks.image.Placement> image placements
+---@field augroup number
 ---@field _convert uv.uv_process_t?
 local Image = {}
 Image.__index = Image
@@ -162,13 +179,7 @@ function Image.new(src)
       self:on_ready()
     end)
   end
-  vim.api.nvim_create_autocmd({ "ExitPre" }, {
-    group = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true }),
-    once = true,
-    callback = function()
-      self:del()
-    end,
-  })
+  self.augroup = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true })
 
   return self
 end
@@ -188,32 +199,33 @@ function Image:ready()
 end
 
 function Image:convert()
-  if self.src:find("^file://") then
-    self.src = vim.uri_to_fname(self.src)
+  local src = self.src
+  if src:find("^file://") then
+    src = vim.uri_to_fname(src)
   end
   -- convert urls and non-png files to png
-  if not self.src:find("^https?://") and self.src:find("%.png$") then
-    return self.src
+  if not src:find("^https?://") and src:find("%.png$") then
+    return src
   end
-  if not self.src:find("^%w%w+://") then
-    self.src = vim.fs.normalize(self.src)
+  if not src:find("^%w%w+://") then
+    src = vim.fs.normalize(src)
   end
-  local fin = self.src .. "[0]"
+  local fin = src .. "[0]"
   local root = vim.fn.stdpath("cache") .. "/snacks/image"
   vim.fn.mkdir(root, "p")
-  self.src = root .. "/" .. Snacks.util.file_encode(fin) .. ".png"
-  if vim.fn.filereadable(self.src) == 1 then
-    return self.src
+  src = root .. "/" .. Snacks.util.file_encode(fin) .. ".png"
+  if vim.fn.filereadable(src) == 1 then
+    return src
   end
-  local opts = { args = { fin, self.src } }
-  self._convert = uv.spawn("magick", opts, function(code)
+  local opts = { args = { fin, src } }
+  have_magick = have_magick == nil and vim.fn.executable("magick") == 1 or have_magick
+  self._convert = uv.spawn(have_magick and "magick" or "convert", opts, function(code)
     self._convert:close()
-    if code ~= 0 then
-      return -- silently fail
+    if code == 0 then
+      vim.schedule(function()
+        self:on_ready()
+      end)
     end
-    vim.schedule(function()
-      self:on_ready()
-    end)
   end)
   return self.src
 end
@@ -259,7 +271,6 @@ function Image:send()
       uv.sleep(1)
     end
   end
-
   self:on_send()
 end
 
@@ -288,6 +299,7 @@ function Image:del(pid)
   if not next(self.placements) then
     M.request({ a = "d", d = "i", i = self.id })
     self.sent = false
+    pcall(vim.api.nvim_del_autocmd_by_id, self.augroup)
   end
 end
 
@@ -343,7 +355,6 @@ end
 ---@field opts snacks.image.Opts
 ---@field augroup number
 ---@field closed? boolean
----@field inline? boolean render the image inline in the buffer
 ---@field extmark_id? number
 ---@field _loc? snacks.image.Loc
 ---@field _state? snacks.image.State
@@ -362,10 +373,6 @@ function Placement.new(buf, src, opts)
   self.img:place(self)
   self.opts = opts or {}
   self.buf = buf
-  self.inline = true
-  if vim.bo[buf].filetype == "image" then
-    self.inline = false
-  end
   self.ns = vim.api.nvim_create_namespace("snacks.image." .. self.id)
   self.augroup = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true })
 
@@ -395,6 +402,13 @@ function Placement.new(buf, src, opts)
       vim.schedule(function()
         self:close()
       end)
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "ExitPre" }, {
+    group = self.augroup,
+    once = true,
+    callback = function()
+      self:close()
     end,
   })
 
@@ -433,7 +447,11 @@ end
 ---@param loc snacks.image.Loc
 function Placement:render_grid(loc)
   local hl = "SnacksImage" .. self.id -- image id is encoded in the foreground color
-  vim.api.nvim_set_hl(0, hl, { fg = self.img.id, sp = self.id })
+  vim.api.nvim_set_hl(0, hl, {
+    fg = self.img.id,
+    sp = self.id,
+    bg = config.debug and "#FF007C" or nil,
+  })
   local lines = {} ---@type string[]
   for r = 1, loc.height do
     local line = {} ---@type string[]
@@ -446,7 +464,8 @@ function Placement:render_grid(loc)
     lines[#lines + 1] = table.concat(line)
   end
 
-  if self.inline then
+  if self.opts.inline then
+    dd(loc, self.opts)
     vim.api.nvim_buf_clear_namespace(self.buf, self.ns, 0, -1)
     self.extmark_id = vim.api.nvim_buf_set_extmark(self.buf, self.ns, loc[1] - 1, loc[2], {
       id = self.extmark_id,
@@ -521,18 +540,34 @@ function Placement:state()
       wins[#wins + 1] = win
     end
   end
+
   width = minmax(self.opts.width or width, self.opts.min_width, self.opts.max_width)
   height = minmax(self.opts.height or height, self.opts.min_height, self.opts.max_height)
-  local w, h = M.dim(self.img.file)
-  h = h * 0.5 -- adjust for cell height
-  local scale = math.min(width / w, height / h)
-  local c, r = math.floor(w * scale), math.floor(h * scale)
+
+  local img_width, img_height = M.dim(self.img.file)
+  img_height = img_height * 0.5 -- adjust for cell height
+
+  local scale = width / height
+  local img_scale = img_width / img_height
+  local fit_height = math.floor(width / img_scale)
+  local fit_width = math.floor(height * img_scale)
+
+  if height == fit_height or width == fit_width then
+    -- Image fits exactly
+  elseif img_scale > scale then
+    -- Image is wider relative to height - fit to width
+    height = fit_height
+  else
+    -- Image is taller relative to width - fit to height
+    width = fit_width
+  end
+
   local pos = self.opts.pos or { 1, 0 }
   ---@class snacks.image.State
   ---@field loc snacks.image.Loc
   ---@field wins number[]
   return {
-    loc = { pos[1], pos[2], width = math.floor(c + 0.5), height = math.floor(r + 0.5) },
+    loc = { pos[1], pos[2], width = width, height = height },
     wins = wins,
   }
 end
@@ -540,6 +575,10 @@ end
 function Placement:update()
   if not self:ready() then
     return
+  end
+
+  if self.opts.on_update_pre then
+    self.opts.on_update_pre(self)
   end
 
   local state = self:state()
@@ -556,7 +595,7 @@ function Placement:update()
 
   self:debug("update")
 
-  if not self.inline then
+  if not self.opts.inline then
     for _, win in ipairs(state.wins) do
       Snacks.util.wo(win, config.wo or {})
     end
@@ -577,12 +616,15 @@ function Placement:update()
     self:render_fallback(state)
   end
 
-  if not self.inline then
+  if not self.opts.inline then
     for _, win in ipairs(state.wins) do
       vim.api.nvim_win_call(win, function()
         vim.fn.winrestview({ topline = 1, lnum = 1, col = 0, leftcol = 0 })
       end)
     end
+  end
+  if self.opts.on_update then
+    self.opts.on_update(self)
   end
 end
 
@@ -719,7 +761,7 @@ function M.setup(ev)
       end,
     })
   end
-  if config.enabled and config.markdown.enabled and M.env().placeholders then
+  if config.enabled and config.markdown.enabled then
     vim.api.nvim_create_autocmd("FileType", {
       group = group,
       callback = function(e)
@@ -765,7 +807,7 @@ function M.attach(buf, opts)
       modified = false,
       swapfile = false,
     })
-    Placement.new(buf, file, opts)
+    return Placement.new(buf, file, opts)
   end
 end
 
@@ -780,11 +822,11 @@ function M.markdown(buf)
   local file = vim.api.nvim_buf_get_name(buf)
   local dir = vim.fs.dirname(file)
   assert(vim.bo[buf].filetype == "markdown", "`Image.markdown`: buf should be a markdown buffer")
-  local imgs = {} ---@type table<string, snacks.image.Placement>
   local parser = vim.treesitter.get_parser(buf)
   assert(parser, "`Image.markdown`: treesitter parser not found")
   parser:parse(true)
   local query = vim.treesitter.query.parse("markdown_inline", "(image (link_destination) @image)")
+  local group = vim.api.nvim_create_augroup("snacks.image.markdown." .. buf, { clear = true })
 
   ---@param src string
   local function resolve(src)
@@ -794,26 +836,105 @@ function M.markdown(buf)
     return src
   end
 
-  local function update()
-    local found = {} ---@type table<string, boolean>
+  ---@param from? number
+  ---@param to? number
+  local function find(from, to)
+    local ret = {} ---@type {id:string, pos:snacks.image.Pos, src:string}[]
     parser:for_each_tree(function(tstree)
       if not tstree then
         return
       end
-      for _, node, _ in query:iter_captures(tstree:root(), buf) do
+      for _, node, _ in query:iter_captures(tstree:root(), buf, from and from - 1 or nil, to and to - 1 or nil) do
         local src = vim.treesitter.get_node_text(node, buf)
+        src = config.resolve and config.resolve(file, src) or resolve(src)
         local range = { node:range() }
         local pos = { range[1] + 1, range[2] }
         local nid = node:id()
-        if not imgs[nid] then
-          src = config.resolve and config.resolve(file, src) or resolve(src)
-          imgs[nid] = Placement.new(buf, src, { pos = pos, max_width = 80 })
-        else
-          imgs[nid]:update()
-        end
-        found[nid] = true
+        ret[#ret + 1] = { id = nid, pos = pos, src = src }
       end
     end)
+    return ret
+  end
+
+  local inline = config.markdown.inline and M.env().placeholders
+
+  if config.markdown.float and not inline then
+    local win ---@type snacks.win?
+    local img ---@type snacks.image.Placement?
+
+    local function close()
+      if img then
+        img:close()
+      end
+      if win then
+        win:close()
+      end
+      win, img = nil, nil
+    end
+
+    local update = Snacks.util.debounce(function()
+      if win and vim.api.nvim_get_current_win() == win.win then
+        return
+      end
+      if vim.api.nvim_get_current_buf() ~= buf or vim.fn.mode() ~= "n" then
+        return close()
+      end
+      local cursor = vim.api.nvim_win_get_cursor(0)
+      local i = find(cursor[1], cursor[1] + 1)[1]
+      if not i then
+        return close()
+      end
+      if img and img.img.src ~= i.src then
+        close()
+      end
+      win = win
+        or Snacks.win(Snacks.win.resolve(config.markdown, "snacks_image", {
+          show = false,
+          enter = false,
+        }))
+      win:open_buf()
+      local updated = false
+      local o = Snacks.config.merge({}, config.markdown, {
+        on_update_pre = function()
+          if img and win and not updated then
+            updated = true
+            local loc = img:state().loc
+            win.opts.width = loc.width
+            win.opts.height = loc.height
+            win:show()
+          end
+        end,
+        inline = false,
+      })
+      img = img or Placement.new(win.buf, i.src, o)
+    end, { ms = 100 })
+
+    vim.schedule(update)
+    vim.api.nvim_create_autocmd({ "BufWritePost", "CursorMoved", "ModeChanged", "BufLeave" }, {
+      group = group,
+      buffer = buf,
+      callback = vim.schedule_wrap(update),
+    })
+    return
+  end
+
+  if not inline then
+    return
+  end
+
+  local imgs = {} ---@type table<string, snacks.image.Placement>
+  local function update()
+    local found = {} ---@type table<string, boolean>
+    for _, i in ipairs(find()) do
+      local img = imgs[i.id]
+      if not img then
+        img = Placement.new(buf, i.src, Snacks.config.merge({}, config.markdown, { pos = i.pos, inline = true }))
+        imgs[i.id] = img
+      else
+        img:update()
+      end
+      found[i.id] = true
+    end
     for nid, img in pairs(imgs) do
       if not found[nid] then
         img:close()
@@ -823,13 +944,10 @@ function M.markdown(buf)
   end
 
   vim.schedule(update)
-  local group = vim.api.nvim_create_augroup("snacks.image.markdown." .. buf, { clear = true })
   vim.api.nvim_create_autocmd("BufWritePost", {
     group = group,
     buffer = buf,
-    callback = function()
-      update()
-    end,
+    callback = vim.schedule_wrap(update),
   })
 end
 

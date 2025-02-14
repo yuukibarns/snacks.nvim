@@ -1,7 +1,10 @@
-# 🍿 pie
+# 🍿 pi
 
 Snacks now comes with a modern fuzzy-finder to navigate the Neovim universe.
 
+![imag](https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d)
+![image](https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d)
+![image](https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d)
 ![image](https://github.com/user-attachments/assets/b454fc3c-6613-4aa4-9296-f57a8b02bf6d)
 ![image](https://github.com/user-attachments/assets/3203aec4-7d75-4bca-b3d5-18d931277e4e)
 ![image](https://github.com/user-attachments/assets/e09d25f8-8559-441c-a0f7-576d2aa57097)
