@@ -103,6 +103,7 @@ function M.find(buf, from, to)
       for _, match in query:iter_matches(tstree:root(), buf, from and from - 1 or nil, to and to - 1 or nil) do
         local src, pos, nid ---@type string, snacks.image.Pos, string
         for id, nodes in pairs(match) do
+          nodes = type(nodes) == "userdata" and { nodes } or nodes
           local name = query.captures[id]
           for _, node in ipairs(nodes) do
             if name == "image" then
