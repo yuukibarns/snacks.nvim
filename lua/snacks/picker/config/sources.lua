@@ -245,6 +245,7 @@ M.git_files = {
 
 -- Grep in git files
 ---@class snacks.picker.git.grep.Config: snacks.picker.Config
+---@field args? string[] additional arguments to pass to `git grep`
 ---@field untracked? boolean search in untracked files
 ---@field submodules? boolean search in submodule files
 ---@field need_search? boolean require a search pattern

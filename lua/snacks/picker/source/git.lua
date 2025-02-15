@@ -44,6 +44,7 @@ function M.grep(opts, ctx)
   elseif opts.submodules then
     table.insert(args, "--recurse-submodules")
   end
+  vim.list_extend(args, opts.args or {})
   table.insert(args, ctx.filter.search)
   if not opts.cwd then
     opts.cwd = Snacks.git.get_root() or uv.cwd() or "."
