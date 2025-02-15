@@ -266,9 +266,11 @@ function M.git_show(ctx)
     "show",
     ctx.item.commit,
   }
-  if ctx.item.file then
+  local pathspec = ctx.item.files or ctx.item.file
+  pathspec = type(pathspec) == "table" and pathspec or { pathspec }
+  if #pathspec > 0 then
     cmd[#cmd + 1] = "--"
-    cmd[#cmd + 1] = ctx.item.file
+    vim.list_extend(cmd, pathspec)
   end
   if not native then
     table.insert(cmd, 2, "--no-pager")
