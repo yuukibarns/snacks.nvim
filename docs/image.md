@@ -58,12 +58,19 @@ to the supported formats (all except PNG).
 {
   formats = { "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif", "mp4", "mov", "avi", "mkv", "webm" },
   force = false, -- try displaying the image, even if the terminal does not support it
-  markdown = {
-    -- enable image viewer for markdown files
-    -- if your env doesn't support unicode placeholders, this will be disabled
+  doc = {
+    -- enable image viewer for documents
+    -- a treesitter parser must be available for the enabled languages.
+    -- supported language injections: markdown, html
     enabled = true,
-    inline = true, -- render the image inline in the buffer (takes precedence over `opts.float` on supported terminals)
-    float = true, -- render the image in a floating window
+    lang = { "markdown", "html" },
+    -- render the image inline in the buffer
+    -- if your env doesn't support unicode placeholders, this will be disabled
+    -- takes precedence over `opts.float` on supported terminals
+    inline = true,
+    -- render the image in a floating window
+    -- only used if `opts.inline` is disabled
+    float = true,
     max_width = 80,
     max_height = 40,
   },
@@ -139,49 +146,15 @@ docs for more information on how to customize these styles
 
 ## 📦 Module
 
-### `Snacks.image.attach()`
-
 ```lua
----@param buf number
----@param opts? snacks.image.Opts|{src?: string}
-Snacks.image.attach(buf, opts)
-```
-
-### `Snacks.image.dim()`
-
-Get the dimensions of a PNG file
-
-```lua
----@param file string
----@return number width, number height
-Snacks.image.dim(file)
-```
-
-### `Snacks.image.env()`
-
-```lua
-Snacks.image.env()
-```
-
-### `Snacks.image.markdown()`
-
-```lua
----@param buf? number
-Snacks.image.markdown(buf)
-```
-
-### `Snacks.image.request()`
-
-```lua
----@param opts table<string, string|number>|{data?: string}
-Snacks.image.request(opts)
-```
-
-### `Snacks.image.set_cursor()`
-
-```lua
----@param pos {[1]: number, [2]: number}
-Snacks.image.set_cursor(pos)
+---@class snacks.image
+---@field terminal snacks.image.terminal
+---@field image snacks.Image
+---@field placement snacks.image.Placement
+---@field util snacks.image.util
+---@field buf snacks.image.buf
+---@field doc snacks.image.doc
+Snacks.image = {}
 ```
 
 ### `Snacks.image.supports()`
