@@ -234,7 +234,11 @@ function M.inline(buf)
   return function()
     local found = {} ---@type table<string, boolean>
     for _, i in ipairs(M.find(buf)) do
-      local img = imgs[i.id]
+      local img = imgs[i.id] ---@type snacks.image.Placement?
+      if img and img.img.src ~= i.src then
+        img:close()
+        img = nil
+      end
 
       if not img then
         img = Snacks.image.placement.new(
