@@ -110,6 +110,7 @@ function M.log(opts, ctx)
   local Proc = require("snacks.picker.source.proc")
   file = file and vim.fs.normalize(file) or nil
   local cwd = vim.fs.normalize(file and vim.fn.fnamemodify(file, ":h") or opts and opts.cwd or uv.cwd() or ".") or nil
+  cwd = Snacks.git.get_root(cwd) or cwd
 
   local renames = { file } ---@type string[]
   return function(cb)
