@@ -6,6 +6,11 @@ local M = {}
 ---@field win snacks.win
 ---@field buf number
 
+---@class snacks.image.Query
+---@field setup fun():vim.treesitter.Query
+---@field query? vim.treesitter.Query|false
+---@field transform? fun(buf:number, anchor: TSNode, image: TSNode): string
+
 ---@type table<string, {setup:(fun():vim.treesitter.Query), query?:vim.treesitter.Query|false}>
 M._queries = {
   markdown = {
@@ -52,19 +57,39 @@ M._queries = {
       )
     end,
   },
+  norg = {
+    setup = function()
+      return vim.treesitter.query.parse(
+        "norg",
+        [[
+          (infirm_tag
+            (tag_name) @tag (#eq? @tag "image")
+            (tag_parameters (tag_param) @image)
+          ) @anchor
+        ]]
+      )
+    end,
+    ---@param anchor TSNode
+    ---@param img TSNode
+    transform = function(buf, anchor, img)
+      local row, col = img:start()
+      local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1]
+      return line:sub(col + 1)
+    end,
+  },
 }
 
 local hover ---@type snacks.image.Hover?
 
 function M.queries()
-  local ret = {} ---@type vim.treesitter.Query[]
+  local ret = {} ---@type snacks.image.Query[]
   for _, query in pairs(M._queries) do
     if query.query == nil then
       local ok, q = pcall(query.setup)
       query.query = ok and q or false
     end
     if query.query then
-      table.insert(ret, query.query)
+      table.insert(ret, query)
     end
   end
   return ret
@@ -78,9 +103,12 @@ function M.resolve(buf, src)
   if s then
     return s
   end
-  local dir = vim.fs.dirname(file)
-  if src:find("^%.") or (not src:find("^%w%w+://") and src:find("^%w")) then
-    src = vim.fs.normalize(dir .. "/" .. src)
+  if not src:find("^%w%w+://") then
+    if src:find("^%.") or src:find("^%w") then
+      local dir = vim.fs.dirname(file)
+      src = dir .. "/" .. src
+    end
+    src = vim.fs.normalize(src)
   end
   return src
 end
@@ -100,16 +128,18 @@ function M.find(buf, from, to)
       return
     end
     for _, query in ipairs(M.queries()) do
-      for _, match in query:iter_matches(tstree:root(), buf, from and from - 1 or nil, to and to - 1 or nil) do
+      for _, match in query.query:iter_matches(tstree:root(), buf, from and from - 1 or nil, to and to - 1 or nil) do
         local src, pos, nid ---@type string, snacks.image.Pos, string
+        local anchor, image ---@type TSNode, TSNode
         for id, nodes in pairs(match) do
           nodes = type(nodes) == "userdata" and { nodes } or nodes
-          local name = query.captures[id]
+          local name = query.query.captures[id]
           for _, node in ipairs(nodes) do
             if name == "image" then
+              image = node
               src = vim.treesitter.get_node_text(node, buf)
-              src = M.resolve(buf, src)
             elseif name == "anchor" then
+              anchor = node
               local range = { node:range() }
               pos = { range[1] + 1, range[2] }
               nid = node:id()
@@ -117,6 +147,10 @@ function M.find(buf, from, to)
           end
         end
         if src and pos and nid then
+          if query.transform then
+            src = query.transform(buf, anchor, image)
+          end
+          src = M.resolve(buf, src)
           ret[#ret + 1] = { id = nid, pos = pos, src = src }
         end
       end
@@ -190,6 +224,7 @@ function M.inline(buf)
     local found = {} ---@type table<string, boolean>
     for _, i in ipairs(M.find(buf)) do
       local img = imgs[i.id]
+
       if not img then
         img = Snacks.image.placement.new(
           buf,
@@ -227,7 +262,7 @@ function M.attach(buf)
     return
   end
 
-  local group = vim.api.nvim_create_augroup("snacks.image.markdown." .. buf, { clear = true })
+  local group = vim.api.nvim_create_augroup("snacks.image.doc." .. buf, { clear = true })
 
   local update = inline and M.inline(buf) or M.hover
 
