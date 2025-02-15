@@ -38,13 +38,14 @@ function M.grep(opts, ctx)
   if opts.need_search ~= false and ctx.filter.search == "" then
     return function() end
   end
-  local args = { "-c", "core.quotepath=false", "grep", "--line-number", "--column", "--no-color", "-I" }
+  local args = { "-c", "core.quotepath=false" }
+  vim.list_extend(args, opts.args or {})
+  vim.list_extend(args, { "grep", "--line-number", "--column", "--no-color", "-I" })
   if opts.untracked then
     table.insert(args, "--untracked")
   elseif opts.submodules then
     table.insert(args, "--recurse-submodules")
   end
-  vim.list_extend(args, opts.args or {})
   table.insert(args, ctx.filter.search)
   if not opts.cwd then
     opts.cwd = Snacks.git.get_root() or uv.cwd() or "."
