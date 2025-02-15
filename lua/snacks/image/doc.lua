@@ -221,6 +221,11 @@ function M.hover()
     buf = current_buf,
     img = Snacks.image.placement.new(win.buf, img.src, o),
   }
+  vim.api.nvim_create_autocmd({ "BufWritePost", "CursorMoved", "ModeChanged", "BufLeave" }, {
+    buffer = current_buf,
+    once = true,
+    callback = M.hover,
+  })
 end
 
 ---@param buf number
@@ -279,7 +284,7 @@ function M.attach(buf)
       callback = vim.schedule_wrap(update),
     })
   else
-    vim.api.nvim_create_autocmd({ "BufWritePost", "CursorMoved", "ModeChanged", "BufLeave" }, {
+    vim.api.nvim_create_autocmd({ "CursorMoved" }, {
       group = group,
       buffer = buf,
       callback = vim.schedule_wrap(update),
