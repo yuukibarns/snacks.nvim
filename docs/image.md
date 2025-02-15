@@ -4,25 +4,35 @@
 
 Image viewer using the [Kitty Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/).
 
-Supported terminals:
+Terminal support:
 
 - [kitty](https://sw.kovidgoyal.net/kitty/)
-- [wezterm](https://wezfurlong.org/wezterm/)
 - [ghostty](https://ghostty.org/)
+- [wezterm](https://wezfurlong.org/wezterm/)
+  Wezterm has only limited support for the kitty graphics protocol.
+  Inline image rendering is not supported.
+- [tmux](https://github.com/tmux/tmux)
+  Snacks automatically tries to enable `allow-passthrough=on` for tmux,
+  but you may need to enable it manually in your tmux configuration.
+- [zellij](https://github.com/zellij-org/zellij) is **not** supported,
+  since they don't have any support for passthrough
 
-In order to automatically display the image when openinng an image file,
+Image will be transferred to the terminal by filename or by sending the image
+date in case `ssh` is detected.
+
+In some cases you may need to force snacks to detect or not detect a certain
+environment. You can do this by setting `SNACKS_${ENV_NAME}` to `true` or `false`.
+
+For example, to force detection of **ghostty** you can set `SNACKS_GHOSTTY=true`.
+
+In order to automatically display the image when opening an image file,
+or to have imaged displayed in supported document formats like `markdown` or `html`,
 you need to enable the `image` plugin in your `snacks` config.
-
-Supported image formats:
-
-- PNG
-- JPEG/JPG
-- GIF
-- BMP
-- WEBP
 
 [ImageMagick](https://imagemagick.org/index.php) is required to convert images
 to the supported formats (all except PNG).
+
+In case of issues, make sure to run `:checkhealth snacks`.
 
 <!-- docgen -->
 
@@ -155,6 +165,14 @@ docs for more information on how to customize these styles
 ---@field buf snacks.image.buf
 ---@field doc snacks.image.doc
 Snacks.image = {}
+```
+
+### `Snacks.image.hover()`
+
+Show the image at the cursor in a floating window
+
+```lua
+Snacks.image.hover()
 ```
 
 ### `Snacks.image.supports()`
