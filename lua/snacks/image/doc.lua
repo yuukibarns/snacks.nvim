@@ -80,6 +80,7 @@ M._queries = {
 }
 
 local hover ---@type snacks.image.Hover?
+local uv = vim.uv or vim.loop
 
 function M.queries()
   local ret = {} ---@type snacks.image.Query[]
@@ -105,8 +106,13 @@ function M.resolve(buf, src)
   end
   if not src:find("^%w%w+://") then
     if src:find("^%.") or src:find("^%w") then
-      local dir = vim.fs.dirname(file)
-      src = dir .. "/" .. src
+      for _, dir in ipairs({ vim.fs.dirname(file), uv.cwd() }) do
+        local path = dir .. "/" .. src
+        if vim.fn.filereadable(path) == 1 then
+          src = path
+          break
+        end
+      end
     end
     src = vim.fs.normalize(src)
   end
