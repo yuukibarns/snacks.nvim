@@ -29,7 +29,6 @@ M.buffers = {
   win = {
     input = {
       keys = {
-        ["dd"] = "bufdelete",
         ["<c-x>"] = { "bufdelete", mode = { "n", "i" } },
       },
     },
