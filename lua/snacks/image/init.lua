@@ -121,6 +121,11 @@ function M.supports_terminal()
   return M.terminal.env().supported or M.config.force or false
 end
 
+--- Show the image at the cursor in a floating window
+function M.hover()
+  M.doc.hover()
+end
+
 ---@private
 ---@param ev? vim.api.keyset.create_autocmd.callback_args
 function M.setup(ev)
