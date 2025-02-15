@@ -73,7 +73,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
     -- a treesitter parser must be available for the enabled languages.
     -- supported language injections: markdown, html
     enabled = true,
-    lang = { "markdown", "html" },
+    lang = { "markdown", "html", "norg" },
     -- render the image inline in the buffer
     -- if your env doesn't support unicode placeholders, this will be disabled
     -- takes precedence over `opts.float` on supported terminals
