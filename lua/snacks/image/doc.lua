@@ -234,7 +234,6 @@ function M.find(buf, from, to)
       end
     end
   end)
-  dd(ret)
   return ret
 end
 

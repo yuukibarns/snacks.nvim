@@ -29,6 +29,17 @@ In order to automatically display the image when opening an image file,
 or to have imaged displayed in supported document formats like `markdown` or `html`,
 you need to enable the `image` plugin in your `snacks` config.
 
+Supported document formats are:
+
+- markdown
+- html
+- norg
+- tsx
+- javascript
+- css
+- vue
+- angular
+
 [ImageMagick](https://imagemagick.org/index.php) is required to convert images
 to the supported formats (all except PNG).
 
@@ -121,6 +132,12 @@ docs for more information on how to customize these styles
 ```
 
 ## 📚 Types
+
+TODO:
+
+- tsx / jsx
+- url decode?
+- look for all images?
 
 ```lua
 ---@alias snacks.image.Size {width: number, height: number}
