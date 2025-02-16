@@ -9,13 +9,25 @@ local M = {}
 ---@class snacks.image.Query
 ---@field setup fun():vim.treesitter.Query
 ---@field query? vim.treesitter.Query|false
----@field transform? fun(buf:number, anchor: TSNode, image: TSNode): string
+---@field transform? fun(buf:number, src:string, anchor: TSNode, image: TSNode): string
 
 ---@type table<string, {setup:(fun():vim.treesitter.Query), query?:vim.treesitter.Query|false}>
 M._queries = {
   markdown = {
     setup = function()
-      return vim.treesitter.query.parse("markdown_inline", [[(image (link_destination) @image) @anchor]])
+      return vim.treesitter.query.parse(
+        "markdown_inline",
+        [[
+          (image 
+            [
+              (link_destination) @image
+              (image_description (shortcut_link (link_text) @image))
+            ]) @anchor
+        ]]
+      )
+    end,
+    transform = function(_, src)
+      return src:gsub("|.*", "")
     end,
   },
   html = {
@@ -71,7 +83,7 @@ M._queries = {
     end,
     ---@param anchor TSNode
     ---@param img TSNode
-    transform = function(buf, anchor, img)
+    transform = function(buf, _, anchor, img)
       local row, col = img:start()
       local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1]
       return line:sub(col + 1)
@@ -154,7 +166,7 @@ function M.find(buf, from, to)
         end
         if src and pos and nid then
           if query.transform then
-            src = query.transform(buf, anchor, image)
+            src = query.transform(buf, src, anchor, image)
           end
           src = M.resolve(buf, src)
           ret[#ret + 1] = { id = nid, pos = pos, src = src }
