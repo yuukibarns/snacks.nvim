@@ -108,9 +108,17 @@ function M.queries()
   return ret
 end
 
+---@param str string
+function M.url_decode(str)
+  return str:gsub("+", " "):gsub("%%(%x%x)", function(hex)
+    return string.char(tonumber(hex, 16))
+  end)
+end
+
 ---@param buf number
 ---@param src string
 function M.resolve(buf, src)
+  src = M.url_decode(src)
   local file = vim.fs.normalize(vim.api.nvim_buf_get_name(buf))
   local s = Snacks.image.config.resolve and Snacks.image.config.resolve(file, src) or nil
   if s then
