@@ -75,6 +75,7 @@ local defaults = {
     spell = false,
     statuscolumn = "",
   },
+  cache = vim.fn.stdpath("cache") .. "/snacks/image",
   debug = false,
   env = {},
 }
