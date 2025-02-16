@@ -55,6 +55,58 @@ M._queries = {
       )
     end,
   },
+  tsx = {
+    setup = function()
+      return vim.treesitter.query.parse(
+        "tsx",
+        [[
+          (jsx_element
+            (jsx_opening_element
+              (identifier) @tag (#eq? @tag "img")
+              (jsx_attribute
+                (property_identifier) @attr_name (#eq? @attr_name "src")
+                (string (string_fragment) @image)
+              )
+            )
+          ) @anchor
+
+          (jsx_self_closing_element
+            (identifier) @tag (#eq? @tag "img")
+            (jsx_attribute
+              (property_identifier) @attr_name (#eq? @attr_name "src")
+              (string (string_fragment) @image)
+            )
+          ) @anchor
+        ]]
+      )
+    end,
+  },
+  javascript = {
+    setup = function()
+      return vim.treesitter.query.parse(
+        "javascript",
+        [[
+          (jsx_element
+            (jsx_opening_element
+              (identifier) @tag (#eq? @tag "img")
+              (jsx_attribute
+                (property_identifier) @attr_name (#eq? @attr_name "src")
+                (string (string_fragment) @image)
+              )
+            )
+          ) @anchor
+
+          (jsx_self_closing_element
+            (identifier) @tag (#eq? @tag "img")
+            (jsx_attribute
+              (property_identifier) @attr_name (#eq? @attr_name "src")
+              (string (string_fragment) @image)
+            )
+          ) @anchor
+        ]]
+      )
+    end,
+  },
   css = {
     setup = function()
       return vim.treesitter.query.parse(
@@ -182,6 +234,7 @@ function M.find(buf, from, to)
       end
     end
   end)
+  dd(ret)
   return ret
 end
 
