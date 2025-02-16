@@ -27,7 +27,7 @@ M._queries = {
       )
     end,
     transform = function(_, src)
-      return src:gsub("|.*", "")
+      return src:gsub("|.*", ""):gsub("^<", ""):gsub(">$", "")
     end,
   },
   html = {
