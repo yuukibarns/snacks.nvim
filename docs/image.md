@@ -133,12 +133,6 @@ docs for more information on how to customize these styles
 
 ## 📚 Types
 
-TODO:
-
-- tsx / jsx
-- url decode?
-- look for all images?
-
 ```lua
 ---@alias snacks.image.Size {width: number, height: number}
 ---@alias snacks.image.Pos {[1]: number, [2]: number}
