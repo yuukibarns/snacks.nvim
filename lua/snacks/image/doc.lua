@@ -185,6 +185,16 @@ function M.hover_close()
   end
 end
 
+--- Get the image at the cursor (if any)
+---@return string? image_src, snacks.image.Pos? image_pos
+function M.at_cursor()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local img = M.find(vim.api.nvim_get_current_buf(), cursor[1], cursor[1] + 1)[1]
+  if img then
+    return img.src, img.pos
+  end
+end
+
 function M.hover()
   local current_win = vim.api.nvim_get_current_win()
   local current_buf = vim.api.nvim_get_current_buf()
@@ -197,13 +207,12 @@ function M.hover()
     M.hover_close()
   end
 
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  local img = M.find(current_buf, cursor[1], cursor[1] + 1)[1]
-  if not img then
+  local src = M.at_cursor()
+  if not src then
     return M.hover_close()
   end
 
-  if hover and hover.img.img.src ~= img.src then
+  if hover and hover.img.img.src ~= src then
     M.hover_close()
   elseif hover then
     hover.img:update()
@@ -231,7 +240,7 @@ function M.hover()
   hover = {
     win = win,
     buf = current_buf,
-    img = Snacks.image.placement.new(win.buf, img.src, o),
+    img = Snacks.image.placement.new(win.buf, src, o),
   }
   vim.api.nvim_create_autocmd({ "BufWritePost", "CursorMoved", "ModeChanged", "BufLeave" }, {
     buffer = current_buf,
