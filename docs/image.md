@@ -108,6 +108,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
     spell = false,
     statuscolumn = "",
   },
+  cache = vim.fn.stdpath("cache") .. "/snacks/image",
   env = {},
 }
 ```
