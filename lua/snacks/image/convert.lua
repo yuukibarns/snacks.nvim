@@ -124,10 +124,10 @@ end
 function M.convert(src, opts)
   local png = M.tmpfile(src, "png")
   src = M.norm(src)
+  local ext = vim.fn.fnamemodify(src, ":e"):lower()
   if not M.is_uri(src) then
     src = vim.fs.normalize(src)
     png = M.tmpfile(src, "png")
-    local ext = vim.fn.fnamemodify(src, ":e"):lower()
     if ext == "png" then
       if opts and opts.on_done then
         opts.on_done(0)
@@ -156,10 +156,22 @@ function M.convert(src, opts)
   opts.args = {
     -- "-density",
     -- 128,
-    src,
+    src .. "[0]",
     "-scale",
     "200%",
   }
+  if ext == "pdf" then
+    opts.args = {
+      "-density",
+      144,
+      src .. "[0]",
+      "-background",
+      "white",
+      "-alpha",
+      "remove",
+      "-trim",
+    }
+  end
   return png, M.magick(src, png, opts)
 end
 

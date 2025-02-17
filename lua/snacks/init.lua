@@ -21,7 +21,23 @@ _G.Snacks = M
 local config = {
   image = {
     -- define these here, so that we don't need to load the image module
-    formats = { "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif", "mp4", "mov", "avi", "mkv", "webm" },
+    formats = {
+      "png",
+      "jpg",
+      "jpeg",
+      "gif",
+      "bmp",
+      "webp",
+      "tiff",
+      "heic",
+      "avif",
+      "mp4",
+      "mov",
+      "avi",
+      "mkv",
+      "webm",
+      "pdf",
+    },
   },
 }
 config.styles = {}
