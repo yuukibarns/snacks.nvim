@@ -348,16 +348,17 @@ end
 ---@param opts {cmd: string|string[], args?: string[], cwd?: string}
 function M.cmd(opts)
   local cmd = opts.cmd
-  local args = opts.args or {}
+  local args = vim.deepcopy(opts.args or {})
   if type(cmd) == "table" then
     vim.list_extend(args, cmd, 2)
     cmd = cmd[1]
   end
+  args = vim.tbl_map(tostring, args)
   ---@cast cmd string
   vim.schedule(function()
     local lines = { cmd } ---@type string[]
     for _, arg in ipairs(args or {}) do
-      arg = arg:find("[$%s]") and vim.fn.shellescape(arg) or arg
+      arg = arg:find("[%$%s%?]") and vim.fn.shellescape(arg) or arg
       if #arg + #lines[#lines] > 40 then
         lines[#lines] = lines[#lines] .. " \\"
         table.insert(lines, "  " .. arg)
