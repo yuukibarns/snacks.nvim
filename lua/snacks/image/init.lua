@@ -62,6 +62,7 @@ local defaults = {
     max_width = 80,
     max_height = 40,
   },
+  img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments" },
   -- window options applied to windows displaying image buffers
   -- an image buffer is a buffer with `filetype=image`
   wo = {

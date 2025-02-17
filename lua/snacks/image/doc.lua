@@ -40,12 +40,21 @@ M.transforms = {
 
 local hover ---@type snacks.image.Hover?
 local uv = vim.uv or vim.loop
+local dir_cache = {} ---@type table<string, boolean>
 
 ---@param str string
 function M.url_decode(str)
   return str:gsub("+", " "):gsub("%%(%x%x)", function(hex)
     return string.char(tonumber(hex, 16))
   end)
+end
+
+---@param dir string
+function M.is_dir(dir)
+  if dir_cache[dir] == nil then
+    dir_cache[dir] = vim.fn.isdirectory(dir) == 1
+  end
+  return dir_cache[dir]
 end
 
 ---@param buf number
@@ -58,13 +67,18 @@ function M.resolve(buf, src)
     return s
   end
   if not src:find("^%w%w+://") then
-    if src:find("^%.") or src:find("^%w") then
-      for _, dir in ipairs({ vim.fs.dirname(file), uv.cwd() }) do
-        local path = dir .. "/" .. src
-        if vim.fn.filereadable(path) == 1 then
-          src = path
-          break
-        end
+    local cwd = uv.cwd() or "."
+    local checks = { src, vim.fs.dirname(file) .. "/" .. src }
+    for _, dir in ipairs(Snacks.image.config.img_dirs) do
+      dir = cwd .. "/" .. dir
+      if M.is_dir(dir) then
+        checks[#checks + 1] = dir .. "/" .. src
+      end
+    end
+    for _, f in ipairs(checks) do
+      if vim.fn.filereadable(f) == 1 then
+        src = uv.fs_realpath(f) or f
+        break
       end
     end
     src = vim.fs.normalize(src)
