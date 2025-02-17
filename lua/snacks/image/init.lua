@@ -255,6 +255,12 @@ function M.health()
     end
   end
 
+  if Snacks.health.have_tool("gs") then
+    Snacks.health.ok("PDF files are supported")
+  else
+    Snacks.health.warn("`gs` is required to render PDF files")
+  end
+
   if Snacks.health.have_tool({ "tectonic", "pdflatex" }) then
     Snacks.health.ok("LaTeX math equations are supported")
   else
