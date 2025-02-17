@@ -61,6 +61,13 @@ function M:on_send()
   end
 end
 
+function M:failed()
+  if self._proc and self._proc:failed() then
+    return true
+  end
+  return self.file and vim.fn.filereadable(self.file) == 0
+end
+
 function M:ready()
   if self._proc and self._proc:running() then
     return false
@@ -73,7 +80,11 @@ function M:convert()
     run = false,
     on_exit = function(procs, err)
       if err then
-        Snacks.notify.error("Failed to convert image to " .. self.file)
+        vim.schedule(function()
+          for _, p in pairs(self.placements) do
+            p:error()
+          end
+        end)
       else
         vim.schedule(function()
           self:on_ready()

@@ -40,7 +40,9 @@ function M.proc(opts, ctx)
     end
 
     if ctx.picker.opts.debug.proc then
-      Snacks.debug.cmd(Snacks.config.merge(opts, { group = true }))
+      vim.schedule(function()
+        Snacks.debug.cmd(Snacks.config.merge(opts, { group = true }))
+      end)
     end
 
     local sep = opts.sep or "\n"

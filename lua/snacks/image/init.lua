@@ -112,6 +112,11 @@ Snacks.config.style("snacks_image", {
   -- width/height are automatically set by the image size unless specified below
 })
 
+Snacks.util.set_hl({
+  Spinner = "Special",
+  Loading = "NonText",
+}, { prefix = "SnacksImage", default = true })
+
 ---@class snacks.image.Opts
 ---@field pos? snacks.image.Pos (row, col) (1,0)-indexed. defaults to the top-left corner
 ---@field inline? boolean render the image inline in the buffer

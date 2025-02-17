@@ -402,6 +402,11 @@ function M.is_float(win)
   return vim.api.nvim_win_get_config(win or 0).relative ~= ""
 end
 
+function M.spinner()
+  local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+  return spinner[math.floor(uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+end
+
 M.base64 = vim.base64 and vim.base64.encode
   or function(data)
     data = tostring(data)

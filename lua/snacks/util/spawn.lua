@@ -62,6 +62,10 @@ function Proc:kill(signal)
   end
 end
 
+function Proc:failed()
+  return self.code ~= 0 or self.signal ~= 0
+end
+
 function Proc:run()
   assert(not self.handle, "already running")
   self.stdout = assert(uv.new_pipe())
@@ -82,6 +86,7 @@ function Proc:run()
   end)
   if not self.handle then
     self.code = 1
+    self.data[self.stderr] = { "Failed to spawn " .. self.opts.cmd }
     close(self.stdout)
     close(self.stderr)
     return self:on_exit()
@@ -158,8 +163,7 @@ function M.multi(procs, opts)
 
   local function done()
     if opts.on_exit then
-      local err = procs[current].code ~= 0 or procs[current].signal ~= 0
-      opts.on_exit(procs, err)
+      opts.on_exit(procs, procs[current]:failed())
     end
   end
 
@@ -179,8 +183,9 @@ function M.multi(procs, opts)
     proc:run()
   end
 
-  ---@type snacks.spawn.Proc
+  ---@type snacks.spawn.Proc|{procs: snacks.spawn.Proc[]}
   local ret = setmetatable({
+    procs = procs,
     run = next,
   }, {
     __index = function(_, k)
