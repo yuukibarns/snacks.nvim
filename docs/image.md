@@ -108,6 +108,11 @@ In case of issues, make sure to run `:checkhealth snacks`.
     statuscolumn = "",
   },
   cache = vim.fn.stdpath("cache") .. "/snacks/image",
+  debug = {
+    request = false,
+    convert = false,
+    placement = false,
+  },
   env = {},
 }
 ```
@@ -175,6 +180,7 @@ docs for more information on how to customize these styles
 ---@field util snacks.image.util
 ---@field buf snacks.image.buf
 ---@field doc snacks.image.doc
+---@field convert snacks.image.convert
 Snacks.image = {}
 ```
 
