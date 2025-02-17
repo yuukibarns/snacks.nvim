@@ -261,6 +261,12 @@ function M.health()
     Snacks.health.warn("`tectonic` or `pdflatex` is required to render LaTeX math equations")
   end
 
+  if Snacks.health.have_tool("mmdc") then
+    Snacks.health.ok("Mermaid diagrams are supported")
+  else
+    Snacks.health.warn("`mmdc` is required to render Mermaid diagrams")
+  end
+
   if env.supported then
     Snacks.health.ok("your terminal supports the kitty graphics protocol")
   elseif M.config.force then

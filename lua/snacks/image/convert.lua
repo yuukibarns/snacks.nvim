@@ -129,6 +129,23 @@ function M.convert(src, opts)
         args = { "-density", 300, "src", "-trim" },
       })
       return png, Spawn.multi(procs, opts)
+    elseif ext == "mmd" then
+      return png,
+        M.generate(png, vim.deepcopy(opts), {
+          cmd = "mmdc",
+          args = {
+            "-i",
+            src,
+            "-o",
+            png,
+            "-b",
+            "transparent",
+            "-t",
+            vim.o.background,
+            "-s",
+            Snacks.image.terminal.size().scale,
+          },
+        })
     end
   end
   opts.args = {
@@ -150,7 +167,7 @@ function M.convert(src, opts)
       "-trim",
     }
   end
-  return png, Spawn.multi({ M.magick(src, png, opts) }, opts)
+  return png, M.magick(src, png, opts)
 end
 
 return M
