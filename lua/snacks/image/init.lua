@@ -193,7 +193,8 @@ end
 ---@private
 function M.health()
   Snacks.health.have_tool({ "kitty", "wezterm", "ghostty" })
-  if not Snacks.health.have_tool({ "magick", "convert" }) then
+  local is_win = jit.os:find("Windows")
+  if not Snacks.health.have_tool({ "magick", not is_win and "convert" or nil }) then
     Snacks.health.error("`magick` is required to convert images. Only PNG files will be displayed.")
   end
   local env = M.terminal.env()

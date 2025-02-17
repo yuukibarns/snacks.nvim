@@ -94,6 +94,11 @@ function M.magick(src, dest, opts)
   local args = opts.args or { src .. "[0]" } ---@type string[]
   args[#args + 1] = dest
   have_magick = have_magick == nil and vim.fn.executable("magick") == 1 or have_magick
+  local cmd = have_magick and "magick" or "convert"
+  local is_win = jit.os:find("Windows")
+  if is_win and cmd == "convert" then
+    return
+  end
   return M.generate(dest, {
     cmd = have_magick and "magick" or "convert",
     args = args,
