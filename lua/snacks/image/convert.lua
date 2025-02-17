@@ -92,12 +92,19 @@ end
 function M.magick(src, dest, opts)
   opts = opts or {}
   local args = opts.args or { src .. "[0]" } ---@type string[]
+  for a, arg in ipairs(args) do
+    if arg == "src" then
+      args[a] = src .. "[0]"
+    end
+  end
   args[#args + 1] = dest
   have_magick = have_magick == nil and vim.fn.executable("magick") == 1 or have_magick
   local cmd = have_magick and "magick" or "convert"
   local is_win = jit.os:find("Windows")
   if is_win and cmd == "convert" then
-    return
+    return function()
+      return false
+    end
   end
   return M.generate(dest, {
     cmd = have_magick and "magick" or "convert",
@@ -156,7 +163,7 @@ function M.convert(src, opts)
   opts.args = {
     -- "-density",
     -- 128,
-    src .. "[0]",
+    "src",
     "-scale",
     "200%",
   }
@@ -164,7 +171,7 @@ function M.convert(src, opts)
     opts.args = {
       "-density",
       144,
-      src .. "[0]",
+      "src",
       "-background",
       "white",
       "-alpha",
