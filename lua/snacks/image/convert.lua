@@ -1,3 +1,5 @@
+local Spawn = require("snacks.util.spawn")
+
 ---@class snacks.image.convert
 local M = {}
 -- vim.list_extend(args, {
@@ -58,39 +60,21 @@ function M.tmpfile(src, ext)
 end
 
 ---@param file string
----@param opts snacks.image.generate
----@return (fun(): boolean) is_ready
-function M.generate(file, opts)
-  local on_done = function(code)
-    if opts.on_done then
-      opts.on_done(code)
-    end
-  end
+---@param ... snacks.spawn.Config
+function M.generate(file, ...)
+  local opts = Snacks.config.merge(...)
+  opts = Snacks.config.merge(opts, { debug = Snacks.image.config.debug.convert })
   if vim.fn.filereadable(file) == 1 then
-    on_done(0)
-    return function()
-      return true
-    end
+    return
   end
-  if Snacks.image.config.debug.convert then
-    Snacks.debug.cmd(opts)
-  end
-  local handle ---@type uv.uv_process_t
-  handle = uv.spawn(opts.cmd, opts, function(code)
-    handle:close()
-    on_done(code)
-  end)
-  return function()
-    return (not handle or handle:is_closing() or false) and vim.fn.filereadable(file) == 1
-  end
+  return Spawn.new(opts)
 end
 
 ---@param src string
 ---@param dest string
----@param opts? {args?: (string|number)[], on_done?: snacks.image.generate.on_done}
----@return (fun(): boolean) is_ready
-function M.magick(src, dest, opts)
-  opts = opts or {}
+---@param ...? snacks.spawn.Config
+function M.magick(src, dest, ...)
+  local opts = Snacks.config.merge(...)
   local args = opts.args or { src .. "[0]" } ---@type string[]
   for a, arg in ipairs(args) do
     if arg == "src" then
@@ -100,34 +84,29 @@ function M.magick(src, dest, opts)
   args[#args + 1] = dest
   have_magick = have_magick == nil and vim.fn.executable("magick") == 1 or have_magick
   local cmd = have_magick and "magick" or "convert"
-  local is_win = jit.os:find("Windows")
-  if is_win and cmd == "convert" then
-    return function()
-      return false
-    end
+  if Snacks.util.is_win and cmd == "convert" then
+    return
   end
-  return M.generate(dest, {
-    cmd = have_magick and "magick" or "convert",
+  return M.generate(dest, opts, {
+    cmd = cmd,
     args = args,
-    on_done = opts.on_done,
   })
 end
 
 ---@param src string
 ---@param dest string
----@param opts? {on_done?: snacks.image.generate.on_done}
----@return (fun(): boolean) is_ready
-function M.tex2pdf(src, dest, opts)
-  return M.generate(dest, {
+---@param ... snacks.spawn.Config
+function M.tex2pdf(src, dest, ...)
+  local opts = Snacks.config.merge(...)
+  return M.generate(dest, opts, {
     cmd = "pdflatex",
     args = { "-output-directory=" .. vim.fn.fnamemodify(dest, ":h"), src },
-    on_done = opts and opts.on_done,
   })
 end
 
 ---@param src string
----@param opts? {on_done?: snacks.image.generate.on_done}
----@return string png, (fun(): boolean) is_ready
+---@param opts? snacks.spawn.Multi
+---@return string png, snacks.spawn.Proc?
 function M.convert(src, opts)
   local png = M.tmpfile(src, "png")
   src = M.norm(src)
@@ -136,28 +115,16 @@ function M.convert(src, opts)
     src = vim.fs.normalize(src)
     png = M.tmpfile(src, "png")
     if ext == "png" then
-      if opts and opts.on_done then
-        opts.on_done(0)
-      end
-      return src, function()
-        return true
-      end
+      return src
     elseif ext == "tex" then
       local pdf = src:gsub("%.tex$", ".pdf")
-      local is_ready = function()
-        return false
-      end
-      M.tex2pdf(src, pdf, {
-        on_done = function(code)
-          if code == 0 then
-            opts.args = { "-density", 300, pdf, "-trim" }
-            is_ready = M.magick(pdf, png, opts)
-          end
-        end,
+      local procs = {} ---@type snacks.spawn.Proc[]
+      procs[#procs + 1] = M.tex2pdf(src, pdf, vim.deepcopy(opts), { run = false })
+      procs[#procs + 1] = M.magick(pdf, png, vim.deepcopy(opts), {
+        run = false,
+        args = { "-density", 300, "src", "-trim" },
       })
-      return png, function()
-        return is_ready()
-      end
+      return png, Spawn.multi(procs, opts)
     end
   end
   opts.args = {
@@ -179,7 +146,7 @@ function M.convert(src, opts)
       "-trim",
     }
   end
-  return png, M.magick(src, png, opts)
+  return png, Spawn.multi({ M.magick(src, png, opts) }, opts)
 end
 
 return M
