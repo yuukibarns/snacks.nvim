@@ -5,10 +5,11 @@
 ---@field util snacks.image.util
 ---@field buf snacks.image.buf
 ---@field doc snacks.image.doc
+---@field convert snacks.image.convert
 local M = setmetatable({}, {
   ---@param M snacks.image
   __index = function(M, k)
-    if vim.tbl_contains({ "terminal", "image", "placement", "util", "doc", "buf" }, k) then
+    if vim.tbl_contains({ "terminal", "image", "placement", "util", "doc", "buf", "convert" }, k) then
       M[k] = require("snacks.image." .. k)
     end
     return rawget(M, k)
@@ -75,7 +76,11 @@ local defaults = {
     statuscolumn = "",
   },
   cache = vim.fn.stdpath("cache") .. "/snacks/image",
-  debug = false,
+  debug = {
+    request = false,
+    convert = false,
+    placement = false,
+  },
   env = {},
 }
 M.config = Snacks.config.get("image", defaults)
@@ -223,6 +228,12 @@ function M.health()
     else
       Snacks.health.error("Image rendering for `" .. lang .. "` is not available")
     end
+  end
+
+  if Snacks.health.have_tool({ "pdflatex" }) then
+    Snacks.health.ok("`pdflatex` is available to render math expressions in `latex` and `markdown` documents")
+  else
+    Snacks.health.warn("`pdflatex` is required to render LaTeX math equations")
   end
 
   if env.supported then

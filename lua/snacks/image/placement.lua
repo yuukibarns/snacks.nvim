@@ -114,7 +114,7 @@ function M:render_grid(loc)
   vim.api.nvim_set_hl(0, hl, {
     fg = self.img.id,
     sp = self.id,
-    bg = Snacks.image.config.debug and "#FF007C" or nil,
+    bg = Snacks.image.config.debug.placement and "#FF007C" or nil,
   })
   local lines = {} ---@type string[]
   for r = 1, loc.height do
@@ -180,7 +180,7 @@ function M:render_fallback(state)
 end
 
 function M:debug(...)
-  if not Snacks.image.config.debug then
+  if true or not Snacks.image.config.debug then
     return
   end
   Snacks.debug.inspect({ ... }, self.img.src, self.img.id, self.id)

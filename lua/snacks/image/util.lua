@@ -30,8 +30,8 @@ end
 function M.pixels_to_cells(size)
   local terminal = Snacks.image.terminal.size()
   return M.norm({
-    width = size.width / terminal.cell_width * terminal.scale,
-    height = size.height / terminal.cell_height * terminal.scale,
+    width = size.width / terminal.cell_width,
+    height = size.height / terminal.cell_height,
   })
 end
 
