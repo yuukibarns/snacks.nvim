@@ -345,7 +345,7 @@ function M.metrics()
   Snacks.notify.warn(lines, { title = "Metrics" })
 end
 
----@param opts {cmd: string|string[], args?: string[], cwd?: string}
+---@param opts {cmd: string|string[], args?: string[], cwd?: string, group?: boolean}
 function M.cmd(opts)
   local cmd = opts.cmd
   local args = vim.deepcopy(opts.args or {})
@@ -367,17 +367,12 @@ function M.cmd(opts)
       end
     end
     local id = cmd
-    for _, a in ipairs(args or {}) do
-      if a:find("^-") then
-        id = id .. " " .. a
-      end
-    end
     Snacks.notify.info(
       ("- **cwd**: `%s`\n```sh\n%s\n```"):format(
         vim.fn.fnamemodify(vim.fs.normalize(opts.cwd or uv.cwd() or "."), ":~"),
         table.concat(lines, "\n")
       ),
-      { id = "snacks.debug.cmd." .. id, title = "Cmd Debug" }
+      { id = opts.group and ("snacks.debug.cmd." .. id) or nil, title = "Cmd Debug" }
     )
   end)
 end

@@ -5,6 +5,8 @@ M.meta = {
   desc = "Utility functions for Snacks _(library)_",
 }
 
+M.is_win = jit.os:find("Windows")
+
 local uv = vim.uv or vim.loop
 local key_cache = {} ---@type table<string, string>
 
