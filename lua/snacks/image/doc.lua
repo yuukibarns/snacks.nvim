@@ -226,9 +226,16 @@ function M.hover()
     img = Snacks.image.placement.new(win.buf, src, o),
   }
   vim.api.nvim_create_autocmd({ "BufWritePost", "CursorMoved", "ModeChanged", "BufLeave" }, {
-    buffer = current_buf,
-    once = true,
-    callback = M.hover,
+    group = vim.api.nvim_create_augroup("snacks.image.hover", { clear = true }),
+    callback = function()
+      if not hover then
+        return true
+      end
+      M.hover()
+      if not hover then
+        return true
+      end
+    end,
   })
 end
 
