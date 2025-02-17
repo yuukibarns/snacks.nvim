@@ -27,6 +27,7 @@ local M = {}
 local uv = vim.uv or vim.loop
 
 local have_magick ---@type boolean
+local have_tectonic ---@type boolean
 
 ---@param src string
 function M.is_url(src)
@@ -98,10 +99,13 @@ end
 ---@param ... snacks.spawn.Config
 function M.tex2pdf(src, dest, ...)
   local opts = Snacks.config.merge(...)
-  return M.generate(dest, opts, {
-    cmd = "pdflatex",
-    args = { "-output-directory=" .. vim.fn.fnamemodify(dest, ":h"), src },
-  })
+  have_tectonic = have_tectonic == nil and vim.fn.executable("tectonic") == 1 or have_tectonic
+  local dir = vim.fn.fnamemodify(dest, ":h")
+  local cmd, args = "pdflatex", { "-output-directory=" .. dir, src }
+  if have_tectonic then
+    cmd, args = "tectonic", { "--outdir", dir, src }
+  end
+  return M.generate(dest, opts, { cmd = cmd, args = args })
 end
 
 ---@param src string

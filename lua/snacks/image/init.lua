@@ -250,10 +250,10 @@ function M.health()
     end
   end
 
-  if Snacks.health.have_tool({ "pdflatex" }) then
-    Snacks.health.ok("`pdflatex` is available to render math expressions in `latex` and `markdown` documents")
+  if Snacks.health.have_tool({ "tectonic", "pdflatex" }) then
+    Snacks.health.ok("LaTeX math equations are supported")
   else
-    Snacks.health.warn("`pdflatex` is required to render LaTeX math equations")
+    Snacks.health.error("`tectonic` or `pdflatex` is required to render LaTeX math equations")
   end
 
   if env.supported then
