@@ -41,6 +41,7 @@ end
 function Proc.new(opts)
   local self = setmetatable({}, Proc)
   self.opts = opts
+  self.code, self.signal = 0, 0
   self.data = {}
   if opts.run ~= false then
     self:run()
@@ -63,6 +64,9 @@ function Proc:kill(signal)
 end
 
 function Proc:failed()
+  if self:running() then
+    return false
+  end
   return self.code ~= 0 or self.signal ~= 0
 end
 

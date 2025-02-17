@@ -251,14 +251,14 @@ function M.health()
     if ok and parser then
       Snacks.health.ok("Image rendering for `" .. lang .. "` is available")
     else
-      Snacks.health.error("Image rendering for `" .. lang .. "` is not available")
+      Snacks.health.warn("Image rendering for `" .. lang .. "` is not available")
     end
   end
 
   if Snacks.health.have_tool({ "tectonic", "pdflatex" }) then
     Snacks.health.ok("LaTeX math equations are supported")
   else
-    Snacks.health.error("`tectonic` or `pdflatex` is required to render LaTeX math equations")
+    Snacks.health.warn("`tectonic` or `pdflatex` is required to render LaTeX math equations")
   end
 
   if env.supported then

@@ -62,6 +62,9 @@ function M:on_send()
 end
 
 function M:failed()
+  if self._proc and self._proc:running() then
+    return false
+  end
   if self._proc and self._proc:failed() then
     return true
   end
