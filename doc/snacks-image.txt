@@ -1,4 +1,4 @@
-*snacks-image.txt*                                                 snacks.nvim
+*snacks-image*                                                snacks_image
 
 ==============================================================================
 Table of Contents                             *snacks-image-table-of-contents*
@@ -10,6 +10,7 @@ Table of Contents                             *snacks-image-table-of-contents*
 4. Types                                                  |snacks-image-types|
 5. Module                                                |snacks-image-module|
   - Snacks.image.hover()            |snacks-image-module-snacks.image.hover()|
+  - Snacks.image.langs()            |snacks-image-module-snacks.image.langs()|
   - Snacks.image.supports()      |snacks-image-module-snacks.image.supports()|
   - Snacks.image.supports_file()|snacks-image-module-snacks.image.supports_file()|
   - Snacks.image.supports_terminal()|snacks-image-module-snacks.image.supports_terminal()|
@@ -43,6 +44,17 @@ For example, to force detection of **ghostty** you can set
 In order to automatically display the image when opening an image file, or to
 have imaged displayed in supported document formats like `markdown` or `html`,
 you need to enable the `image` plugin in your `snacks` config.
+
+Supported document formats are:
+
+- markdown
+- html
+- norg
+- tsx
+- javascript
+- css
+- vue
+- angular
 
 ImageMagick <https://imagemagick.org/index.php> is required to convert images
 to the supported formats (all except PNG).
@@ -90,7 +102,6 @@ In case of issues, make sure to run `:checkhealth snacks`.
         -- a treesitter parser must be available for the enabled languages.
         -- supported language injections: markdown, html
         enabled = true,
-        lang = { "markdown", "html", "norg", "tsx", "javascript", "css", "vue", "angular" },
         -- render the image inline in the buffer
         -- if your env doesn't support unicode placeholders, this will be disabled
         -- takes precedence over `opts.float` on supported terminals
@@ -101,6 +112,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
         max_width = 80,
         max_height = 40,
       },
+      img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments" },
       -- window options applied to windows displaying image buffers
       -- an image buffer is a buffer with `filetype=image`
       wo = {
@@ -113,6 +125,12 @@ In case of issues, make sure to run `:checkhealth snacks`.
         list = false,
         spell = false,
         statuscolumn = "",
+      },
+      cache = vim.fn.stdpath("cache") .. "/snacks/image",
+      debug = {
+        request = false,
+        convert = false,
+        placement = false,
       },
       env = {},
     }
@@ -144,8 +162,6 @@ SNACKS_IMAGE                                *snacks-image-styles-snacks_image*
 
 ==============================================================================
 4. Types                                                  *snacks-image-types*
-
-TODO: - tsx / jsx - url decode? - look for all images?
 
 >lua
     ---@alias snacks.image.Size {width: number, height: number}
@@ -191,6 +207,7 @@ TODO: - tsx / jsx - url decode? - look for all images?
     ---@field util snacks.image.util
     ---@field buf snacks.image.buf
     ---@field doc snacks.image.doc
+    ---@field convert snacks.image.convert
     Snacks.image = {}
 <
 
@@ -201,6 +218,14 @@ Show the image at the cursor in a floating window
 
 >lua
     Snacks.image.hover()
+<
+
+
+`Snacks.image.langs()`                                  *Snacks.image.langs()*
+
+>lua
+    ---@return string[]
+    Snacks.image.langs()
 <
 
 
