@@ -193,7 +193,7 @@ end
 ---@private
 function M.health()
   Snacks.health.have_tool({ "kitty", "wezterm", "ghostty" })
-  if not Snacks.health.have_tool("magick") then
+  if not Snacks.health.have_tool({ "magick", "convert" }) then
     Snacks.health.error("`magick` is required to convert images. Only PNG files will be displayed.")
   end
   local env = M.terminal.env()
