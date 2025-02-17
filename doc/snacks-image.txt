@@ -3,20 +3,29 @@
 ==============================================================================
 Table of Contents                             *snacks-image-table-of-contents*
 
-1. Setup                                                  |snacks-image-setup|
-2. Config                                                |snacks-image-config|
-3. Styles                                                |snacks-image-styles|
+1. Features                                            |snacks-image-features|
+2. Setup                                                  |snacks-image-setup|
+3. Config                                                |snacks-image-config|
+4. Styles                                                |snacks-image-styles|
   - snacks_image                            |snacks-image-styles-snacks_image|
-4. Types                                                  |snacks-image-types|
-5. Module                                                |snacks-image-module|
+5. Types                                                  |snacks-image-types|
+6. Module                                                |snacks-image-module|
   - Snacks.image.hover()            |snacks-image-module-snacks.image.hover()|
   - Snacks.image.langs()            |snacks-image-module-snacks.image.langs()|
   - Snacks.image.supports()      |snacks-image-module-snacks.image.supports()|
   - Snacks.image.supports_file()|snacks-image-module-snacks.image.supports_file()|
   - Snacks.image.supports_terminal()|snacks-image-module-snacks.image.supports_terminal()|
-6. Links                                                  |snacks-image-links|
-Image viewer using the Kitty Graphics Protocol
-<https://sw.kovidgoyal.net/kitty/graphics-protocol/>.
+7. Links                                                  |snacks-image-links|
+
+==============================================================================
+1. Features                                            *snacks-image-features*
+
+- Image viewer using the Kitty Graphics Protocol <https://sw.kovidgoyal.net/kitty/graphics-protocol/>.
+- open images in a wide range of formats:
+    `png`, `jpg`, `jpeg`, `gif`, `bmp`, `webp`, `tiff`, `heic`, `avif`, `mp4`, `mov`, `avi`, `mkv`, `webm`
+- Supports inline image rendering in:
+    `markdown`, `html`, `norg`, `tsx`, `javascript`, `css`, `vue`, `scss`, `latex`, `typst`, `vue`
+- LaTex math expressions in `markdown` and `latex` documents
 
 Terminal support:
 
@@ -45,17 +54,6 @@ In order to automatically display the image when opening an image file, or to
 have imaged displayed in supported document formats like `markdown` or `html`,
 you need to enable the `image` plugin in your `snacks` config.
 
-Supported document formats are:
-
-- markdown
-- html
-- norg
-- tsx
-- javascript
-- css
-- vue
-- angular
-
 ImageMagick <https://imagemagick.org/index.php> is required to convert images
 to the supported formats (all except PNG).
 
@@ -63,7 +61,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
 
 
 ==============================================================================
-1. Setup                                                  *snacks-image-setup*
+2. Setup                                                  *snacks-image-setup*
 
 >lua
     -- lazy.nvim
@@ -82,7 +80,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
 
 
 ==============================================================================
-2. Config                                                *snacks-image-config*
+3. Config                                                *snacks-image-config*
 
 >lua
     ---@class snacks.image.Config
@@ -138,7 +136,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
 
 
 ==============================================================================
-3. Styles                                                *snacks-image-styles*
+4. Styles                                                *snacks-image-styles*
 
 Check the styles
 <https://github.com/folke/snacks.nvim/blob/main/docs/styles.md> docs for more
@@ -161,7 +159,7 @@ SNACKS_IMAGE                                *snacks-image-styles-snacks_image*
 
 
 ==============================================================================
-4. Types                                                  *snacks-image-types*
+5. Types                                                  *snacks-image-types*
 
 >lua
     ---@alias snacks.image.Size {width: number, height: number}
@@ -197,7 +195,7 @@ SNACKS_IMAGE                                *snacks-image-styles-snacks_image*
 
 
 ==============================================================================
-5. Module                                                *snacks-image-module*
+6. Module                                                *snacks-image-module*
 
 >lua
     ---@class snacks.image
@@ -259,7 +257,7 @@ Check if the terminal supports the kitty graphics protocol
 <
 
 ==============================================================================
-6. Links                                                  *snacks-image-links*
+7. Links                                                  *snacks-image-links*
 
 1. *Image*: https://github.com/user-attachments/assets/4e8a686c-bf41-4989-9d74-1641ecf2835f
 
