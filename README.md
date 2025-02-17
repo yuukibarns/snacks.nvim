@@ -129,6 +129,7 @@ Please refer to the readme of each plugin for their specific configuration.
 ---@field words? snacks.words.Config
 ---@field zen? snacks.zen.Config
 ---@field styles? table<string, snacks.win.Config>
+---@field image? snacks.image.Config|{}
 {
   image = {
     -- define these here, so that we don't need to load the image module
