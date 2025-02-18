@@ -8,7 +8,7 @@ local M = {}
 
 ---@alias TSMatch {node:TSNode, meta:vim.treesitter.query.TSMetadata}
 ---@alias snacks.image.ctx {buf:number, pos?: TSMatch, src?: TSMatch, content?: TSMatch}
----@alias snacks.image.match {id: string, pos: snacks.image.Pos, src?: string, content?: string, ext?: string}
+---@alias snacks.image.match {id: string, pos: snacks.image.Pos, src?: string, content?: string, ext?: string, range?:Range4}
 ---@alias snacks.image.transform fun(match: snacks.image.match, ctx: snacks.image.ctx)
 
 ---@type table<string, snacks.image.transform>
@@ -142,6 +142,7 @@ function M.find(buf, from, to)
       local img = {
         ext = meta["image.ext"],
         id = ctx.pos.node:id(),
+        range = { range[1] + 1, range[2], range[4] + 1, range[5] },
         pos = {
           range[1] + #lines,
           math.min(range[2], range[5]),
@@ -190,9 +191,17 @@ end
 ---@return string? image_src, snacks.image.Pos? image_pos
 function M.at_cursor()
   local cursor = vim.api.nvim_win_get_cursor(0)
-  local img = M.find(vim.api.nvim_get_current_buf(), cursor[1], cursor[1] + 1)[1]
-  if img then
-    return img.src, img.pos
+  local imgs = M.find(vim.api.nvim_get_current_buf(), cursor[1], cursor[1] + 1)
+  for _, img in ipairs(imgs) do
+    local range = img.range
+    if range then
+      if
+        (range[1] == range[3] and cursor[2] >= range[2] and cursor[2] <= range[4])
+        or (range[1] ~= range[3] and cursor[1] >= range[1] and cursor[1] <= range[3])
+      then
+        return img.src, img.pos
+      end
+    end
   end
 end
 
