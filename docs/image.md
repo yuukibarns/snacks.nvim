@@ -130,6 +130,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
   env = {},
   ---@class snacks.image.convert.Config
   convert = {
+    notify = true, -- show a notification on error
     ---@type snacks.image.args
     mermaid = function()
       local theme = vim.o.background == "light" and "neutral" or "dark"
