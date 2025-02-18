@@ -181,6 +181,7 @@ Convert.__index = Convert
 
 ---@param opts snacks.image.convert.Config
 function Convert.new(opts)
+  vim.mkdir(Snacks.image.config.cache, "p")
   local self = setmetatable({}, Convert)
   opts.src = M.norm(opts.src)
   self.opts = opts
