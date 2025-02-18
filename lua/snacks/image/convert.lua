@@ -124,7 +124,7 @@ local commands = {
       fd:close()
       local format, w, h, x, y = info:match("^(%w+)%s+(%d+)x(%d+)%s+(%d+%.?%d*)x(%d+%.?%d*)$")
       if not format then
-        dd(info)
+        return
       end
       step.meta.info = {
         format = format:lower(),
