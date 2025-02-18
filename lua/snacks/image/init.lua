@@ -44,7 +44,7 @@ M.meta = {
 --- Return the absolute path or url to the image.
 --- When `nil`, the path is resolved relative to the file.
 ---@field resolve? fun(file: string, src: string): string?
----@field magick? table<string, (string|number)[]>
+---@field convert? snacks.image.convert.Config
 local defaults = {
   formats = {
     "png",
@@ -100,10 +100,14 @@ local defaults = {
     placement = false,
   },
   env = {},
-  magick = {
-    default = { "{src}[0]", "-scale", "1920x1080>" },
-    math = { "-density", 600, "{src}[0]", "-trim" },
-    pdf = { "-density", 300, "{src}[0]", "-background", "white", "-alpha", "remove", "-trim" },
+  ---@class snacks.image.convert.Config
+  convert = {
+    ---@type table<string,snacks.image.args>
+    magick = {
+      default = { "{src}[0]", "-scale", "1920x1080>" },
+      math = { "-density", 600, "{src}[0]", "-trim" },
+      pdf = { "-density", 300, "{src}[0]", "-background", "white", "-alpha", "remove", "-trim" },
+    },
   },
 }
 M.config = Snacks.config.get("image", defaults)

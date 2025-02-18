@@ -10,7 +10,7 @@ local uv = vim.uv or vim.loop
 ---@field size snacks.image.Size
 ---@field dpi snacks.image.Size
 
----@class snacks.image.convert.Config
+---@class snacks.image.convert.Opts
 ---@field src string
 
 ---@class snacks.image.meta
@@ -18,11 +18,13 @@ local uv = vim.uv or vim.loop
 ---@field info? snacks.image.Info
 ---@field [string] string|number|boolean
 
+---@alias snacks.image.args (number|string)[] | fun(): ((number|string)[])
+
 ---@class snacks.image.Proc
 ---@field cmd string
 ---@field cwd? string
 ---@field available? boolean
----@field args (number|string)[]
+---@field args snacks.image.args
 
 ---@class snacks.image.step
 ---@field name string
@@ -137,7 +139,7 @@ local commands = {
     depends = { "identify" },
     ft = "png",
     cmd = function(step)
-      local formats = vim.deepcopy(Snacks.image.config.magick or {})
+      local formats = vim.deepcopy(Snacks.image.config.convert.magick or {})
       local args = formats.default or { "{src}[0]" }
       local info = step.meta.info
       local fts = { vim.fs.basename(step.file):match("%.([^%.]+)%.png") } ---@type string[]
@@ -167,7 +169,7 @@ local commands = {
 }
 
 ---@class snacks.image.Convert
----@field opts snacks.image.convert.Config
+---@field opts snacks.image.convert.Opts
 ---@field src string
 ---@field file string
 ---@field prefix string
@@ -179,7 +181,7 @@ local commands = {
 local Convert = {}
 Convert.__index = Convert
 
----@param opts snacks.image.convert.Config
+---@param opts snacks.image.convert.Opts
 function Convert.new(opts)
   vim.fn.mkdir(Snacks.image.config.cache, "p")
   local self = setmetatable({}, Convert)
@@ -324,7 +326,9 @@ function Convert:run(cb)
         c.available = vim.fn.executable(c.cmd) == 1
       end
       if c.available then
-        local args = vim.deepcopy(c.args)
+        local args = type(c.args) == "function" and c.args() or c.args
+        ---@cast args (number|string)[]
+        args = vim.deepcopy(args)
         local data = vim.tbl_extend("keep", {
           file = step.file,
           basename = vim.fs.basename(step.file),
@@ -344,7 +348,9 @@ function Convert:run(cb)
           args = args,
           on_exit = function(proc, err)
             local out = vim.trim(proc:out() .. "\n" .. proc:err())
-            done(step, err and out or nil)
+            vim.schedule(function()
+              done(step, err and out or nil)
+            end)
           end,
         })
         return
@@ -376,7 +382,7 @@ function M.norm(src)
   return src
 end
 
----@param opts snacks.image.convert.Config
+---@param opts snacks.image.convert.Opts
 function M.convert(opts)
   return Convert.new(opts)
 end
