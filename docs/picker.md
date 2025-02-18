@@ -1157,6 +1157,7 @@ Git log
 ---@field follow? boolean track file history across renames
 ---@field current_file? boolean show current file log
 ---@field current_line? boolean show current line log
+---@field author? string filter commits by author
 {
   finder = "git_log",
   format = "git_log",
