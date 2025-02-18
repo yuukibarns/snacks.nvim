@@ -30,14 +30,25 @@ M.transforms = {
     if not content:find("^\\begin") then
       content = ("\\[%s\\]"):format(content)
     end
+    local packages = { "xcolor", "amsmath", "amssymb" }
+    for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
+      if line:find("\\usepackage") then
+        for _, p in ipairs(vim.split(line:match("{(.-)}") or "", ",%s*")) do
+          if not vim.tbl_contains(packages, p) then
+            packages[#packages + 1] = p
+          end
+        end
+      end
+    end
+    table.sort(packages)
     img.content = ([[
 \documentclass[preview,border=2pt,varwidth]{standalone}
-\usepackage{xcolor, amsmath, amssymb}
+\usepackage{%s}
 \begin{document}
 { \Large \color[HTML]{%s}
 %s}
 \end{document}
-    ]]):format(fg:upper():sub(2), content)
+    ]]):format(table.concat(packages, ", "), fg:upper():sub(2), content)
   end,
 }
 
@@ -108,7 +119,7 @@ function M.find(buf, from, to)
       return
     end
     for _, match, meta in query:iter_matches(tstree:root(), buf, from and from - 1 or nil, to and to - 1 or nil) do
-      local ctx = {} ---@type snacks.image.ctx
+      local ctx = { buf = buf } ---@type snacks.image.ctx
       local lang = meta["injection.language"] or tree:lang()
       for id, nodes in pairs(match) do
         nodes = type(nodes) == "userdata" and { nodes } or nodes
