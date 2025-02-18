@@ -179,10 +179,12 @@ end
 ---@param loc snacks.image.Loc
 function M:render_grid(loc)
   local hl = "SnacksImage" .. self.id -- image id is encoded in the foreground color
-  vim.api.nvim_set_hl(0, hl, {
-    fg = self.img.id,
-    sp = self.id,
-    bg = Snacks.image.config.debug.placement and "#FF007C" or nil,
+  Snacks.util.set_hl({
+    [hl] = {
+      fg = self.img.id,
+      sp = self.id,
+      bg = Snacks.image.config.debug.placement and "#FF007C" or nil,
+    },
   })
   local lines = {} ---@type string[]
   for r = 1, loc.height do
