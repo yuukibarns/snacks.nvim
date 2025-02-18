@@ -1399,11 +1399,14 @@ Neovim help tags
   plugs = false,
   ["local"] = true,
   modes = { "n", "v", "x", "s", "o", "i", "c", "t" },
+  ---@param picker snacks.Picker
   confirm = function(picker, item)
-    picker:close()
-    if item then
-      vim.api.nvim_input(item.item.lhs)
-    end
+    picker:norm(function()
+      if item then
+        picker:close()
+        vim.api.nvim_input(item.item.lhs)
+      end
+    end)
   end,
   actions = {
     toggle_global = function(picker)
