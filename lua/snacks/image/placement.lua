@@ -231,6 +231,9 @@ end
 
 ---@param state snacks.image.State
 function M:render_fallback(state)
+  if not self.opts.inline then
+    vim.api.nvim_buf_clear_namespace(self.buf, self.ns, 0, -1)
+  end
   for _, win in ipairs(state.wins) do
     self:debug("render_fallback", win)
     local border = setmetatable({ opts = vim.api.nvim_win_get_config(win) }, { __index = Snacks.win }):border_size()
