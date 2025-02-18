@@ -102,6 +102,11 @@ local defaults = {
   env = {},
   ---@class snacks.image.convert.Config
   convert = {
+    ---@type snacks.image.args
+    mermaid = function()
+      local theme = vim.o.background == "light" and "neutral" or "dark"
+      return { "-i", "{src}", "-o", "{file}", "-b", "transparent", "-t", theme, "-s", "{scale}" }
+    end,
     ---@type table<string,snacks.image.args>
     magick = {
       default = { "{src}[0]", "-scale", "1920x1080>" },

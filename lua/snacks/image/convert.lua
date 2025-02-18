@@ -93,11 +93,13 @@ local commands = {
     end,
   },
   mmd = {
-    ft = "png",
     cmd = {
       cmd = "mmdc",
-      args = { "-i", "{src}", "-o", "{file}", "-b", "transparent", "-t", "{bg}", "-s", "{scale}" },
+      args = Snacks.image.config.convert.mermaid,
     },
+    file = function(convert, ctx)
+      return convert:tmpfile(vim.o.background .. ".png")
+    end,
   },
   identify = {
     pipe = false,
