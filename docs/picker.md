@@ -167,6 +167,10 @@ Snacks.picker.pick({source = "files", ...})
   },
   ---@class snacks.picker.previewers.Config
   previewers = {
+    diff = {
+      native = false, -- use native (terminal) or Neovim for previewing git diffs and commits
+      cmd = { "delta" }, -- example to show a diff with delta
+    },
     git = {
       native = false, -- use native (terminal) or Neovim for previewing git diffs and commits
       args = {}, -- additional arguments passed to the git command. Useful to set pager options usin `-c ...`
@@ -2053,7 +2057,7 @@ Not meant to be used directly.
 {
   finder = "vim_undo",
   format = "undo",
-  preview = "preview",
+  preview = "diff",
   confirm = "item_action",
   win = {
     preview = { wo = { number = false, relativenumber = false, signcolumn = "no" } },
