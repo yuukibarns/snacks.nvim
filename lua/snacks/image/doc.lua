@@ -123,12 +123,16 @@ function M.find(buf, from, to)
       assert(ctx.pos, "no image node")
 
       local range = vim.treesitter.get_range(ctx.pos.node, buf, ctx.pos.meta)
+      local lines = vim.api.nvim_buf_get_lines(buf, range[1], range[4] + 1, false)
+      while #lines > 0 and vim.trim(lines[#lines]) == "" do
+        table.remove(lines)
+      end
       ---@type snacks.image.match
       local img = {
         ext = meta["image.ext"],
         id = ctx.pos.node:id(),
         pos = {
-          range[1] == range[4] and (range[1] + 1) or (range[4] + 1),
+          range[1] + #lines,
           math.min(range[2], range[5]),
         },
       }
