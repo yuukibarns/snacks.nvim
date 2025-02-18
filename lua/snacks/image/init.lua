@@ -131,6 +131,7 @@ Snacks.config.style("snacks_image", {
 Snacks.util.set_hl({
   Spinner = "Special",
   Loading = "NonText",
+  Math = { fg = Snacks.util.color({ "@markup.math.latex", "Special", "Normal" }) },
 }, { prefix = "SnacksImage", default = true })
 
 ---@class snacks.image.Opts

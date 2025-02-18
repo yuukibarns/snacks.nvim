@@ -70,6 +70,15 @@ local commands = {
       uv.fs_copyfile(step.meta.src, step.file)
     end,
   },
+  typ = {
+    ft = "pdf",
+    cmd = {
+      {
+        cmd = "typst",
+        args = { "compile", "--format", "pdf", "--pages", 1, "{src}", "{file}" },
+      },
+    },
+  },
   tex = {
     ft = "pdf",
     cmd = {

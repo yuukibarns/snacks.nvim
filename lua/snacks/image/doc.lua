@@ -18,11 +18,21 @@ M.transforms = {
     local line = vim.api.nvim_buf_get_lines(ctx.buf, row, row + 1, false)[1]
     img.src = line:sub(col + 1)
   end,
+  typst = function(img, ctx)
+    if not img.content then
+      return
+    end
+    local fg = Snacks.util.color("SnacksImageMath") or "#000000"
+    img.content = ([[
+#set page(width: auto, height: auto, margin: (x: 2pt, y: 2pt))
+#set text(size: 12pt, fill: rgb("%s"))
+%s]]):format(fg, img.content)
+  end,
   latex = function(img, ctx)
     if not img.content then
       return
     end
-    local fg = Snacks.util.color({ "@markup.math.latex", "Special", "Normal" }) or "#000000"
+    local fg = Snacks.util.color("SnacksImageMath") or "#000000"
     img.ext = "math.tex"
     local content = vim.trim(img.content or "")
     content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
