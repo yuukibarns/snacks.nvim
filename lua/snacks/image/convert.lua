@@ -349,8 +349,8 @@ function Convert:run(cb)
         })
         return
       end
-      return done(step, "No command available")
     end
+    return done(step, "No command available")
   end
   next()
 end
