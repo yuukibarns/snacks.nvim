@@ -1056,6 +1056,7 @@ Neovim commands
 ```
 
 ```lua
+---@type snacks.picker.git.Config
 {
   finder = "git_branches",
   format = "git_branch",
@@ -1069,6 +1070,7 @@ Neovim commands
       },
     },
   },
+  ---@param picker snacks.Picker
   on_show = function(picker)
     for i, item in ipairs(picker:items()) do
       if item.current then
@@ -1088,6 +1090,7 @@ Neovim commands
 ```
 
 ```lua
+---@type snacks.picker.git.Config
 {
   finder = "git_diff",
   format = "file",
@@ -1104,7 +1107,7 @@ Neovim commands
 Find git files
 
 ```lua
----@class snacks.picker.git.files.Config: snacks.picker.Config
+---@class snacks.picker.git.files.Config: snacks.picker.git.Config
 ---@field untracked? boolean show untracked files
 ---@field submodules? boolean show submodule files
 {
@@ -1125,8 +1128,7 @@ Find git files
 Grep in git files
 
 ```lua
----@class snacks.picker.git.grep.Config: snacks.picker.Config
----@field args? string[] additional arguments to pass to `git grep`
+---@class snacks.picker.git.grep.Config: snacks.picker.git.Config
 ---@field untracked? boolean search in untracked files
 ---@field submodules? boolean search in submodule files
 ---@field need_search? boolean require a search pattern
@@ -1151,7 +1153,7 @@ Grep in git files
 Git log
 
 ```lua
----@class snacks.picker.git.log.Config: snacks.picker.Config
+---@class snacks.picker.git.log.Config: snacks.picker.git.Config
 ---@field follow? boolean track file history across renames
 ---@field current_file? boolean show current file log
 ---@field current_line? boolean show current line log
@@ -1224,7 +1226,7 @@ Git log
 ```
 
 ```lua
----@class snacks.picker.git.status.Config: snacks.picker.Config
+---@class snacks.picker.git.status.Config: snacks.picker.git.Config
 ---@field ignored? boolean show ignored files
 {
   finder = "git_status",
