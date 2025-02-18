@@ -23,7 +23,6 @@ local uv = vim.uv or vim.loop
 ---@class snacks.image.Proc
 ---@field cmd string
 ---@field cwd? string
----@field available? boolean
 ---@field args snacks.image.args
 
 ---@class snacks.image.step
@@ -164,11 +163,13 @@ local commands = {
       args[#args + 1] = "{file}"
       return {
         { cmd = "magick", args = args },
-        { cmd = "convert", args = args },
+        not Snacks.util.is_win and { cmd = "convert", args = args } or nil,
       }
     end,
   },
 }
+
+local have = {} ---@type table<string, boolean>
 
 ---@class snacks.image.Convert
 ---@field opts snacks.image.convert.Opts
@@ -282,18 +283,27 @@ function Convert:run(cb)
   local s = 0
   local next ---@type fun()
 
-  ---@param step snacks.image.step
+  ---@param step? snacks.image.step
   ---@param err? string
   local function done(step, err)
-    step.done = true
-    if err then
+    if step then
+      step.done = true
       step.err = err
-      Snacks.notify.error("Conversion of " .. step.name .. " failed:\n" .. err)
+    end
+    if err then
+      if Snacks.image.config.convert.notify then
+        local title = step and ("Conversion failed at step `%s`"):format(step.name) or "Conversion failed"
+        if step and step.proc then
+          step.proc:debug({ title = title })
+        else
+          Snacks.notify.error("# " .. title .. "\n" .. err, { title = "Snacks Image" })
+        end
+      end
       self._err = err
       self._done = true
       return cb(self)
     end
-    if step.cmd.on_done then
+    if step and step.cmd.on_done then
       step.cmd.on_done(step)
     end
     if s == #self.steps then
@@ -301,6 +311,12 @@ function Convert:run(cb)
       return cb(self)
     end
     next()
+  end
+
+  if not M.is_uri(self.src) and vim.fn.filereadable(self.src) == 0 then
+    local f = M.is_uri(self.src) and self.src or vim.fn.fnamemodify(self.src, ":p:~")
+    done(nil, ("File not found\n- `%s`"):format(f))
+    return
   end
 
   next = function()
@@ -324,10 +340,10 @@ function Convert:run(cb)
     local cmds = cmd.cmd and { cmd } or cmd
     ---@cast cmds snacks.image.Proc[]
     for _, c in ipairs(cmds) do
-      if c.available == nil then
-        c.available = vim.fn.executable(c.cmd) == 1
+      if have[c.cmd] == nil then
+        have[c.cmd] = vim.fn.executable(c.cmd) == 1
       end
-      if c.available then
+      if have[c.cmd] then
         local args = type(c.args) == "function" and c.args() or c.args
         ---@cast args (number|string)[]
         args = vim.deepcopy(args)
