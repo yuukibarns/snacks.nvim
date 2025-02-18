@@ -100,6 +100,10 @@ function M.log(opts, ctx)
     "--no-patch"
   )
 
+  if opts.author then
+    table.insert(args, "--author=" .. opts.author)
+  end
+
   local file ---@type string?
   if opts.current_line then
     local cursor = vim.api.nvim_win_get_cursor(ctx.filter.current_win)
@@ -118,6 +122,7 @@ function M.log(opts, ctx)
 
   local Proc = require("snacks.picker.source.proc")
   file = file and vim.fs.normalize(file) or nil
+
   local cwd = vim.fs.normalize(file and vim.fn.fnamemodify(file, ":h") or opts and opts.cwd or uv.cwd() or ".") or nil
   cwd = Snacks.git.get_root(cwd) or cwd
 
