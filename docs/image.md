@@ -132,6 +132,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
   convert = {
     notify = true, -- show a notification on error
     math = {
+      font_size = "Large", -- see https://www.sascha-frank.com/latex-font-size.html
       -- for latex documents, the doc packages are included automatically,
       -- but you can add more packages here. Useful for markdown documents.
       packages = { "amsmath", "amssymb", "amsfonts", "amscd", "mathtools", "physics", "siunitx", "mhchem" },
@@ -143,8 +144,9 @@ In case of issues, make sure to run `:checkhealth snacks`.
     end,
     ---@type table<string,snacks.image.args>
     magick = {
-      default = { "{src}[0]", "-scale", "1920x1080>" },
-      math = { "-density", 600, "{src}[0]", "-trim" },
+      default = { "{src}[0]", "-scale", "1920x1080>" }, -- default for raster images
+      vector = { "-density", 300, "{src}[0]" }, -- used by vector images like svg
+      math = { "-density", 300, "{src}[0]", "-trim" },
       pdf = { "-density", 300, "{src}[0]", "-background", "white", "-alpha", "remove", "-trim" },
     },
   },
