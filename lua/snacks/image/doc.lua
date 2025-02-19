@@ -163,7 +163,6 @@ function M.find(buf, from, to)
           ctx[field] = { node = nodes[1], meta = meta[id] or {} }
         end
       end
-      assert(ctx.src or ctx.content, "no image src or content")
       ctx.pos = ctx.pos or ctx.src or ctx.content
       assert(ctx.pos, "no image node")
 
@@ -190,6 +189,7 @@ function M.find(buf, from, to)
       if ctx.content then
         img.content = vim.treesitter.get_node_text(ctx.content.node, buf, { metadata = ctx.content.meta })
       end
+      assert(img.src or img.content, "no image src or content")
 
       local transform = M.transforms[lang]
       if transform then
