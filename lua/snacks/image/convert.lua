@@ -156,29 +156,29 @@ local commands = {
     end,
   },
   convert = {
-    depends = { "identify" },
     ft = "png",
     cmd = function(step)
       local formats = vim.deepcopy(Snacks.image.config.convert.magick or {})
       local args = formats.default or { "{src}[0]" }
       local info = step.meta.info
-      local fts = { vim.fs.basename(step.file):match("%.([^%.]+)%.png") } ---@type string[]
-      if info then
-        local vector = vim.tbl_contains({ "pdf", "svg", "eps", "ai", "mvg" }, info.format)
-        if vector then
-          args = formats.vector or args
-        end
-        if info.format then
-          fts[#fts + 1] = info.format
-        end
+      local format = info and info.format or vim.fn.fnamemodify(step.meta.src, ":e")
+
+      local vector = vim.tbl_contains({ "pdf", "svg", "eps", "ai", "mvg" }, format)
+      if vector then
+        args = formats.vector or args
       end
+
+      local fts = { vim.fs.basename(step.file):match("%.([^%.]+)%.png") } ---@type string[]
+      fts[#fts + 1] = format
+
       for _, ft in ipairs(fts) do
         local fmt = formats[ft]
         if fmt then
-          args = fmt
+          args = type(fmt) == "function" and fmt() or fmt
           break
         end
       end
+
       args[#args + 1] = "{file}"
       return {
         { cmd = "magick", args = args },
@@ -281,7 +281,10 @@ function Convert:ft(src)
 end
 
 function Convert:resolve()
-  self:_resolve("url")
+  if M.is_uri(self.src) then
+    self:_resolve("url")
+    self:_resolve("identify")
+  end
   while self:ft() ~= "png" do
     local ft = self:ft()
     local target = commands[ft] and ft or "convert"
