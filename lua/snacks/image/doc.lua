@@ -40,7 +40,8 @@ M.transforms = {
     if not content:find("^\\begin") then
       content = ("\\[%s\\]"):format(content)
     end
-    local packages = { "xcolor", "amsmath", "amssymb" }
+    local packages = { "xcolor" }
+    vim.list_extend(packages, Snacks.image.config.convert.math.packages)
     for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
       if line:find("\\usepackage") then
         for _, p in ipairs(vim.split(line:match("{(.-)}") or "", ",%s*")) do

@@ -103,6 +103,11 @@ local defaults = {
   ---@class snacks.image.convert.Config
   convert = {
     notify = true, -- show a notification on error
+    math = {
+      -- for latex documents, the doc packages are included automatically,
+      -- but you can add more packages here. Useful for markdown documents.
+      packages = { "amsmath", "amssymb", "amsfonts", "amscd", "mathtools", "physics", "siunitx", "mhchem" },
+    },
     ---@type snacks.image.args
     mermaid = function()
       local theme = vim.o.background == "light" and "neutral" or "dark"
