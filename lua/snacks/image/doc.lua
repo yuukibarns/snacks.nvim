@@ -154,6 +154,7 @@ function M.find(buf, from, to)
       ---@type snacks.image.match
       local img = {
         ext = meta["image.ext"],
+        src = meta["image.src"],
         id = ctx.pos.node:id(),
         range = { range[1] + 1, range[2], range[4] + 1, range[5] },
         pos = {
