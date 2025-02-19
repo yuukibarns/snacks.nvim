@@ -128,9 +128,10 @@ function M.get()
   return ret, current
 end
 
----@param count number
+---@param count? number
 ---@param cycle? boolean
 function M.jump(count, cycle)
+  count = count or 1
   local words, idx = M.get()
   if not idx then
     return
