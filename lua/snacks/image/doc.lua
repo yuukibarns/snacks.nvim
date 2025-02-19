@@ -52,14 +52,16 @@ M.transforms = {
       end
     end
     table.sort(packages)
+    local fs = Snacks.image.config.convert.math.font_size or "large"
     img.content = ([[
-\documentclass[preview,border=2pt,varwidth]{standalone}
+\documentclass[preview,border=2pt,varwidth,12pt]{standalone}
 \usepackage{%s}
 \begin{document}
-{ \Large \color[HTML]{%s}
+{ \%s \selectfont
+  \color[HTML]{%s}
 %s}
 \end{document}
-    ]]):format(table.concat(packages, ", "), fg:upper():sub(2), content)
+    ]]):format(table.concat(packages, ", "), fs, fg:upper():sub(2), content)
   end,
 }
 
