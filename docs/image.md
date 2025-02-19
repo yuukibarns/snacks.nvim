@@ -138,7 +138,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
       font_size = "Large", -- see https://www.sascha-frank.com/latex-font-size.html
       -- for latex documents, the doc packages are included automatically,
       -- but you can add more packages here. Useful for markdown documents.
-      packages = { "amsmath", "amssymb", "amsfonts", "amscd", "mathtools", "physics", "siunitx", "mhchem" },
+      packages = { "amsmath", "amssymb", "amsfonts", "amscd", "mathtools" },
     },
     ---@type snacks.image.args
     mermaid = function()
