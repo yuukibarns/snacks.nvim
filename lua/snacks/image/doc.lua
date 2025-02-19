@@ -298,6 +298,7 @@ function M.inline(buf)
           i.src,
           Snacks.config.merge({}, Snacks.image.config.doc, {
             pos = i.pos,
+            range = i.range,
             inline = true,
           })
         )

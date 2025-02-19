@@ -78,6 +78,9 @@ local defaults = {
     float = true,
     max_width = 80,
     max_height = 40,
+    -- Set to `true`, to conceal the image text when rendering inline.
+    -- (experimental)
+    conceal = false,
   },
   img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments" },
   -- window options applied to windows displaying image buffers
@@ -143,6 +146,7 @@ Snacks.util.set_hl({
 
 ---@class snacks.image.Opts
 ---@field pos? snacks.image.Pos (row, col) (1,0)-indexed. defaults to the top-left corner
+---@field range? Range4
 ---@field inline? boolean render the image inline in the buffer
 ---@field width? number
 ---@field min_width? number
