@@ -274,13 +274,9 @@ function M.health()
     )
   )
 
-  for _, lang in ipairs(M.langs()) do
-    local ok, parser = pcall(vim.treesitter.get_string_parser, "", lang)
-    if ok and parser then
-      Snacks.health.ok("Image rendering for `" .. lang .. "` is available")
-    else
-      Snacks.health.warn("Image rendering for `" .. lang .. "` is not available")
-    end
+  local langs, _, missing = Snacks.health.has_lang(M.langs())
+  if missing > 0 then
+    Snacks.health.warn("Image rendering in docs with missing treesitter parsers won't work")
   end
 
   if Snacks.health.have_tool("gs") then
@@ -290,9 +286,13 @@ function M.health()
   end
 
   if Snacks.health.have_tool({ "tectonic", "pdflatex" }) then
-    Snacks.health.ok("LaTeX math equations are supported")
+    if langs.latex then
+      Snacks.health.ok("LaTeX math equations are supported")
+    else
+      Snacks.health.warn("The `latex` treesitter parser is required to render LaTeX math expressions")
+    end
   else
-    Snacks.health.warn("`tectonic` or `pdflatex` is required to render LaTeX math equations")
+    Snacks.health.warn("`tectonic` or `pdflatex` is required to render LaTeX math expressions")
   end
 
   if Snacks.health.have_tool("mmdc") then
