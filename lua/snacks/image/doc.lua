@@ -26,7 +26,8 @@ M.transforms = {
     img.content = ([[
 #set page(width: auto, height: auto, margin: (x: 2pt, y: 2pt))
 #set text(size: 12pt, fill: rgb("%s"))
-%s]]):format(fg, img.content)
+%s
+%s]]):format(fg, M.get_header(ctx.buf), img.content)
   end,
   latex = function(img, ctx)
     if not img.content then
@@ -57,17 +58,34 @@ M.transforms = {
 \documentclass[preview,border=2pt,varwidth,12pt]{standalone}
 \usepackage{%s}
 \begin{document}
+%s
 { \%s \selectfont
   \color[HTML]{%s}
 %s}
 \end{document}
-    ]]):format(table.concat(packages, ", "), fs, fg:upper():sub(2), content)
+    ]]):format(table.concat(packages, ", "), M.get_header(ctx.buf), fs, fg:upper():sub(2), content)
   end,
 }
 
 local hover ---@type snacks.image.Hover?
 local uv = vim.uv or vim.loop
 local dir_cache = {} ---@type table<string, boolean>
+
+---@param buf number
+function M.get_header(buf)
+  local header = {} ---@type string[]
+  local in_header = false
+  for _, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+    if line:find("snacks:%s*header%s*start") then
+      in_header = true
+    elseif line:find("snacks:%s*header%s*end") then
+      in_header = false
+    elseif in_header then
+      header[#header + 1] = line
+    end
+  end
+  return table.concat(header, "\n")
+end
 
 ---@param str string
 function M.url_decode(str)
