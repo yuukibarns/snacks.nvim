@@ -156,7 +156,7 @@ local commands = {
       if info then
         local vector = vim.tbl_contains({ "pdf", "svg", "eps", "ai", "mvg" }, info.format)
         if vector then
-          args = { "-density", 300, "{src}[0]" }
+          args = formats.vector or args
         end
         if info.format then
           fts[#fts + 1] = info.format
