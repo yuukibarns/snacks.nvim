@@ -95,14 +95,17 @@ function M.resolve(buf, src)
   end
   if not src:find("^%w%w+://") then
     local cwd = uv.cwd() or "."
-    local checks = { src, vim.fs.dirname(file) .. "/" .. src }
-    for _, dir in ipairs(Snacks.image.config.img_dirs) do
-      dir = cwd .. "/" .. dir
-      if M.is_dir(dir) then
-        checks[#checks + 1] = dir .. "/" .. src
+    local checks = { [src] = true }
+    for _, root in ipairs({ cwd, vim.fs.dirname(file) }) do
+      checks[root .. "/" .. src] = true
+      for _, dir in ipairs(Snacks.image.config.img_dirs) do
+        dir = root .. "/" .. dir
+        if M.is_dir(dir) then
+          checks[dir .. "/" .. src] = true
+        end
       end
     end
-    for _, f in ipairs(checks) do
+    for f in pairs(checks) do
       if vim.fn.filereadable(f) == 1 then
         src = uv.fs_realpath(f) or f
         break
