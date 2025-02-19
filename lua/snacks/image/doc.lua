@@ -37,10 +37,10 @@ M.transforms = {
     local content = vim.trim(img.content or "")
     content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
     content = content:gsub("^\\[%[%(]", ""):gsub("\\[%]%)]$", "")
-    if not content:find("^\\begin") then
+    if not content:find("^\\begin") or content:find("^\\begin{aligned}") then
       content = ("\\[%s\\]"):format(content)
     end
-    local packages = { "xcolor", "amsmath", "amssymb" }
+    local packages = { "xcolor", "amsmath", "amssymb", "mathtools", "tikz-cd" }
     for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
       if line:find("\\usepackage") then
         for _, p in ipairs(vim.split(line:match("{(.-)}") or "", ",%s*")) do
@@ -55,7 +55,7 @@ M.transforms = {
 \documentclass[preview,border=2pt,varwidth]{standalone}
 \usepackage{%s}
 \begin{document}
-{ \Large \color[HTML]{%s}
+{ \small \color[HTML]{%s}
 %s}
 \end{document}
     ]]):format(table.concat(packages, ", "), fg:upper():sub(2), content)
@@ -206,8 +206,8 @@ function M.at_cursor()
     local range = img.range
     if range then
       if
-        (range[1] == range[3] and cursor[2] >= range[2] and cursor[2] <= range[4])
-        or (range[1] ~= range[3] and cursor[1] >= range[1] and cursor[1] <= range[3])
+          (range[1] == range[3] and cursor[2] >= range[2] and cursor[2] <= range[4])
+          or (range[1] ~= range[3] and cursor[1] >= range[1] and cursor[1] <= range[3])
       then
         return img.src, img.pos, img.id
       end

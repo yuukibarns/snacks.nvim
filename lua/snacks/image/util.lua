@@ -53,8 +53,8 @@ function M.fit(file, cells, opts)
   if opts.info then
     local terminal = Snacks.image.terminal.size()
     img_pixels = {}
-    img_pixels.height = opts.info.size.height / opts.info.dpi.height * 96 * terminal.scale
-    img_pixels.width = opts.info.size.width / opts.info.dpi.width * 96 * terminal.scale
+    img_pixels.height = opts.info.size.height / opts.info.dpi.height * 192 * terminal.scale
+    img_pixels.width = opts.info.size.width / opts.info.dpi.width * 192 * terminal.scale
   else
     img_pixels = M.dim(file)
   end
