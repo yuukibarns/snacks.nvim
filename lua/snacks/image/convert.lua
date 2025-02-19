@@ -39,9 +39,9 @@ local uv = vim.uv or vim.loop
 ---@field cmd (fun(step: snacks.image.step):(snacks.image.Proc|snacks.image.Proc[])?)|snacks.image.Proc|snacks.image.Proc[]
 ---@field ft? string
 ---@field file? fun(convert: snacks.image.Convert, meta: snacks.image.meta): string
----@field available? boolean
 ---@field depends? string[]
 ---@field on_done? fun(step: snacks.image.step)
+---@field on_error? fun(step: snacks.image.step):boolean? when return true, continue to next step
 ---@field pipe? boolean
 
 ---@type table<string, snacks.image.cmd>
@@ -81,11 +81,15 @@ local commands = {
   },
   tex = {
     ft = "pdf",
+    file = function(convert, ctx)
+      ctx.pdf = Snacks.image.config.cache .. "/" .. vim.fs.basename(ctx.src):gsub("%.tex$", ".pdf")
+      return convert:tmpfile("pdf")
+    end,
     cmd = {
       {
         cwd = "{dirname}",
         cmd = "tectonic",
-        args = { "--outdir", "{cache}", "{src}" },
+        args = { "-Z", "continue-on-errors", "--outdir", "{cache}", "{src}" },
       },
       {
         cmd = "pdflatex",
@@ -94,9 +98,15 @@ local commands = {
       },
     },
     on_done = function(step)
-      local pdf = Snacks.image.config.cache .. "/" .. vim.fs.basename(step.meta.src):gsub("%.tex$", ".pdf")
+      local pdf = assert(step.meta.pdf, "No pdf file")
       if uv.fs_stat(pdf) then
         uv.fs_rename(pdf, step.file)
+      end
+    end,
+    on_error = function(step)
+      local pdf = assert(step.meta.pdf, "No pdf file")
+      if step.meta.pdf and vim.fn.getfsize(pdf) > 0 then
+        return true
       end
     end,
   },
@@ -236,6 +246,7 @@ function Convert:error()
   return self._err
 end
 
+---@param ft string
 function Convert:tmpfile(ft)
   return Snacks.image.config.cache .. "/" .. self.prefix .. "." .. ft
 end
@@ -299,7 +310,9 @@ function Convert:run(cb)
       step.done = true
       step.err = err
     end
-    if err then
+    if step and err and step.cmd.on_error and step.cmd.on_error(step) then
+      -- keep going
+    elseif err then
       if Snacks.image.config.convert.notify then
         local title = step and ("Conversion failed at step `%s`"):format(step.name) or "Conversion failed"
         if step and step.proc then
