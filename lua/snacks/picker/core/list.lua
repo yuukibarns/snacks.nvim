@@ -366,9 +366,6 @@ function M:update(opts)
   if self.paused and #self.items < self.state.height then
     return
   end
-  if not self.win:valid() then
-    return
-  end
   self:render()
 end
 
@@ -553,6 +550,9 @@ function M:update_cursorline()
 end
 
 function M:render()
+  if not self.win:valid() then
+    return
+  end
   stats.render = stats.render + 1
   if self.target then
     self:view(self.target.cursor, self.target.top, false)
