@@ -6,10 +6,22 @@ local M = {}
 ---@field win snacks.win
 ---@field buf number
 
+---@class snacks.image.ctx
+---@field buf number
+---@field lang string
+---@field meta vim.treesitter.query.TSMetadata
+---@field pos? TSMatch
+---@field src? TSMatch
+---@field content? TSMatch
+
 ---@alias TSMatch {node:TSNode, meta:vim.treesitter.query.TSMetadata}
----@alias snacks.image.ctx {buf:number, pos?: TSMatch, src?: TSMatch, content?: TSMatch}
 ---@alias snacks.image.match {id: string, pos: snacks.image.Pos, src?: string, content?: string, ext?: string, range?:Range4}
 ---@alias snacks.image.transform fun(match: snacks.image.match, ctx: snacks.image.ctx)
+
+local META_EXT = "image.ext"
+local META_SRC = "image.src"
+local META_IGNORE = "image.ignore"
+local META_LANG = "image.lang"
 
 ---@type table<string, snacks.image.transform>
 M.transforms = {
@@ -154,65 +166,77 @@ function M.find(buf, from, to)
       return
     end
     for _, match, meta in query:iter_matches(tstree:root(), buf, from and from - 1 or nil, to and to - 1 or nil) do
-      local ctx = { buf = buf } ---@type snacks.image.ctx
-      local lang = meta["injection.language"] or tree:lang()
-      for id, nodes in pairs(match) do
-        nodes = type(nodes) == "userdata" and { nodes } or nodes
-        local name = query.captures[id]
-        local field = name == "image" and "pos" or name:match("^image%.(.*)$")
-        if field then
-          ctx[field] = { node = nodes[1], meta = meta[id] or {} }
+      if not meta[META_IGNORE] then
+        ---@type snacks.image.ctx
+        local ctx = {
+          buf = buf,
+          lang = tostring(meta[META_LANG] or meta["injection.language"] or tree:lang()),
+          meta = meta,
+        }
+        for id, nodes in pairs(match) do
+          nodes = type(nodes) == "userdata" and { nodes } or nodes
+          local name = query.captures[id]
+          local field = name == "image" and "pos" or name:match("^image%.(.*)$")
+          if field then
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            ctx[field] = { node = nodes[1], meta = meta[id] or {} }
+          end
         end
+        ret[#ret + 1] = M._img(ctx)
       end
-      ctx.pos = ctx.pos or ctx.src or ctx.content
-      assert(ctx.pos, "no image node")
-
-      local range = vim.treesitter.get_range(ctx.pos.node, buf, ctx.pos.meta)
-      local lines = vim.api.nvim_buf_get_lines(buf, range[1], range[4] + 1, false)
-      while #lines > 0 and vim.trim(lines[#lines]) == "" do
-        table.remove(lines)
-      end
-      ---@type snacks.image.match
-      local img = {
-        ext = meta["image.ext"],
-        src = meta["image.src"],
-        id = ctx.pos.node:id(),
-        range = { range[1] + 1, range[2], range[4] + 1, range[5] },
-        pos = {
-          range[1] + #lines,
-          math.min(range[2], range[5]),
-        },
-      }
-      img.pos[1] = math.min(img.pos[1], vim.api.nvim_buf_line_count(buf))
-      if ctx.src then
-        img.src = vim.treesitter.get_node_text(ctx.src.node, buf, { metadata = ctx.src.meta })
-      end
-      if ctx.content then
-        img.content = vim.treesitter.get_node_text(ctx.content.node, buf, { metadata = ctx.content.meta })
-      end
-      assert(img.src or img.content, "no image src or content")
-
-      local transform = M.transforms[lang]
-      if transform then
-        transform(img, ctx)
-      end
-      if img.src then
-        img.src = M.resolve(buf, img.src)
-      end
-      if img.content and not img.src then
-        local root = Snacks.image.config.cache
-        vim.fn.mkdir(root, "p")
-        img.src = root .. "/" .. vim.fn.sha256(img.content):sub(1, 8) .. "-content." .. (img.ext or "png")
-        if vim.fn.filereadable(img.src) == 0 then
-          local fd = assert(io.open(img.src, "w"), "failed to open " .. img.src)
-          fd:write(img.content)
-          fd:close()
-        end
-      end
-      ret[#ret + 1] = img
     end
   end)
   return ret
+end
+
+---@param ctx snacks.image.ctx
+function M._img(ctx)
+  ctx.pos = ctx.pos or ctx.src or ctx.content
+  assert(ctx.pos, "no image node")
+
+  local range = vim.treesitter.get_range(ctx.pos.node, ctx.buf, ctx.pos.meta)
+  local lines = vim.api.nvim_buf_get_lines(ctx.buf, range[1], range[4] + 1, false)
+  while #lines > 0 and vim.trim(lines[#lines]) == "" do
+    table.remove(lines)
+  end
+  ---@type snacks.image.match
+  local img = {
+    ext = ctx.meta[META_EXT],
+    src = ctx.meta[META_SRC],
+    id = ctx.pos.node:id(),
+    range = { range[1] + 1, range[2], range[4] + 1, range[5] },
+    pos = {
+      range[1] + #lines,
+      math.min(range[2], range[5]),
+    },
+  }
+  img.pos[1] = math.min(img.pos[1], vim.api.nvim_buf_line_count(ctx.buf))
+  if ctx.src then
+    img.src = vim.treesitter.get_node_text(ctx.src.node, ctx.buf, { metadata = ctx.src.meta })
+  end
+  if ctx.content then
+    img.content = vim.treesitter.get_node_text(ctx.content.node, ctx.buf, { metadata = ctx.content.meta })
+  end
+  assert(img.src or img.content, "no image src or content")
+
+  local transform = M.transforms[ctx.lang]
+  if transform then
+    transform(img, ctx)
+  end
+  if img.src then
+    img.src = M.resolve(ctx.buf, img.src)
+  end
+  if img.content and not img.src then
+    local root = Snacks.image.config.cache
+    vim.fn.mkdir(root, "p")
+    img.src = root .. "/" .. vim.fn.sha256(img.content):sub(1, 8) .. "-content." .. (img.ext or "png")
+    if vim.fn.filereadable(img.src) == 0 then
+      local fd = assert(io.open(img.src, "w"), "failed to open " .. img.src)
+      fd:write(img.content)
+      fd:close()
+    end
+  end
+  return img
 end
 
 function M.hover_close()
