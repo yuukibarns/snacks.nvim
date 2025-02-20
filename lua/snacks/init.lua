@@ -54,9 +54,8 @@ M.config = setmetatable({}, {
   end,
 })
 
-local islist = vim.islist or vim.tbl_islist
 local is_dict_like = function(v) -- has string and number keys
-  return type(v) == "table" and (vim.tbl_isempty(v) or not islist(v))
+  return type(v) == "table" and (vim.tbl_isempty(v) or not svim.islist(v))
 end
 local is_dict = function(v) -- has only string keys
   return type(v) == "table" and (vim.tbl_isempty(v) or not v[1])
