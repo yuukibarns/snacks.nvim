@@ -95,8 +95,8 @@ In case of issues, make sure to run `:checkhealth snacks`.
   doc = {
     -- enable image viewer for documents
     -- a treesitter parser must be available for the enabled languages.
-    -- supported language injections: markdown, html
     enabled = true,
+    math = true, -- enable math expression rendering
     -- render the image inline in the buffer
     -- if your env doesn't support unicode placeholders, this will be disabled
     -- takes precedence over `opts.float` on supported terminals
@@ -107,8 +107,7 @@ In case of issues, make sure to run `:checkhealth snacks`.
     max_width = 80,
     max_height = 40,
     -- Set to `true`, to conceal the image text when rendering inline.
-    -- (experimental)
-    conceal = false,
+    conceal = false, -- (experimental)
   },
   img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments" },
   -- window options applied to windows displaying image buffers
