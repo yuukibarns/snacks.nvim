@@ -207,11 +207,11 @@ Snacks.picker.pick({source = "files", ...})
         ["/"] = "toggle_focus",
         ["<C-Down>"] = { "history_forward", mode = { "i", "n" } },
         ["<C-Up>"] = { "history_back", mode = { "i", "n" } },
-        ["<C-c>"] = { "close", mode = "i" },
+        ["<C-c>"] = { "cancel", mode = "i" },
         ["<C-w>"] = { "<c-s-w>", mode = { "i" }, expr = true, desc = "delete word" },
         ["<CR>"] = { "confirm", mode = { "n", "i" } },
         ["<Down>"] = { "list_down", mode = { "i", "n" } },
-        ["<Esc>"] = "close",
+        ["<Esc>"] = "cancel",
         ["<S-CR>"] = { { "pick_win", "jump" }, mode = { "n", "i" } },
         ["<S-Tab>"] = { "select_and_prev", mode = { "i", "n" } },
         ["<Tab>"] = { "select_and_next", mode = { "i", "n" } },
@@ -259,7 +259,7 @@ Snacks.picker.pick({source = "files", ...})
         ["<2-LeftMouse>"] = "confirm",
         ["<CR>"] = "confirm",
         ["<Down>"] = "list_down",
-        ["<Esc>"] = "close",
+        ["<Esc>"] = "cancel",
         ["<S-CR>"] = { { "pick_win", "jump" } },
         ["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
         ["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
@@ -307,7 +307,7 @@ Snacks.picker.pick({source = "files", ...})
     -- preview window
     preview = {
       keys = {
-        ["<Esc>"] = "close",
+        ["<Esc>"] = "cancel",
         ["q"] = "close",
         ["i"] = "focus_input",
         ["<ScrollWheelDown>"] = "list_scroll_wheel_down",
@@ -610,23 +610,6 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
----@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts? snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
----@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
-```
-
-```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -702,6 +685,23 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
+```
+
+```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts? snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
+---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
 ```
 
 ## 📦 Module
@@ -2359,6 +2359,12 @@ local M = {}
 Snacks.picker.actions.bufdelete(picker)
 ```
 
+### `Snacks.picker.actions.cancel()`
+
+```lua
+Snacks.picker.actions.cancel(picker)
+```
+
 ### `Snacks.picker.actions.cd()`
 
 ```lua
@@ -2706,6 +2712,8 @@ Snacks.picker.actions.toggle_preview(picker)
 Snacks.picker.actions.yank(picker, item, action)
 ```
 
+
+
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -2960,5 +2968,3 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
-
-
