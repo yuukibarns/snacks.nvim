@@ -180,7 +180,7 @@ function M.get_locations(method, opts, filter)
   local win = filter.current_win
   local buf = filter.current_buf
   local fname = vim.api.nvim_buf_get_name(buf)
-  fname = vim.fs.normalize(fname)
+  fname = svim.fs.normalize(fname)
   local cursor = vim.api.nvim_win_get_cursor(win)
   local bufmap = M.bufmap()
 
@@ -203,7 +203,7 @@ function M.get_locations(method, opts, filter)
       if not opts.include_current then
         ---@param item vim.quickfix.entry
         items = vim.tbl_filter(function(item)
-          if vim.fs.normalize(item.filename) ~= fname then
+          if svim.fs.normalize(item.filename) ~= fname then
             return true
           end
           if not item.lnum then

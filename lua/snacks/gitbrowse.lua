@@ -149,7 +149,7 @@ end
 function M._open(opts)
   opts = Snacks.config.get("gitbrowse", defaults, opts)
   local file = vim.api.nvim_buf_get_name(0) ---@type string?
-  file = file and (uv.fs_stat(file) or {}).type == "file" and vim.fs.normalize(file) or nil
+  file = file and (uv.fs_stat(file) or {}).type == "file" and svim.fs.normalize(file) or nil
   local cwd = file and vim.fn.fnamemodify(file, ":h") or vim.fn.getcwd()
 
   ---@type snacks.gitbrowse.Fields

@@ -54,7 +54,7 @@ function M.proc(opts, ctx)
     local spawn_opts = {
       args = opts.args,
       stdio = { nil, stdout, nil },
-      cwd = opts.cwd and vim.fs.normalize(opts.cwd) or nil,
+      cwd = opts.cwd and svim.fs.normalize(opts.cwd) or nil,
       env = opts.env,
       hide = true,
     }
@@ -174,7 +174,7 @@ function M.debug(opts)
     end
     Snacks.notify.info(
       ("- **cwd**: `%s`\n```sh\n%s\n```"):format(
-        vim.fn.fnamemodify(vim.fs.normalize(opts.cwd or uv.cwd() or "."), ":~"),
+        vim.fn.fnamemodify(svim.fs.normalize(opts.cwd or uv.cwd() or "."), ":~"),
         table.concat(lines, "\n")
       ),
       { id = "snacks.picker.proc." .. id, title = "Snacks Proc" }

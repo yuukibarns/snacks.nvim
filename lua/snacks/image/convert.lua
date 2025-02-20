@@ -420,7 +420,7 @@ function M.norm(src)
     src = vim.uri_to_fname(src)
   end
   if not M.is_uri(src) then
-    src = vim.fs.normalize(vim.fn.fnamemodify(src, ":p"))
+    src = svim.fs.normalize(vim.fn.fnamemodify(src, ":p"))
   end
   return src
 end

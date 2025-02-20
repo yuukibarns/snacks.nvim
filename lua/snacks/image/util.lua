@@ -7,7 +7,7 @@ local dims = {} ---@type table<string, snacks.image.Size>
 ---@param file string
 ---@return snacks.image.Size
 function M.dim(file)
-  file = vim.fs.normalize(file)
+  file = svim.fs.normalize(file)
   if dims[file] then
     return dims[file]
   end

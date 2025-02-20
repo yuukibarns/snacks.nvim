@@ -44,7 +44,7 @@ function M.rename_file(opts)
     if not value or value == "" or value == extra then
       return
     end
-    to = vim.fs.normalize(root .. "/" .. value)
+    to = svim.fs.normalize(root .. "/" .. value)
     rename()
   end)
 end

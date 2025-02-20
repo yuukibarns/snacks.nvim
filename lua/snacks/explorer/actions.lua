@@ -160,7 +160,7 @@ function M.actions.explorer_add(picker)
     if not value or value:find("^%s$") then
       return
     end
-    local path = vim.fs.normalize(picker:dir() .. "/" .. value)
+    local path = svim.fs.normalize(picker:dir() .. "/" .. value)
     local is_file = value:sub(-1) ~= "/"
     local dir = is_file and vim.fs.dirname(path) or path
     if is_file and uv.fs_stat(path) then
@@ -237,7 +237,7 @@ function M.actions.explorer_copy(picker, item)
       return
     end
     local dir = vim.fs.dirname(item.file)
-    local to = vim.fs.normalize(dir .. "/" .. value)
+    local to = svim.fs.normalize(dir .. "/" .. value)
     if uv.fs_stat(to) then
       Snacks.notify.warn("File already exists:\n- `" .. to .. "`")
       return
