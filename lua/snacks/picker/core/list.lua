@@ -132,7 +132,7 @@ function M.new(picker)
     for win in pairs(vim.v.event) do
       if (tonumber(win) or -1) == self.win.win then
         vim.api.nvim_win_call(self.win.win, function()
-          vim.fn.winrestview({ topline = 1, leftcol = 0 })
+          vim.fn.winrestview({ topline = 1 })
         end)
       end
     end
