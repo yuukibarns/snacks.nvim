@@ -1,6 +1,9 @@
 ---@class snacks.image.doc
 local M = {}
 
+---@alias TSMatch {node:TSNode, meta:vim.treesitter.query.TSMetadata}
+---@alias snacks.image.transform fun(match: snacks.image.match, ctx: snacks.image.ctx)
+
 ---@class snacks.image.Hover
 ---@field img snacks.image.Placement
 ---@field win snacks.win
@@ -14,9 +17,13 @@ local M = {}
 ---@field src? TSMatch
 ---@field content? TSMatch
 
----@alias TSMatch {node:TSNode, meta:vim.treesitter.query.TSMetadata}
----@alias snacks.image.match {id: string, pos: snacks.image.Pos, src?: string, content?: string, ext?: string, range?:Range4}
----@alias snacks.image.transform fun(match: snacks.image.match, ctx: snacks.image.ctx)
+---@class snacks.image.match
+---@field id string
+---@field pos snacks.image.Pos
+---@field src? string
+---@field content? string
+---@field ext? string
+---@field range? Range4
 
 local META_EXT = "image.ext"
 local META_SRC = "image.src"
@@ -225,6 +232,9 @@ function M._img(ctx)
   end
   if img.src then
     img.src = M.resolve(ctx.buf, img.src)
+  end
+  if not Snacks.image.config.doc.math and img.ext and img.ext:find("math") then
+    return
   end
   if img.content and not img.src then
     local root = Snacks.image.config.cache
