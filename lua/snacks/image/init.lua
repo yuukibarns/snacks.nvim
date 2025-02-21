@@ -203,6 +203,29 @@ function M.hover()
   M.doc.hover()
 end
 
+local managers = {}
+local ImageManager = require("snacks.image.image_manager")
+
+function M.open()
+  local buf = vim.api.nvim_get_current_buf()
+  if not managers[buf] then
+    managers[buf] = ImageManager.new(buf)
+    managers[buf]:open()
+  else
+    managers[buf]:open()
+  end
+end
+
+function M.close()
+  local buf = vim.api.nvim_get_current_buf()
+  if not managers[buf] then
+    managers[buf] = ImageManager.new(buf)
+    managers[buf]:close()
+  else
+    managers[buf]:close()
+  end
+end
+
 ---@return string[]
 function M.langs()
   local queries = vim.api.nvim_get_runtime_file("queries/*/images.scm", true)
