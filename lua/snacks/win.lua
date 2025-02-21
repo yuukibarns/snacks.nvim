@@ -615,6 +615,12 @@ function M:set_title(title, pos)
   if not self:valid() then
     return
   end
+  -- Don't try to update if the relative window is invalid.
+  -- It will be fixed once a full update is done.
+  local relative_win = vim.api.nvim_win_get_config(self.win).win
+  if relative_win and not vim.api.nvim_win_is_valid(relative_win) then
+    return
+  end
   vim.api.nvim_win_set_config(self.win, {
     title = self.opts.title,
     title_pos = self.opts.title_pos,
