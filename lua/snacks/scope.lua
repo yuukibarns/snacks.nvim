@@ -107,7 +107,7 @@ local defaults = {
 }
 
 ---@diagnostic disable-next-line: invisible
-M.TS_ASYNC = vim.treesitter.languagetree._async_parse ~= nil
+M.TS_ASYNC = (vim.treesitter.languagetree or {})._async_parse ~= nil
 
 local id = 0
 
