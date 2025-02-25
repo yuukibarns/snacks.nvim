@@ -315,18 +315,6 @@ end
 local TSScope = setmetatable({}, Scope)
 TSScope.__index = TSScope
 
-function TSScope.has_ts(buf)
-  if vim.b[buf].snacks_ts == nil then
-    if vim.b[buf].ts_highlight then
-      vim.b[buf].snacks_ts = true
-    else
-      local ok, parser = pcall(vim.treesitter.get_parser, buf)
-      vim.b[buf].snacks_ts = ok and parser ~= nil
-    end
-  end
-  return vim.b[buf].snacks_ts
-end
-
 -- Expand the scope to fill the range of the node
 function TSScope:fill()
   local n = self.node
@@ -513,7 +501,7 @@ function M.get(cb, opts)
   end
 
   ---@type snacks.scope.Scope
-  local Class = (opts.treesitter.enabled and TSScope.has_ts(opts.buf)) and TSScope or IndentScope
+  local Class = (opts.treesitter.enabled and Snacks.util.get_lang(opts.buf)) and TSScope or IndentScope
   if rawequal(Class, TSScope) and opts.parse ~= false then
     TSScope:init(function()
       opts.parse = false
