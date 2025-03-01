@@ -106,9 +106,6 @@ local defaults = {
   },
 }
 
----@diagnostic disable-next-line: invisible
-M.TS_ASYNC = (vim.treesitter.languagetree or {})._async_parse ~= nil
-
 local id = 0
 
 ---@alias snacks.scope.scope {buf: number, from: number, to: number, indent?: number}
@@ -399,12 +396,7 @@ function TSScope:init(cb, opts)
   if not parser then
     return cb()
   end
-  if M.TS_ASYNC then
-    parser:parse(opts.treesitter.injections, cb)
-  else
-    parser:parse(opts.treesitter.injections)
-    cb()
-  end
+  Snacks.util.parse(parser, opts.treesitter.injections, cb)
 end
 
 ---@param opts snacks.scope.Opts
