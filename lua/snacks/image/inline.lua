@@ -136,10 +136,10 @@ function M:update()
     for k, v in pairs(stats) do
       stats[k] = v > 0 and v or nil
     end
-    Snacks.notify(
-      vim.inspect({ all = vim.tbl_count(self.imgs), stats = stats }),
-      { ft = "lua", id = "snacks.image.inline" }
-    )
+    -- Snacks.notify(
+    --   vim.inspect({ all = vim.tbl_count(self.imgs), stats = stats }),
+    --   { ft = "lua", id = "snacks.image.inline" }
+    -- )
   end)
 end
 
