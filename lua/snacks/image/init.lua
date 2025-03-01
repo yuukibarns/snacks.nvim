@@ -203,9 +203,10 @@ function M.hover()
   M.doc.hover()
 end
 
-local managers = {}
+local managers = {} ---@type table<integer, ImageManager>
 local ImageManager = require("snacks.image.image_manager")
 
+--- Opens the image manager for the current buffer.
 function M.open()
   local buf = vim.api.nvim_get_current_buf()
   if not managers[buf] then
@@ -216,13 +217,19 @@ function M.open()
   end
 end
 
+--- Closes the image manager for the current buffer.
 function M.close()
   local buf = vim.api.nvim_get_current_buf()
-  if not managers[buf] then
-    managers[buf] = ImageManager.new(buf)
+  if managers[buf] then
     managers[buf]:close()
-  else
-    managers[buf]:close()
+  end
+end
+
+--- Shows the images managed by the image manager for the current buffer.
+function M.show_src()
+  local buf = vim.api.nvim_get_current_buf()
+  if managers[buf] then
+    managers[buf]:show_src()
   end
 end
 

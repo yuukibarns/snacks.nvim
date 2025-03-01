@@ -1,9 +1,21 @@
+---@module 'snacks.image.doc'
 local doc = require("snacks.image.doc")
 
+---@param src string
+local function convert(src)
+  local _convert = Snacks.image.convert.convert({ src = src })
+  return _convert.file
+end
+
+---@class ImageManager
+---@field buf integer
+---@field imgs table<string, table<snacks.image.Placement>>
 local ImageManager = {}
 ImageManager.__index = ImageManager
 
----@param buf integer
+--- Creates a new ImageManager instance.
+---@param buf integer The buffer ID to manage images for.
+---@return ImageManager
 function ImageManager.new(buf)
   local self = setmetatable({}, ImageManager)
   self.buf = buf
@@ -11,6 +23,8 @@ function ImageManager.new(buf)
   return self
 end
 
+--- Retrieves images based on the current mode and cursor position.
+---@return table<integer, table> A list of images.
 function ImageManager:get_images()
   local mode = vim.fn.mode()
   local images = {}
@@ -65,6 +79,7 @@ function ImageManager:get_images()
   return images
 end
 
+--- Opens images in the buffer.
 function ImageManager:open()
   local found = {}
   for _, i in ipairs(doc.find(self.buf)) do
@@ -129,6 +144,7 @@ function ImageManager:open()
   end
 end
 
+--- Closes images in the buffer.
 function ImageManager:close()
   local found = {}
   for _, i in ipairs(doc.find(self.buf)) do
@@ -176,6 +192,17 @@ function ImageManager:close()
       end
     end
   end
+end
+
+--- Shows the images sources.
+function ImageManager:show_src()
+   local images = self:get_images()
+   for _, image in ipairs(images) do
+     local file = convert(image.src)
+     vim.fn.setreg("+", file)
+     vim.fn.setreg("*", file)
+     vim.api.nvim_echo({{file .. " " .. "copied to clipboard"}}, true, {})
+   end
 end
 
 return ImageManager
