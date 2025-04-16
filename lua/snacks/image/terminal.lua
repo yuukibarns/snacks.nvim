@@ -38,6 +38,18 @@ local environments = {
       return ("\027Ptmux;" .. data:gsub("\027", "\027\027")) .. "\027\\"
     end,
   },
+  {
+    name = "neovide",
+    env = { NEOVIDE_IMAGE = true },
+    supported = true,
+    placeholders = true,
+    remote = true,
+    request = function(data)
+      if neovide and neovide.kitty_image then
+        neovide.kitty_image(data)
+      end
+    end
+  },
   { name = "zellij", env = { TERM = "zellij", ZELLIJ = true }, supported = false, placeholders = false },
   { name = "ssh", env = { SSH_CLIENT = true, SSH_CONNECTION = true }, remote = true },
 }
@@ -154,6 +166,7 @@ function M.env()
       end
       M._env.transform = e.transform or M._env.transform
       M._env.remote = e.remote or M._env.remote
+      M._env.request = e.request or M._env.request
       if e.setup then
         e.setup()
       end
@@ -166,6 +179,10 @@ end
 ---@param opts table<string, string|number>|{data?: string}
 function M.request(opts)
   opts.q = opts.q or 2 -- silence all
+  if M.env().request then
+    M.env().request(opts)
+    return
+  end
   local msg = {} ---@type string[]
   for k, v in pairs(opts) do
     if k ~= "data" then
