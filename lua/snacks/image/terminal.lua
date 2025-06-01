@@ -38,8 +38,33 @@ local environments = {
       return ("\027Ptmux;" .. data:gsub("\027", "\027\027")) .. "\027\\"
     end,
   },
-  { name = "zellij", env = { TERM = "zellij", ZELLIJ = true }, supported = false, placeholders = false },
-  { name = "ssh", env = { SSH_CLIENT = true, SSH_CONNECTION = true }, remote = true },
+  {
+    name = "neovide",
+    env = { NEOVIDE_IMAGE = true },
+    supported = true,
+    placeholders = true,
+    remote = true,
+    request = function(data)
+      if neovide and neovide.kitty_image then
+        neovide.kitty_image(data)
+      end
+    end,
+    size = function()
+      local info = neovide.info
+      local client_area = info.client_area
+      return {
+        width = client_area.max.x - client_area.min.x,
+        height = client_area.max.y - client_area.min.y,
+        columns = vim.o.columns,
+        rows = vim.o.lines,
+        cell_width = info.cell_size.width,
+        cell_height = info.cell_size.height,
+        scale = info.scale_factor
+      }
+    end
+  },
+  { name = "zellij", env = { TERM = "zellij", ZELLIJ = true },           supported = false, placeholders = false },
+  { name = "ssh",    env = { SSH_CLIENT = true, SSH_CONNECTION = true }, remote = true },
 }
 
 M._env = nil ---@type snacks.image.Env?
@@ -63,6 +88,11 @@ end, 100)
 
 function M.size()
   if size then
+    return size
+  end
+  local env = M.env()
+  if env then
+    size = env.size()
     return size
   end
   local ffi = require("ffi")
@@ -151,6 +181,8 @@ function M.env()
       end
       M._env.transform = e.transform or M._env.transform
       M._env.remote = e.remote or M._env.remote
+      M._env.request = e.request or M._env.request
+      M._env.size = e.size or M._env.size
       if e.setup then
         e.setup()
       end
@@ -163,6 +195,10 @@ end
 ---@param opts table<string, string|number>|{data?: string}
 function M.request(opts)
   opts.q = opts.q or 2 -- silence all
+  if M.env().request then
+    M.env().request(opts)
+    return
+  end
   local msg = {} ---@type string[]
   for k, v in pairs(opts) do
     if k ~= "data" then

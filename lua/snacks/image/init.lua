@@ -45,6 +45,8 @@ M.meta = {
 --- When `nil`, the path is resolved relative to the file.
 ---@field resolve? fun(file: string, src: string): string?
 ---@field convert? snacks.image.convert.Config
+--- Use this to send over some other channel than stdio
+---@field write? fun(data: string)
 local defaults = {
   formats = {
     "png",
