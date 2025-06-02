@@ -91,7 +91,7 @@ function M.size()
     return size
   end
   local env = M.env()
-  if env then
+  if env and type(env.size) == "function" then
     size = env.size()
     return size
   end
