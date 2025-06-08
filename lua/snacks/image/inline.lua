@@ -5,6 +5,12 @@
 local M = {}
 M.__index = M
 
+---@param src string
+local function convert(src)
+  local _convert = Snacks.image.convert.convert({ src = src })
+  return _convert.file
+end
+
 -- Generate key from image range
 ---@param img snacks.image.match
 ---@return string
@@ -178,29 +184,69 @@ end
 
 ---Open image at cursor position
 function M:open()
+  local mode = vim.fn.mode():sub(1, 1):lower()
   local cursor = vim.api.nvim_win_get_cursor(0)
+  local from, to = vim.fn.line("v"), vim.fn.line(".")
+  from, to = math.min(from, to), math.max(from, to)
 
-  Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
-    for _, img in ipairs(matches) do
-      if is_cursor_in_range(cursor, img.range) then
+  if mode == "n" then
+    Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
+      for _, img in ipairs(matches) do
+        if is_cursor_in_range(cursor, img.range) then
+          if img.src then
+            local file = convert(img.src)
+            vim.fn.setreg("+", file)
+            vim.fn.setreg("*", file)
+            vim.api.nvim_echo({ { file .. " " .. "copied to clipboard" } }, true, {})
+          end
+          local key = get_key(img)
+          if not self.managed[key] then
+            self.managed[key] = img
+            self:update()
+          end
+          return
+        end
+      end
+    end, { from = from, to = to + 1 })
+  else
+    Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
+      for _, img in ipairs(matches) do
         local key = get_key(img)
         if not self.managed[key] then
           self.managed[key] = img
-          self:update()
         end
-        return
       end
-    end
-  end, { from = cursor[1], to = cursor[1] + 1 })
+      self:update()
+    end, { from = from, to = to + 1 })
+  end
 end
 
 ---Close image at cursor position
 function M:close()
+  local mode = vim.fn.mode():sub(1, 1):lower()
   local cursor = vim.api.nvim_win_get_cursor(0)
+  local from, to = vim.fn.line("v"), vim.fn.line(".")
+  from, to = math.min(from, to), math.max(from, to)
 
-  Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
-    for _, img in ipairs(matches) do
-      if is_cursor_in_range(cursor, img.range) then
+  if mode == "n" then
+    Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
+      for _, img in ipairs(matches) do
+        if is_cursor_in_range(cursor, img.range) then
+          local key = get_key(img)
+          if self.managed[key] then
+            self.managed[key] = nil
+            if self.placements[key] then
+              self.placements[key]:close()
+              self.placements[key] = nil
+            end
+          end
+          return
+        end
+      end
+    end, { from = from, to = to + 1 })
+  else
+    Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
+      for _, img in ipairs(matches) do
         local key = get_key(img)
         if self.managed[key] then
           self.managed[key] = nil
@@ -209,10 +255,9 @@ function M:close()
             self.placements[key] = nil
           end
         end
-        return
       end
-    end
-  end, { from = cursor[1], to = cursor[1] + 1 })
+    end, { from = from, to = to + 1 })
+  end
 end
 
 return M
