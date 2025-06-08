@@ -61,6 +61,7 @@ function M.new(buf, src, opts)
   self.buf = buf
   self.augroup = vim.api.nvim_create_augroup("snacks.image." .. self.id, { clear = true })
   self.eids = {}
+  self.type = opts and opts.type or "image"
 
   if self.opts.auto_resize then
     vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter", "BufWinLeave", "BufEnter" }, {

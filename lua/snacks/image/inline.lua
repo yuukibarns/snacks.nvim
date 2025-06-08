@@ -75,9 +75,9 @@ end
 
 function M:conceal()
   local mode = vim.fn.mode():sub(1, 1):lower()
-  for _, placement in pairs(self.placements) do
-    placement:show()
-  end
+  -- for _, placement in pairs(self.placements) do
+  --   placement:show()
+  -- end
 
   if vim.wo.concealcursor:find(mode) then
     return
@@ -88,15 +88,22 @@ function M:conceal()
 
   -- Hide placements in visual selection
   for key, placement in pairs(self.placements) do
-    if placement.opts.conceal then
-      local range = key_to_range(key)
-      -- Check if image range overlaps with visual selection
-      local srow, erow = range[1], range[3]  -- convert to 1-indexed
-      if (srow >= from and srow <= to) or    -- start line in selection
-          (erow >= from and erow <= to) or   -- end line in selection
-          (srow <= from and erow >= to) then -- selection spans image
+    local range = key_to_range(key)
+    -- Check if image range overlaps with visual selection
+    local srow, erow = range[1], range[3]  -- convert to 1-indexed
+    if (srow >= from and srow <= to) or    -- start line in selection
+        (erow >= from and erow <= to) or   -- end line in selection
+        (srow <= from and erow >= to) then -- selection spans image
+      if placement.opts.conceal then
         placement:hide()
+      else
+        placement:show()
       end
+    else
+      -- if placement.type == "math" and not placement.opts.conceal then
+      --   placement.opts.conceal = true
+      -- end
+      placement:show()
     end
   end
 end
@@ -204,20 +211,23 @@ function M:open()
             self.managed[key] = img
             self:update()
           end
+          self.placements[key].opts.conceal = true
           return
         end
       end
-    end, { from = from, to = to + 1 })
+    end, { from = from, to = to })
   else
     Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
       for _, img in ipairs(matches) do
         local key = get_key(img)
         if not self.managed[key] then
           self.managed[key] = img
+          self:update()
         end
+        self.placements[key].opts.conceal = true
       end
       self:update()
-    end, { from = from, to = to + 1 })
+    end, { from = from, to = to })
   end
 end
 
@@ -243,7 +253,7 @@ function M:close()
           return
         end
       end
-    end, { from = from, to = to + 1 })
+    end, { from = from, to = to })
   else
     Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
       for _, img in ipairs(matches) do
@@ -256,8 +266,29 @@ function M:close()
           end
         end
       end
-    end, { from = from, to = to + 1 })
+    end, { from = from, to = to })
   end
+end
+
+-- Toggle showing the current image
+function M:toggle_current()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+
+  Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
+    for _, img in ipairs(matches) do
+      if is_cursor_in_range(cursor, img.range) then
+        local key = get_key(img)
+        if not self.managed[key] then
+          self.managed[key] = img
+          self:update()
+        end
+        if self.placements[key] then
+          self.placements[key].opts.conceal = not self.placements[key].opts.conceal
+        end
+        return
+      end
+    end
+  end, { from = cursor[1], to = cursor[1] })
 end
 
 return M

@@ -245,6 +245,15 @@ function M.inline_close()
   inline_manager[buf]:close()
 end
 
+-- (Inline Only) Toggle the image under the cursor
+function M.inline_toggle()
+  local buf = vim.api.nvim_get_current_buf()
+  if not inline_manager[buf] then
+    inline_manager[buf] = M.inline.new(buf)
+  end
+  inline_manager[buf]:toggle_current()
+end
+
 ---@return string[]
 function M.langs()
   local queries = vim.api.nvim_get_runtime_file("queries/*/images.scm", true)
