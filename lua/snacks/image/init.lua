@@ -224,6 +224,27 @@ function M.hover()
   M.doc.hover()
 end
 
+---@type table<number, snacks.image.inline>
+local inline_manager = {}
+
+-- (Inline Only) Open the image under the cursor
+function M.inline_open()
+  local buf = vim.api.nvim_get_current_buf()
+  if not inline_manager[buf] then
+    inline_manager[buf] = M.inline.new(buf)
+  end
+  inline_manager[buf]:open()
+end
+
+-- (Inline Only) Close the image under the cursor
+function M.inline_close()
+  local buf = vim.api.nvim_get_current_buf()
+  if not inline_manager[buf] then
+    inline_manager[buf] = M.inline.new(buf)
+  end
+  inline_manager[buf]:close()
+end
+
 ---@return string[]
 function M.langs()
   local queries = vim.api.nvim_get_runtime_file("queries/*/images.scm", true)

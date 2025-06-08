@@ -407,24 +407,24 @@ function M.attach(buf)
     return
   end
   vim.b[buf].snacks_image_attached = true
-  local inline = Snacks.image.config.doc.inline and Snacks.image.terminal.env().placeholders
-  local float = Snacks.image.config.doc.float and not inline
-
-  if not inline and not float then
-    return
-  end
-
-  if inline then
-    Snacks.image.inline.new(buf)
-  else
-    local group = vim.api.nvim_create_augroup("snacks.image.doc." .. buf, { clear = true })
-    vim.api.nvim_create_autocmd({ "CursorMoved" }, {
-      group = group,
-      buffer = buf,
-      callback = vim.schedule_wrap(M.hover),
-    })
-    vim.schedule(M.hover)
-  end
+  -- local inline = Snacks.image.config.doc.inline and Snacks.image.terminal.env().placeholders
+  -- local float = Snacks.image.config.doc.float and not inline
+  --
+  -- if not inline and not float then
+  --   return
+  -- end
+  --
+  -- if inline then
+  --   Snacks.image.inline.new(buf)
+  -- else
+  --   local group = vim.api.nvim_create_augroup("snacks.image.doc." .. buf, { clear = true })
+  --   vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+  --     group = group,
+  --     buffer = buf,
+  --     callback = vim.schedule_wrap(M.hover),
+  --   })
+  --   vim.schedule(M.hover)
+  -- end
 end
 
 return M
