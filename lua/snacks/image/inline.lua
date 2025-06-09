@@ -211,7 +211,6 @@ function M:open()
             self.managed[key] = img
             self:update()
           end
-          self.placements[key].opts.conceal = true
           return
         end
       end
@@ -224,7 +223,6 @@ function M:open()
           self.managed[key] = img
           self:update()
         end
-        self.placements[key].opts.conceal = true
       end
       self:update()
     end, { from = from, to = to })
@@ -283,7 +281,7 @@ function M:toggle_current()
           self:update()
         end
         if self.placements[key] and self.placements[key].opts.conceal then
-          self.placements[key].opts.conceal = false
+          self.placements[key].opts.conceal = not self.placements[key].opts.conceal
         end
         return
       end
