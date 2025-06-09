@@ -51,7 +51,7 @@ function M.new(buf)
   self.placements = {}
 
   local group = vim.api.nvim_create_augroup("snacks.image.inline." .. buf, { clear = true })
-  local update = Snacks.util.debounce(function() self:update() end, { ms = 100 })
+  local update = Snacks.util.debounce(function() self:update() end, { ms = 200 })
 
   vim.api.nvim_create_autocmd({ "BufWritePost", "WinScrolled" }, {
     group = group,
@@ -282,8 +282,8 @@ function M:toggle_current()
           self.managed[key] = img
           self:update()
         end
-        if self.placements[key] then
-          self.placements[key].opts.conceal = not self.placements[key].opts.conceal
+        if self.placements[key] and self.placements[key].opts.conceal then
+          self.placements[key].opts.conceal = false
         end
         return
       end
