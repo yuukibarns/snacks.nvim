@@ -81,6 +81,8 @@ local defaults = {
     float = true,
     max_width = 80,
     max_height = 40,
+    -- control the pixel to cell nomalization
+    threshold = 0.5,
     -- Set to `true`, to conceal the image text when rendering inline.
     -- (experimental)
     ---@param lang string tree-sitter language
