@@ -447,6 +447,12 @@ function M:state()
     size.height = 1
   end
 
+  -- scale up for better display math
+  if size.height < 2 and not is_inline() then
+    size.width = size.width * 2
+    size.height = 2
+  end
+
   ---@class snacks.image.State
   ---@field hidden boolean
   ---@field loc snacks.image.Loc
