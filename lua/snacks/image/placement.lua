@@ -431,22 +431,6 @@ function M:state()
 
   local pos = self.opts.pos or { 1, 0 }
 
-  local function is_inline()
-    local range = self.opts.range or { pos[1], pos[2], pos[1], pos[2] }
-    if range[1] == range[3] then
-      local line = vim.api.nvim_buf_get_lines(self.buf, range[1] - 1, range[1], false)[1] or ""
-      local has_before = line:sub(1, range[2]):find("%S") ~= nil
-      local has_after = line:sub(range[4] + 1):find("%S") ~= nil
-      return has_before or has_after
-    end
-  end
-
-  -- scale down to fit inline
-  if size.height <= 2 and is_inline() then
-    size.width = math.ceil(size.width / size.height) + 2
-    size.height = 1
-  end
-
   ---@class snacks.image.State
   ---@field hidden boolean
   ---@field loc snacks.image.Loc
