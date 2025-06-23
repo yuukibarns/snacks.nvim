@@ -24,11 +24,13 @@ local M = {}
 ---@field src? string
 ---@field content? string
 ---@field ext? string
+---@field math? string
 ---@field range? Range4
 ---@field lang string
 ---@field type snacks.image.Type
 
 local META_EXT = "image.ext"
+local META_MATH = "image.math"
 local META_SRC = "image.src"
 local META_TYPE = "image.type"
 local META_IGNORE = "image.ignore"
@@ -75,7 +77,10 @@ M.transforms = {
       return true
     end, packages)
     img.content = Snacks.picker.util.tpl(Snacks.image.config.math.latex.tpl, {
-      font_size = Snacks.image.config.math.latex.font_size or "large",
+      font_size = img.math == "inline"
+          and Snacks.image.config.math.latex.font_size_inline
+          or Snacks.image.config.math.latex.font_size
+          or "large",
       packages = table.concat(packages, ", "),
       header = M.get_header(ctx.buf),
       color = fg:upper():sub(2),
@@ -268,6 +273,7 @@ function M._img(ctx)
   ---@type snacks.image.match
   local img = {
     ext = ctx.meta[META_EXT],
+    math = ctx.meta[META_MATH],
     src = ctx.meta[META_SRC],
     lang = ctx.lang,
     id = ctx.pos.node:id(),
