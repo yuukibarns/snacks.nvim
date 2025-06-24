@@ -237,6 +237,17 @@ function M.inline_open()
   inline_manager[buf]:open()
 end
 
+-- (Inline Only) Toggle open all the visible images of specific types
+---@param type? snacks.image.Type
+---@param math? string[]
+function M.inline_toggle_visible(type, math)
+  local buf = vim.api.nvim_get_current_buf()
+  if not inline_manager[buf] then
+    inline_manager[buf] = M.inline.new(buf)
+  end
+  inline_manager[buf]:toggle_visible(type, math)
+end
+
 -- (Inline Only) Close the image under the cursor
 function M.inline_close()
   local buf = vim.api.nvim_get_current_buf()
@@ -244,6 +255,14 @@ function M.inline_close()
     inline_manager[buf] = M.inline.new(buf)
   end
   inline_manager[buf]:close()
+end
+
+-- (Inline Only) Close all the images
+function M.inline_close_all()
+  local buf = vim.api.nvim_get_current_buf()
+  if inline_manager[buf] then
+    inline_manager[buf]:close_all()
+  end
 end
 
 -- (Inline Only) Toggle the image under the cursor

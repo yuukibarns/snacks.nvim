@@ -1,5 +1,6 @@
 ---@class snacks.image.inline
 ---@field buf number
+---@field open_visible {type: snacks.image.Type, math: string[]}
 ---@field managed table<string, snacks.image.match>  -- key: range string (srow,scol,erow,ecol)
 ---@field placements table<string, snacks.image.Placement> -- key: same as managed
 local M = {}
@@ -47,6 +48,7 @@ end
 function M.new(buf)
   local self = setmetatable({}, M)
   self.buf = buf
+  self.open_visible = nil
   self.managed = {}
   self.placements = {}
 
@@ -127,6 +129,22 @@ function M:update()
       for _, img in ipairs(matches) do
         local key = get_key(img)
         visible_matches[key] = img
+        -- Add all visible images of a specific type to manager
+        if self.open_visible and img.type == self.open_visible.type then
+          if img.type == "math" then
+            for _, type in ipairs(self.open_visible.math) do
+              if img.math == type then
+                if self.managed[key] and self.managed[key].content ~= img.content and self.placements[key] then
+                  self.placements[key]:close()
+                  self.placements[key] = nil
+                end
+                self.managed[key] = img
+              end
+            end
+          else
+            self.managed[key] = img
+          end
+        end
       end
     end, { from = win.topline, to = win.botline })
   end
@@ -229,6 +247,21 @@ function M:open()
   end
 end
 
+---Toggle open all visible images
+---@param type? snacks.image.Type image type to open
+---@param math? string[] math type to open
+function M:toggle_visible(type, math)
+  if self.open_visible then
+    self.open_visible = nil
+  else
+    self.open_visible = {
+      type = type or "image",
+      math = math or { "inline", "display", "environment" },
+    }
+  end
+  self:update()
+end
+
 ---Close image at cursor position
 function M:close()
   local mode = vim.fn.mode():sub(1, 1):lower()
@@ -266,6 +299,15 @@ function M:close()
       end
     end, { from = from, to = to })
   end
+end
+
+-- Close all the images
+function M:close_all()
+  for _, placement in pairs(self.placements) do
+    placement:close()
+  end
+  self.managed = {}
+  self.placements = {}
 end
 
 -- Toggle showing the current image
