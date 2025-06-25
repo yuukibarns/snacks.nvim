@@ -45,7 +45,7 @@ local uv = vim.uv or vim.loop
 ---@field on_error? fun(step: snacks.image.step):boolean? when return true, continue to next step
 ---@field pipe? boolean
 
----@type table<string, snacks.image.cmd>
+---@type table<string, snacks.image.cmd | fun():snacks.image.cmd>
 local commands = {
   url = {
     cmd = {
@@ -72,37 +72,52 @@ local commands = {
       },
     },
   },
-  tex = {
-    ft = "pdf",
-    file = function(convert, ctx)
-      ctx.pdf = Snacks.image.config.cache .. "/" .. vim.fs.basename(ctx.src):gsub("%.tex$", ".pdf")
-      return convert:tmpfile("pdf")
-    end,
-    cmd = {
-      {
-        cwd = "{dirname}",
-        cmd = "tectonic",
-        args = { "-Z", "continue-on-errors", "--outdir", "{cache}", "{src}" },
-      },
-      {
-        cmd = "pdflatex",
-        cwd = "{dirname}",
-        args = { "-output-directory={cache}", "-interaction=nonstopmode", "{src}" },
-      },
-    },
-    on_done = function(step)
-      local pdf = assert(step.meta.pdf, "No pdf file") --[[@as string]]
-      if uv.fs_stat(pdf) then
-        uv.fs_rename(pdf, step.file)
-      end
-    end,
-    on_error = function(step)
-      local pdf = assert(step.meta.pdf, "No pdf file") --[[@as string]]
-      if step.meta.pdf and vim.fn.getfsize(pdf) > 0 then
-        return true
-      end
-    end,
-  },
+  tex = function()
+    if Snacks.image.tex_renderer == "mathjax" then
+      return {
+        ft = "png",
+        cmd = {
+          {
+            cwd = "{dirname}",
+            cmd = "tex2png",
+            args = { "{src}", "{file}", Snacks.util.color("SnacksImageMath") or "#000000", "25" },
+          },
+        },
+      }
+    else
+      return {
+        ft = "pdf",
+        file = function(convert, ctx)
+          ctx.pdf = Snacks.image.config.cache .. "/" .. vim.fs.basename(ctx.src):gsub("%.tex$", ".pdf")
+          return convert:tmpfile("pdf")
+        end,
+        cmd = {
+          {
+            cwd = "{dirname}",
+            cmd = "tectonic",
+            args = { "-Z", "continue-on-errors", "--outdir", "{cache}", "{src}" },
+          },
+          {
+            cmd = "pdflatex",
+            cwd = "{dirname}",
+            args = { "-output-directory={cache}", "-interaction=nonstopmode", "{src}" },
+          },
+        },
+        on_done = function(step)
+          local pdf = assert(step.meta.pdf, "No pdf file") --[[@as string]]
+          if uv.fs_stat(pdf) then
+            uv.fs_rename(pdf, step.file)
+          end
+        end,
+        on_error = function(step)
+          local pdf = assert(step.meta.pdf, "No pdf file") --[[@as string]]
+          if step.meta.pdf and vim.fn.getfsize(pdf) > 0 then
+            return true
+          end
+        end,
+      }
+    end
+  end,
   mmd = {
     cmd = {
       cmd = "mmdc",
@@ -144,7 +159,7 @@ local commands = {
       step.meta.info = {
         format = format:lower(),
         size = { width = tonumber(w) or 0, height = tonumber(h) or 0 },
-        dpi = { width = tonumber(x) or 0, height = tonumber(y) or 0 },
+        dpi = { width = 192, height = 192 }, -- hardcode it since resvg does not change output png's dpi (default to 72)
       }
     end,
   },
@@ -282,6 +297,9 @@ end
 ---@param target string
 function Convert:_resolve(target)
   local cmd = assert(commands[target], "No command for target: " .. target)
+  if type(cmd) == "function" then
+    cmd = cmd()
+  end
   assert(cmd.file or cmd.ft, "No file or ft for target: " .. target)
   for _, dep in ipairs(cmd.depends or {}) do
     self:_resolve(dep)

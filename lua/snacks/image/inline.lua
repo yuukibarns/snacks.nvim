@@ -153,7 +153,7 @@ function M:update()
   for key, img in pairs(self.managed) do
     local is_changed = false
     if visible_matches[key] then
-      if img.content == visible_matches[key].content then
+      if img.raw_content == visible_matches[key].raw_content then
         visible_managed[key] = img
       else
         is_changed = true
@@ -218,12 +218,6 @@ function M:open()
     Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
       for _, img in ipairs(matches) do
         if is_cursor_in_range(cursor, img.range) then
-          if img.src then
-            local file = convert(img.src)
-            vim.fn.setreg("+", file)
-            vim.fn.setreg("*", file)
-            vim.api.nvim_echo({ { file .. " " .. "copied to clipboard" } }, true, {})
-          end
           local key = get_key(img)
           if not self.managed[key] then
             self.managed[key] = img
@@ -232,7 +226,7 @@ function M:open()
           return
         end
       end
-    end, { from = from, to = to })
+    end, { from = cursor[1], to = cursor[1] })
   else
     Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
       for _, img in ipairs(matches) do
@@ -245,6 +239,25 @@ function M:open()
       self:update()
     end, { from = from, to = to })
   end
+end
+
+---Copy image path
+function M:copy()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+
+  Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
+    for _, img in ipairs(matches) do
+      if is_cursor_in_range(cursor, img.range) then
+        if img.src then
+          local file = convert(img.src)
+          vim.fn.setreg("+", file)
+          vim.fn.setreg("*", file)
+          vim.api.nvim_echo({ { file .. " " .. "copied to clipboard" } }, true, {})
+        end
+        return
+      end
+    end
+  end, { from = cursor[1], to = cursor[1] })
 end
 
 ---Toggle open all visible images
@@ -284,7 +297,7 @@ function M:close()
           return
         end
       end
-    end, { from = from, to = to })
+    end, { from = cursor[1], to = cursor[1] })
   else
     Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
       for _, img in ipairs(matches) do

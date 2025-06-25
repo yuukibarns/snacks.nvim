@@ -22,6 +22,7 @@ local M = {}
 ---@field id string
 ---@field pos snacks.image.Pos
 ---@field src? string
+---@field raw_content? string
 ---@field content? string
 ---@field ext? string
 ---@field math? string
@@ -57,36 +58,53 @@ M.transforms = {
     if not (img.content and img.ext == "math.tex") then
       return
     end
-    local fg = Snacks.util.color("SnacksImageMath") or "#000000"
-    local content = vim.trim(img.content or "")
-    content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
-    content = content:gsub("^\\[%[%(]", ""):gsub("\\[%]%)]$", "")
-    if not content:find("^\\begin") then
-      content = ("\\[%s\\]"):format(content)
-    end
-    local packages = { "xcolor" }
-    vim.list_extend(packages, Snacks.image.config.math.latex.packages)
-    vim.list_extend(packages, M.get_packages(ctx.buf))
-    table.sort(packages)
-    local seen = {} ---@type table<string, boolean>
-    packages = vim.tbl_filter(function(p)
-      if seen[p] then
-        return false
+    if Snacks.image.tex_renderer == "mathjax" then
+      local content = vim.trim(img.content or "")
+      content = content:gsub("\\tag{(.-)}", "\\qquad (\\mathrm{%1})") -- \tag is not supported in star environments
+      content = content:gsub("\\tag%*{(.-)}", "\\qquad \\mathrm{%1}") -- \tag* is not supported in star environments
+      if content:find("^%$+%s*\\begin") then
+        img.content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
+        return
       end
-      seen[p] = true
-      return true
-    end, packages)
-    img.content = Snacks.picker.util.tpl(Snacks.image.config.math.latex.tpl, {
-      font_size = img.math == "inline"
-          and Snacks.image.config.math.latex.font_size_inline
-          or Snacks.image.config.math.latex.font_size
-          or "large",
-      packages = table.concat(packages, ", "),
-      header = M.get_header(ctx.buf),
-      color = fg:upper():sub(2),
-      content = content,
-    }, { indent = true, prefix = "$" })
-  end,
+      if content:find("^\\%[%s*\\begin") then
+        img.content = content:gsub("^\\[%[%(]", ""):gsub("\\[%]%)]$", "")
+        return
+      end
+      img.content = content
+    else
+      local fg = Snacks.util.color("SnacksImageMath") or "#000000"
+      local content = vim.trim(img.content or "")
+      content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
+      content = content:gsub("^\\[%[%(]", ""):gsub("\\[%]%)]$", "")
+      content = content:gsub("\\tag{(.-)}", "\\qquad (\\mathrm{%1})")   -- \tag is not supported in star environments
+      content = content:gsub("\\tag%*{(.-)}", "\\qquad \\mathrm{%1}")   -- \tag* is not supported in star environments
+      if not content:find("^%s*\\begin") then
+        content = ("\\[%s\\]"):format(content)
+      end
+      local packages = { "xcolor" }
+      vim.list_extend(packages, Snacks.image.config.math.latex.packages)
+      vim.list_extend(packages, M.get_packages(ctx.buf))
+      table.sort(packages)
+      local seen = {} ---@type table<string, boolean>
+      packages = vim.tbl_filter(function(p)
+        if seen[p] then
+          return false
+        end
+        seen[p] = true
+        return true
+      end, packages)
+      img.content = Snacks.picker.util.tpl(Snacks.image.config.math.latex.tpl, {
+        font_size = img.math == "inline"
+            and Snacks.image.config.math.latex.font_size_inline
+            or Snacks.image.config.math.latex.font_size
+            or "large",
+        packages = table.concat(packages, ", "),
+        header = M.get_header(ctx.buf),
+        color = fg:upper():sub(2),
+        content = content,
+      }, { indent = true, prefix = "$" })
+    end
+  end
 }
 
 local hover ---@type snacks.image.Hover?
@@ -293,7 +311,8 @@ function M._img(ctx)
     img.src = vim.treesitter.get_node_text(ctx.src.node, ctx.buf, { metadata = ctx.src.meta })
   end
   if ctx.content then
-    img.content = vim.treesitter.get_node_text(ctx.content.node, ctx.buf, { metadata = ctx.content.meta })
+    img.raw_content = vim.treesitter.get_node_text(ctx.content.node, ctx.buf, { metadata = ctx.content.meta })
+    img.content = img.raw_content
   end
   assert(img.src or img.content, "no image src or content")
 
@@ -334,8 +353,8 @@ function M.at_cursor(cb)
       local range = img.range
       if range then
         if
-          (range[1] == range[3] and cursor[2] >= range[2] and cursor[2] <= range[4])
-          or (range[1] ~= range[3] and cursor[1] >= range[1] and cursor[1] <= range[3])
+            (range[1] == range[3] and cursor[2] >= range[2] and cursor[2] <= range[4])
+            or (range[1] ~= range[3] and cursor[1] >= range[1] and cursor[1] <= range[3])
         then
           return cb(img.src, img.pos)
         end

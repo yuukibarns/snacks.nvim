@@ -7,6 +7,7 @@
 ---@field doc snacks.image.doc
 ---@field convert snacks.image.convert
 ---@field inline snacks.image.inline
+---@field tex_renderer "mathjax"|"latex"
 local M = setmetatable({}, {
   ---@param M snacks.image
   __index = function(M, k)
@@ -237,6 +238,15 @@ function M.inline_open()
   inline_manager[buf]:open()
 end
 
+-- (Inline Only) Copy the path of the image under the cursor
+function M.inline_copy()
+  local buf = vim.api.nvim_get_current_buf()
+  if not inline_manager[buf] then
+    inline_manager[buf] = M.inline.new(buf)
+  end
+  inline_manager[buf]:copy()
+end
+
 -- (Inline Only) Toggle open all the visible images of specific types
 ---@param type? snacks.image.Type
 ---@param math? string[]
@@ -274,6 +284,17 @@ function M.inline_toggle()
   inline_manager[buf]:toggle_current()
 end
 
+-- (Math Only) Choose latex or MathJax renderer
+function M.change_tex_renderer()
+  if M.tex_renderer == "mathjax" then
+    M.tex_renderer = "latex"
+    vim.notify("Using latex renderer", vim.log.levels.INFO)
+  else
+    M.tex_renderer = "mathjax"
+    vim.notify("Using mathjax renderer", vim.log.levels.INFO)
+  end
+end
+
 ---@return string[]
 function M.langs()
   local queries = vim.api.nvim_get_runtime_file("queries/*/images.scm", true)
@@ -289,8 +310,19 @@ function M.setup(ev)
     return
   end
   did_setup = true
+  M.tex_renderer = "mathjax"
   local group = vim.api.nvim_create_augroup("snacks.image", { clear = true })
 
+  -- Stop tex2png server when Neovim exits
+  vim.api.nvim_create_autocmd("VimLeave", {
+    group = group,
+    callback = function()
+      local path = vim.fn.exepath("tex2png")
+      if path ~= "" then
+        vim.system({ path, "stop" })
+      end
+    end
+  })
   vim.api.nvim_create_autocmd({ "BufWipeout", "BufDelete" }, {
     group = group,
     callback = function(e)
