@@ -156,10 +156,17 @@ local commands = {
       if not format then
         return
       end
+      local dpi_width = tonumber(x)
+      local dpi_height = tonumber(y)
+      -- HACK(yuukibarns): resvg only outputs png with dpi=72x72
+      if dpi_width and dpi_width == 72 and dpi_height and dpi_height == 72 then
+        dpi_width = 192
+        dpi_height = 192
+      end
       step.meta.info = {
         format = format:lower(),
         size = { width = tonumber(w) or 0, height = tonumber(h) or 0 },
-        dpi = { width = 192, height = 192 }, -- hardcode it since resvg does not change output png's dpi (default to 72)
+        dpi = { width = dpi_width  or 0, height = dpi_height or 0 },
       }
     end,
   },
