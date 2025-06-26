@@ -275,13 +275,13 @@ function M.inline_close_all()
   end
 end
 
--- (Inline Only) Toggle the image under the cursor
-function M.inline_toggle()
+-- (Inline Only) Preview the image under the cursor
+function M.inline_preview()
   local buf = vim.api.nvim_get_current_buf()
   if not inline_manager[buf] then
     inline_manager[buf] = M.inline.new(buf)
   end
-  inline_manager[buf]:toggle_current()
+  inline_manager[buf]:preview()
 end
 
 -- (Math Only) Choose latex or MathJax renderer
