@@ -58,10 +58,8 @@ M.transforms = {
     if not (img.content and img.ext == "math.tex") then
       return
     end
-    if Snacks.image.tex_renderer == "mathjax" then
+    if Snacks.image.tex_renderer == "mathjax" and vim.fn.executable("tex2png") == 1 then
       local content = vim.trim(img.content or "")
-      content = content:gsub("\\tag{(.-)}", "\\qquad (\\mathrm{%1})") -- \tag is not supported in star environments
-      content = content:gsub("\\tag%*{(.-)}", "\\qquad \\mathrm{%1}") -- \tag* is not supported in star environments
       if content:find("^%$+%s*\\begin") then
         img.content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
         return

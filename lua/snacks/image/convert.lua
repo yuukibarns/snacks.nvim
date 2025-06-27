@@ -73,7 +73,7 @@ local commands = {
     },
   },
   tex = function()
-    if Snacks.image.tex_renderer == "mathjax" then
+    if Snacks.image.tex_renderer == "mathjax" and vim.fn.executable("tex2png") == 1 then
       return {
         ft = "png",
         cmd = {
