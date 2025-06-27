@@ -86,4 +86,57 @@ function M.fit(file, cells, opts)
   return M.norm(ret)
 end
 
+-- Load macros from path to JSON file
+---@param json_filepath string
+---@return table<string, string>
+local function load_macros(json_filepath)
+  -- Read the file
+  local file = io.open(json_filepath, 'r')
+  if not file then
+    vim.notify('Could not open macros file: ' .. json_filepath, vim.log.levels.ERROR)
+    return {}
+  end
+
+  local content = file:read('*a')
+  file:close()
+
+  -- Parse with vim.json
+  local ok, parsed = pcall(vim.json.decode, content)
+  if not ok then
+    vim.notify('Failed to parse macros JSON: ' .. parsed, vim.log.levels.ERROR)
+    return {}
+  end
+
+  return parsed
+end
+
+-- Function to convert lua table of macros into latex commands
+---@param macros table<string, string>
+---@return string
+local function macros_to_latex_commands(macros)
+  local lines = {}
+
+  for name, definition in pairs(macros) do
+    if type(definition) == "table" then
+      -- Handle array-style macros like ["\\bm", ["\\boldsymbol{#1}", 1]]
+      local args = definition[2] or 0
+      local cmd = definition[1]
+      table.insert(lines, string.format("\\newcommand{\\%s}[%d]{%s}", name, args, cmd))
+    else
+      -- Handle simple string definitions
+      table.insert(lines, string.format("\\newcommand{\\%s}{%s}", name, definition))
+    end
+  end
+
+  return table.concat(lines, "\n")
+end
+
+-- Combine the above three functions
+---@param json_filepath string
+---@return string
+function M.load_macros_to_latex_commands(json_filepath)
+  local macros = load_macros(json_filepath)
+  return macros_to_latex_commands(macros)
+end
+
 return M

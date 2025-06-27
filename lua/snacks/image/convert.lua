@@ -74,13 +74,15 @@ local commands = {
   },
   tex = function()
     if Snacks.image.tex_renderer == "mathjax" and vim.fn.executable("tex2png") == 1 then
+      local macro_path = Snacks.image.config.math.latex.macros
+      local fontsize = Snacks.image.config.math.latex.font_size_mathjax
       return {
         ft = "png",
         cmd = {
           {
             cwd = "{dirname}",
             cmd = "tex2png",
-            args = { "{src}", "{file}", Snacks.util.color("SnacksImageMath") or "#000000", "25" },
+            args = { "{src}", "{file}", Snacks.util.color("SnacksImageMath") or "#000000", tostring(fontsize), macro_path },
           },
         },
       }

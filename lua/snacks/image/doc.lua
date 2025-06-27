@@ -74,11 +74,10 @@ M.transforms = {
       local content = vim.trim(img.content or "")
       content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
       content = content:gsub("^\\[%[%(]", ""):gsub("\\[%]%)]$", "")
-      content = content:gsub("\\tag{(.-)}", "\\qquad (\\mathrm{%1})")   -- \tag is not supported in star environments
-      content = content:gsub("\\tag%*{(.-)}", "\\qquad \\mathrm{%1}")   -- \tag* is not supported in star environments
       if not content:find("^%s*\\begin") then
         content = ("\\[%s\\]"):format(content)
       end
+      local macros = Snacks.image.config.math.latex.macros
       local packages = { "xcolor" }
       vim.list_extend(packages, Snacks.image.config.math.latex.packages)
       vim.list_extend(packages, M.get_packages(ctx.buf))
@@ -98,6 +97,7 @@ M.transforms = {
             or "large",
         packages = table.concat(packages, ", "),
         header = M.get_header(ctx.buf),
+        macros = Snacks.image.util.load_macros_to_latex_commands(macros),
         color = fg:upper():sub(2),
         content = content,
       }, { indent = true, prefix = "$" })

@@ -152,14 +152,18 @@ local defaults = {
     latex = {
       font_size = "Large", -- see https://www.sascha-frank.com/latex-font-size.html
       font_size_inline = "normalsize",
+      font_size_mathjax = 25,
       -- for latex documents, the doc packages are included automatically,
       -- but you can add more packages here. Useful for markdown documents.
       packages = { "amsmath", "amssymb", "amsfonts", "amscd", "mathtools" },
+      -- Path to custom macros JSON file
+      macros = vim.fn.stdpath("config") .. "/latex-macros.json",
       tpl = [[
         \documentclass[preview,border=0pt,varwidth,12pt]{standalone}
         \usepackage{${packages}}
         \begin{document}
         ${header}
+        ${macros}
         { \${font_size} \selectfont
           \color[HTML]{${color}}
         ${content}}
