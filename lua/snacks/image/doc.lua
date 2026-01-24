@@ -59,16 +59,7 @@ M.transforms = {
       return
     end
     if Snacks.image.tex_renderer == "mathjax" and vim.fn.executable("tex2png") == 1 then
-      local content = vim.trim(img.content or "")
-      if content:find("^%$+%s*\\begin") then
-        img.content = content:gsub("^%$+`?", ""):gsub("`?%$+$", "")
-        return
-      end
-      if content:find("^\\%[%s*\\begin") then
-        img.content = content:gsub("^\\[%[%(]", ""):gsub("\\[%]%)]$", "")
-        return
-      end
-      img.content = content
+      img.content = vim.trim(img.content or "")
     else
       local fg = Snacks.util.color("SnacksImageMath") or "#000000"
       local content = vim.trim(img.content or "")
