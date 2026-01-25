@@ -34,16 +34,16 @@ end
 
 -- Check if cursor is within image range
 ---@param cursor integer[] [row, col] (1-indexed, col 0-indexed)
----@param range Range4 [srow, scol, erow, ecol] (0-indexed)
+---@param range Range4 [srow, scol, erow, ecol]
 ---@return boolean
 local function is_cursor_in_range(cursor, range)
-  if
-      (range[1] == range[3] and cursor[2] >= range[2] and cursor[2] <= range[4])
-      or (range[1] ~= range[3] and cursor[1] >= range[1] and cursor[1] <= range[3])
-  then
-    return true
-  end
-  return false
+  local r, c = cursor[1], cursor[2]
+  local sr, sc, er, ec = range[1], range[2], range[3], range[4]
+
+  local after_start = (r > sr) or (r == sr and c >= sc)
+  local before_end = (r < er) or (r == er and c <= ec)
+
+  return after_start and before_end
 end
 
 function M.new(buf)
@@ -79,35 +79,46 @@ end
 
 function M:conceal()
   local mode = vim.fn.mode():sub(1, 1):lower()
-  -- for _, placement in pairs(self.placements) do
-  --   placement:show()
-  -- end
+  for _, placement in pairs(self.placements) do
+    placement:show()
+  end
 
   if vim.wo.concealcursor:find(mode) then
     return
   end
 
-  local from, to = vim.fn.line("v"), vim.fn.line(".")
-  from, to = math.min(from, to), math.max(from, to)
+  if mode == "v" then
+    local from, to = vim.fn.line("v"), vim.fn.line(".")
+    from, to = math.min(from, to), math.max(from, to)
 
-  -- Hide placements in visual selection
-  for key, placement in pairs(self.placements) do
-    local range = key_to_range(key)
-    -- Check if image range overlaps with visual selection
-    local srow, erow = range[1], range[3]  -- convert to 1-indexed
-    if (srow >= from and srow <= to) or    -- start line in selection
-        (erow >= from and erow <= to) or   -- end line in selection
-        (srow <= from and erow >= to) then -- selection spans image
-      if placement.opts.conceal then
-        placement:hide()
+    -- Hide placements in visual selection
+    for key, placement in pairs(self.placements) do
+      local range = key_to_range(key)
+      -- Check if image range overlaps with visual selection
+      local srow, erow = range[1], range[3]  -- convert to 1-indexed
+      if (srow >= from and srow <= to) or    -- start line in selection
+          (erow >= from and erow <= to) or   -- end line in selection
+          (srow <= from and erow >= to) then -- selection spans image
+        if placement.opts.conceal then
+          placement:hide()
+        end
       else
         placement:show()
       end
-    else
-      -- if placement.type == "math" and not placement.opts.conceal then
-      --   placement.opts.conceal = true
-      -- end
-      placement:show()
+    end
+  else
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    for key, placement in pairs(self.placements) do
+      local range = key_to_range(key)
+      if is_cursor_in_range(cursor, range) then
+        if placement.opts.conceal then
+          placement.opts.conceal = false
+          placement:update()
+        end
+      else
+        placement.opts.conceal = true
+        placement:update()
+      end
     end
   end
 end
@@ -115,6 +126,8 @@ end
 function M:update()
   local conceal = Snacks.image.config.doc.conceal
   conceal = type(conceal) ~= "function" and function() return conceal end or conceal
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
 
   local wins = vim.fn.win_findbuf(self.buf)
   local visible_windows = {} ---@type {topline: integer, botline: integer}[]
@@ -197,7 +210,7 @@ function M:update()
           pos = img.pos,
           range = img.range,
           inline = true,
-          conceal = conceal(img.lang, img.type),
+          conceal = conceal(img.lang, img.type) and not is_cursor_in_range(cursor, key_to_range(key)),
           type = img.type,
         })
       )
