@@ -51,10 +51,14 @@ function M.fit(file, cells, opts)
   opts = opts or {}
   local img_pixels ---@type snacks.image.Size
   if opts.info then
-    local terminal = Snacks.image.terminal.size()
     img_pixels = {}
-    img_pixels.height = opts.info.size.height / opts.info.dpi.height * 96 * terminal.scale
-    img_pixels.width = opts.info.size.width / opts.info.dpi.width * 96 * terminal.scale
+    if vim.g.neovide then
+      img_pixels.height = opts.info.size.height * vim.g.neovide_scale_factor
+      img_pixels.width = opts.info.size.width * vim.g.neovide_scale_factor
+    else
+      img_pixels.height = opts.info.size.height
+      img_pixels.width = opts.info.size.width
+    end
   else
     img_pixels = M.dim(file)
   end
