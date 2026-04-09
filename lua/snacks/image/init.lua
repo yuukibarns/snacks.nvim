@@ -279,15 +279,6 @@ function M.inline_close_all()
   end
 end
 
--- (Inline Only) Preview the image under the cursor
-function M.inline_preview()
-  local buf = vim.api.nvim_get_current_buf()
-  if not inline_manager[buf] then
-    inline_manager[buf] = M.inline.new(buf)
-  end
-  inline_manager[buf]:preview()
-end
-
 -- (Math Only) Choose latex or MathJax renderer
 function M.change_tex_renderer()
   if M.tex_renderer == "mathjax" then

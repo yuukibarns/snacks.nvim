@@ -2,7 +2,6 @@
 ---@field buf number
 ---@field open_visible {type: snacks.image.Type, math: string[]}
 ---@field managed table<string, snacks.image.match>  -- key: range string (srow,scol,erow,ecol)
----@field managed_preview {image?: snacks.image.match, placement?: snacks.image.Placement } -- preview image
 ---@field placements table<string, snacks.image.Placement> -- key: same as managed
 local M = {}
 M.__index = M
@@ -51,7 +50,6 @@ function M.new(buf)
   self.buf = buf
   self.open_visible = nil
   self.managed = {}
-  self.managed_preview = {}
   self.placements = {}
 
   local group = vim.api.nvim_create_augroup("snacks.image.inline." .. buf, { clear = true })
@@ -300,44 +298,6 @@ function M:close_all()
   end
   self.managed = {}
   self.placements = {}
-end
-
--- Toggle previewing the current image
-function M:preview()
-  local cursor = vim.api.nvim_win_get_cursor(0)
-
-  Snacks.image.doc.find(vim.api.nvim_get_current_buf(), function(matches)
-    for _, img in ipairs(matches) do
-      if is_cursor_in_range(cursor, img.range) then
-        if self.managed_preview.image and self.managed_preview.placement
-            and get_key(self.managed_preview.image) == get_key(img)
-            and self.managed_preview.image.raw_content == img.raw_content
-        then
-          self.managed_preview.placement:close()
-          self.managed_preview.placement = nil
-          self.managed_preview.image = nil
-          return
-        end
-        if self.managed_preview.placement then
-          self.managed_preview.placement:close()
-        end
-        self.managed_preview = {}
-        self.managed_preview.placement = Snacks.image.placement.new(
-          self.buf,
-          img.src,
-          Snacks.config.merge({}, Snacks.image.config.doc, {
-            pos = img.pos,
-            range = img.range,
-            inline = true,
-            conceal = false,
-            type = img.type,
-          })
-        )
-        self.managed_preview.image = img
-        return
-      end
-    end
-  end, { from = cursor[1], to = cursor[1] })
 end
 
 return M
